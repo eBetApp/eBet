@@ -1,0 +1,9 @@
+{
+  "packages": [
+    "packages/*"
+  ],
+  "version": "0.0.0",
+  "command": {
+    "run api": "lerna run dev --scope api --stream"
+  }
+}
