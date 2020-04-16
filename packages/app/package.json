@@ -20,7 +20,6 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "lint": "tslint --project tsconfig.json",
     "test": "jest"
   },
   "bugs": {
