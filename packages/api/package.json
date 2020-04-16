@@ -6,8 +6,7 @@
   "license": "GNU",
   "main": "src/app.ts",
   "directories": {
-    "lib": "src",
-    "test": "__tests__"
+    "lib": "src"
   },
   "files": [
     "src"
