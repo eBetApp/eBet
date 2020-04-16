@@ -10,7 +10,7 @@ import UserRepository from "../Repositories/userRepository";
 import { cameraPermissions } from "./devicePermissionsService";
 
 // Types imports
-import { User } from "../../ApiTypes/User.types";
+import { User } from "../../../shared/apiTypes/User";
 import { ImageInfo } from "expo-image-picker/build/ImagePicker.types";
 
 const chooseImageFromGaleryAsync = async (): Promise<ImageInfo | null> => {

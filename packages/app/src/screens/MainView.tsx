@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
 // Types imports
-import { User } from "../../ApiTypes/User.types";
+import { User } from "../../lib/types/User.types";
 
 // Redux import
 import { useStore } from "../hooks/store";
