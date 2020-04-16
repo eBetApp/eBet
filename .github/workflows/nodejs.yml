@@ -16,9 +16,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npx lerna bootstrap
-      - run: npx lerna run test --stream
+      - name: Install dependencies
+        run: npm install
+      - name: Lerna bootstrap
+        run: npx lerna bootstrap
+      - name: Run tests
+        run: npx lerna run test --stream
         env:
           CI: true
           DB_TEST_URL: ${{ secrets.DB_TEST_URL }}
