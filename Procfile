@@ -1,1 +1,0 @@
-web: pm2-runtime start packages/api/ecosystem.config.js
