@@ -8,8 +8,7 @@
     "lint": "lerna run lint",
     "dev-api": "lerna run dev --scope api --stream",
     "dev-app": "lerna run start --scope app --stream --npm-client=yarn",
-    "build": "lerna run build",
-    "postinstall": "npm install --prefix packages/api"
+    "build": "lerna run build"
   },
   "husky": {
     "hooks": {

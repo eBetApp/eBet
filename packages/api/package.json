@@ -23,8 +23,7 @@
 		"lintfix": "eslint src/*.ts* src/**/*.ts* --fix",
 		"pretty-quick": "npx pretty-quick --staged src/*.ts* src/**/*.ts*",
 		"dev": "nodemon",
-		"build": "npx babel src/ --out-dir .dist/ --extensions \".ts\" --source-maps inline --quiet --copy-files",
-		"start-heroku": "pm2-runtime start ecosystem.config.js"
+		"build": "npx babel src/ --out-dir .dist/ --extensions \".ts\" --source-maps inline --quiet --copy-files"
 	},
 	"bugs": {
 		"url": "https://github.com/eBetApp/eBet/issues"
