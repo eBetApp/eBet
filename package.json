@@ -7,7 +7,8 @@
     "pretty-quick": "lerna run pretty-quick",
     "lint": "lerna run lint",
     "dev-api": "lerna run dev --scope api --stream",
-    "dev-app": "lerna run start --scope app --stream --npm-client=yarn"
+    "dev-app": "lerna run start --scope app --stream --npm-client=yarn",
+    "build": "lerna run build"
   },
   "husky": {
     "hooks": {
@@ -15,9 +16,16 @@
       "pre-push": "yarn lint && yarn tests"
     }
   },
+  "engines": {
+    "node": ">=12.7.x",
+    "yarn": ">=1.19.x"
+  },
   "devDependencies": {
     "husky": "^4.2.5",
     "lerna": "^3.20.2",
     "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "pm2": "^4.2.3"
   }
 }
