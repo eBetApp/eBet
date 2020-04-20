@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
-    // TODO: centralize common options to all packages
+    "baseUrl": "./packages",
+    "paths": {
+      "@shared/*": ["./shared/*"]
+    }
   }
 }
