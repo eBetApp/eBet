@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { User } from '../entity/User';
+import User from '../entity/User';
 
 interface _avatarMulterFile extends Express.Multer.File {
 	location: string; // location not present (forgotten?) in multer types

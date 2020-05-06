@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 import request from 'superagent';
-import { User } from '../../src/entity/User';
+import User from '../../src/entity/User';
 
 const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 	describe('User routes', () => {

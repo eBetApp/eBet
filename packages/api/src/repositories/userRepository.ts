@@ -1,7 +1,7 @@
 // TYPEORM
 import { Repository, UpdateResult, DeleteResult } from 'typeorm';
 // INTERNALS
-import { User } from '../entity/User';
+import User from '../entity/User';
 import BaseRepository from './BaseRepository';
 
 class UserRepository extends BaseRepository<User> {

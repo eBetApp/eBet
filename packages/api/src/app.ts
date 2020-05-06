@@ -1,14 +1,21 @@
+// EXPRESS
 import express, { Express } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+// PASSPORT
 import passport from 'passport';
-import Routes from './routes';
 import './middlewares/passport';
+// SWAGGER
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+// GRAPHQL
 import { ApolloServer } from 'apollo-server-express';
+import { buildContext } from 'graphql-passport';
 import { typeDefs } from './graphQl/typeDefs';
 import { resolvers } from './graphQl/resolvers';
+// INTERNALS
+import Routes from './routes';
+import User from './entity/User';
 
 const app: Express = express();
 
@@ -51,7 +58,11 @@ app.get(
 );
 
 // GraphQL startup
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+	typeDefs,
+	resolvers,
+	context: ({ req, res }) => buildContext({ req, res, User }),
+});
 server.applyMiddleware({ app });
 
 export default app;

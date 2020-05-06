@@ -1,16 +1,11 @@
-import runInCleanedDatabase from './utils/runInCleanedDatabase';
-import {
-	getSuite,
-	authRoutesSuite,
-	graphQlAuthRoutesSuite,
-	userLoggedRoutesSuite,
-} from './suites';
-import app from '../src/app';
 import supertest from 'supertest';
+// ORM
 import { createConnection, Connection } from 'typeorm';
-import * as PostgressConnectionStringParser from 'pg-connection-string';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { User } from '../src/entity/User';
+// INTERNALS
+import { getSuite, authRoutesSuite, graphQlAuthRoutesSuite } from './suites';
+import app from '../src/app';
+import User from '../src/entity/User';
 
 let connection: Connection;
 
@@ -39,13 +34,13 @@ describe('Tests to run sequentially in cleaned database', () => {
 		done();
 	});
 
-	// it('Reset database (instruction - not a test)', async done => {
-	// 	await connection.dropDatabase()
-	// 	await connection.close()
-	// 	await connection.connect()
-	// 	done()
-	// })
-	// getSuite(server);
+	it('Reset database (instruction - not a test)', async done => {
+		await connection.dropDatabase();
+		await connection.close();
+		await connection.connect();
+		done();
+	});
+	getSuite(server);
 
 	it('Reset database (instruction - not a test)', async done => {
 		await connection.dropDatabase();
@@ -55,13 +50,13 @@ describe('Tests to run sequentially in cleaned database', () => {
 	});
 	authRoutesSuite(server);
 
-	// it('Reset database (instruction - not a test)', async done => {
-	// 	await connection.dropDatabase()
-	// 	await connection.close()
-	// 	await connection.connect()
-	// 	done()
-	// })
-	// graphQlAuthRoutesSuite(server);
+	it('Reset database (instruction - not a test)', async done => {
+		await connection.dropDatabase();
+		await connection.close();
+		await connection.connect();
+		done();
+	});
+	graphQlAuthRoutesSuite(server);
 
 	// it('Reset database (instruction - not a test)', async done => {
 	// 	await connection.dropDatabase()

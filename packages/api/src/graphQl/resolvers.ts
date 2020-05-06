@@ -1,33 +1,48 @@
+// GRAPHQL
 import { AuthenticationError } from 'apollo-server-errors';
-import {
-	signupService,
-	SuccesResult,
-	ErrorResult,
-} from '../services/userAuthServices';
-import { User } from '../entity/User';
+import { Context } from 'graphql-passport/lib/buildContext';
+// INTERNALS
+import AuthService from '../services/AuthServices';
+import User from '../entity/User';
+import { DatabaseError } from '../core/ApiErrors';
 
-interface UserToRegister {
-	nickname: string;
-	password: string;
-	email: string;
-}
-
-// Provide resolver functions for your schema fields
 export const resolvers = {
 	Query: {
-		hello: () => 'Hello world!',
+		hello: (): string => 'Hello world!',
 	},
 	Mutation: {
-		signUp: async (
-			parent: any,
-			args: UserToRegister,
-		): Promise<User | undefined> => {
+		signUp: async (_: any, args: User): Promise<Omit<User, 'password'>> => {
 			const { nickname, password, email } = args;
 			try {
-				const result = await signupService(nickname, password, email);
-				return (result as SuccesResult).data.user;
+				const result = await AuthService.signup(
+					nickname,
+					password,
+					email,
+				);
+				return result.data.user;
 			} catch (error) {
-				throw new AuthenticationError((error as ErrorResult).err);
+				if (error instanceof DatabaseError)
+					throw new AuthenticationError(error.details);
+				throw new AuthenticationError(error);
+			}
+		},
+		signIn: async (
+			_: any,
+			args: User,
+			context: Context<User>,
+		): Promise<Omit<User, 'password'>> => {
+			const { email, password } = args;
+			try {
+				const result = await AuthService.signinGraphQL(
+					email,
+					password,
+					context,
+				);
+				return result.data.user;
+			} catch (error) {
+				if (error instanceof DatabaseError)
+					throw new AuthenticationError(error.details);
+				throw new AuthenticationError(error);
 			}
 		},
 	},

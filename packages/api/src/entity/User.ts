@@ -1,97 +1,29 @@
+// ORM
 import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 import { Length, IsNotEmpty, IsEmail } from 'class-validator';
+// ENCRYPT
 import * as bcrypt from 'bcryptjs';
-
-/**
- * @swagger
- *  components:
- *    schemas:
- *      User:
- *        type: object
- *        required:
- *          - nickname
- *          - email
- *          - password
- *        properties:
- *          nickname:
- *            type: string
- *            description: needs to be unique
- *          email:
- *            type: string
- *            format: email
- *          password:
- *            type: string
- *            format: min. 4 characters
- *        example:
- *           nickname: Bob
- *           email: bob@gmail.com
- *           password: bob1
- *      ResponseUserRegistered:
- *        example:
- *           data:
- *            user:
- *              uuid: 4c2d544a-803f-4668-b4ed-410a1f
- *              nickname: Bob
- *              email: bob@gmail.com
- *              password: bob1
- *              avatar:
- *           meta:
- *            token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRjMmQ1NDRhLTgwM2YtNDY2OC1iNGVkLTQxMGExZjQwZTU4NSIsIm5pY2tuYW1lIjoiZGVsZXRlMjIiLCJ
- *      ResponseArrayOfUsers:
- *        type: array
- *        example:
- *          - uuid: 4c2d544a-803f-4668-b4ed-410a1f
- *            nickname: Bob1
- *            email: bob1@gmail.com
- *            password: bob1
- *            avatar:
- *          - uuid: 4c2d544a-803f-4668-b4ed-410a1f
- *            nickname: Bob2
- *            email: bob2@gmail.com
- *            password: bob2
- *            avatar:
- *      ResponseUserSingle:
- *        example:
- *          uuid: 4c2d544a-803f-4668-b4ed-410a1f
- *          nickname: Bob1
- *          email: bob1@gmail.com
- *          password: bob1
- *          avatar:
- *      ResponseUserWithAvatar:
- *        example:
- *          user:
- *            uuid: 4c2d544a-803f-4668-b4ed-410a1f
- *            nickname: Bob1
- *            email: bob1@gmail.com
- *            password: bob1
- *            avatar:
- *      ResponseUserDeleted:
- *        example:
- *          nickname: Bob1
- *          email: bob1@gmail.com
- *          password: bob1
- *      RequestBodyUserUpdateAvatar:
- *        example:
- *          uuid: 4c2d544a-803f-4668-b4ed-410a1f
- *          file: FILE
- */
+import * as jwt from 'jsonwebtoken';
+// INTERNALS
+import S3 from '../services/s3Service';
+import IStorageService from '../services/IStorageService';
 
 @Entity()
 @Unique(['email'])
-export class User {
+export default class User {
 	@PrimaryGeneratedColumn('uuid')
 	uuid!: string;
 
-	@Column('text', { nullable: true })
+	@Column('text')
 	@IsNotEmpty()
 	nickname!: string;
 
-	@Column('text', { nullable: true })
+	@Column('text')
 	@IsNotEmpty()
 	@IsEmail()
 	email!: string;
 
-	@Column('text', { nullable: true })
+	@Column('text')
 	@Length(4, 20)
 	@IsNotEmpty()
 	password!: string;
@@ -99,11 +31,26 @@ export class User {
 	@Column('text', { nullable: true })
 	avatar?: string;
 
-	hashPassword(): void {
-		this.password = bcrypt.hashSync(this.password, 8);
+	static hashPassword(user: User): void {
+		user.password = bcrypt.hashSync(user.password, 8);
 	}
 
-	checkIfUnencryptedPasswordIsValid(unencryptedPassword: string): boolean {
-		return bcrypt.compareSync(unencryptedPassword, this.password);
+	static checkIfUnencryptedPasswordIsValid(
+		user: User,
+		unencryptedPassword: string,
+	): boolean {
+		return bcrypt.compareSync(unencryptedPassword, user.password);
+	}
+
+	static get storageService(): IStorageService {
+		return S3;
+	}
+
+	static tokenBelongsToUser(token: string, uuid: string): boolean {
+		const userFromJwt = jwt.verify(
+			token,
+			String(process.env.SECRET),
+		) as User;
+		return userFromJwt.uuid == uuid;
 	}
 }
