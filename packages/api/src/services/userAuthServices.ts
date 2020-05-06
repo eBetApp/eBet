@@ -3,12 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { getRepository, Repository } from 'typeorm';
 import { validate, ValidationError } from 'class-validator';
 import passport from 'passport';
 import { User } from '../entity/User';
 import { SendMail, Mail } from './mailGunService';
-import { addUserRepository } from '../repositories/userRepository';
+import UserRepository from '../repositories/userRepository';
 
 interface BaseResult {
 	status: number;
@@ -53,7 +52,7 @@ export const signupService = async (
 	user.hashPassword();
 
 	try {
-		const insertedUser = await addUserRepository(user);
+		const insertedUser = await UserRepository.instance.save(user);
 		console.log('User created');
 		console.log(insertedUser);
 		const data: Mail = {

@@ -5,10 +5,74 @@ import {
 	graphQlAuthRoutesSuite,
 	userLoggedRoutesSuite,
 } from './suites';
+import app from '../src/app';
+import supertest from 'supertest';
+import { createConnection, Connection } from 'typeorm';
+import * as PostgressConnectionStringParser from 'pg-connection-string';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { User } from '../src/entity/User';
+
+let connection: Connection;
+
+const server: supertest.SuperTest<supertest.Test> = supertest(app);
 
 describe('Tests to run sequentially in cleaned database', () => {
-	runInCleanedDatabase(getSuite);
-	runInCleanedDatabase(authRoutesSuite);
-	runInCleanedDatabase(graphQlAuthRoutesSuite);
-	runInCleanedDatabase(userLoggedRoutesSuite);
+	it('Create connection to database (instruction - not a test)', async done => {
+		if (process.env.DB_TEST_URL == null)
+			throw new Error('DB_TEST_URL is required in .env file');
+
+		const options: PostgresConnectionOptions = {
+			name: 'main',
+			type: 'postgres',
+			url: process.env.DB_TEST_URL,
+			synchronize: true,
+			logging: false,
+			uuidExtension: 'uuid-ossp',
+			entities: [User],
+			extra: {
+				ssl: process.env.DB_TEST_SSL === 'true',
+			},
+		};
+
+		connection = await createConnection(options);
+
+		done();
+	});
+
+	// it('Reset database (instruction - not a test)', async done => {
+	// 	await connection.dropDatabase()
+	// 	await connection.close()
+	// 	await connection.connect()
+	// 	done()
+	// })
+	// getSuite(server);
+
+	it('Reset database (instruction - not a test)', async done => {
+		await connection.dropDatabase();
+		await connection.close();
+		await connection.connect();
+		done();
+	});
+	authRoutesSuite(server);
+
+	// it('Reset database (instruction - not a test)', async done => {
+	// 	await connection.dropDatabase()
+	// 	await connection.close()
+	// 	await connection.connect()
+	// 	done()
+	// })
+	// graphQlAuthRoutesSuite(server);
+
+	// it('Reset database (instruction - not a test)', async done => {
+	// 	await connection.dropDatabase()
+	// 	await connection.close()
+	// 	await connection.connect()
+	// 	done()
+	// })
+	// userLoggedRoutesSuite(server);
+
+	it('Close database connection (instruction - not a test)', async done => {
+		await connection.close();
+		done();
+	});
 });

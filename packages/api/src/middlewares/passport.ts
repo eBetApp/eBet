@@ -2,21 +2,23 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { getRepository, Repository } from 'typeorm';
+import UserRepository from '../repositories/userRepository';
 import { User } from '../entity/User';
 require('dotenv').config();
 
 passport.use(
 	new LocalStrategy(
 		{
-			usernameField: 'nickname',
+			usernameField: 'email',
 			passwordField: 'password',
 		},
-		async (username, password, next) => {
+		async (email, password, next) => {
 			console.log('LOCAL strategy');
 			try {
-				const userRepository: Repository<User> = getRepository(User);
-				const user: User | undefined = await userRepository.findOne({
-					nickname: username,
+				const user:
+					| User
+					| undefined = await UserRepository.instance.get({
+					email,
 				});
 
 				if (!user) throw new Error('User does not exist'); // status 400
@@ -43,8 +45,9 @@ passport.use(
 			console.log('jwtPayload:');
 			console.log(jwtPayload);
 			try {
-				const userRepository: Repository<User> = getRepository(User);
-				const user: User | undefined = await userRepository.findOne({
+				const user:
+					| User
+					| undefined = await UserRepository.instance.get({
 					uuid: jwtPayload.id,
 				});
 

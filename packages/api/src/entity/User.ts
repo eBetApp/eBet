@@ -77,7 +77,7 @@ import * as bcrypt from 'bcryptjs';
  */
 
 @Entity()
-@Unique(['nickname'])
+@Unique(['email'])
 export class User {
 	@PrimaryGeneratedColumn('uuid')
 	uuid!: string;
