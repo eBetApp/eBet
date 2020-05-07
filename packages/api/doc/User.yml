@@ -1,0 +1,533 @@
+openapi: 3.0.0
+
+paths:
+  #############################
+  #### USER AUTHENTICATION ####
+  #############################
+  /auth/signup:
+    post:
+      summary: Create a new user
+      tags: [User authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Auth_User_To_Register"
+      responses:
+        "201":
+          description: New user created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Auth_Response_Success"
+        "400":
+          description: Incorrect input data - User not created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Format"
+  #############################
+  /auth/signin:
+    post:
+      summary: Log in
+      tags: [User authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Auth_User_To_Login"
+      responses:
+        "200":
+          description: User logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Auth_Response_Success"
+        "400":
+          description: Incorrect input data - User not logged
+
+  #############################
+  #### USER AUTHENTICATED #####
+  #############################
+  /user/get/:uuid:
+    get:
+      summary: Get user by uuid
+      tags: [User authenticated]
+      parameters:
+        - in: path
+          name: uuid
+          description: user uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: "#/components/schemas/User_Response_With_Avatar"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "404":
+          description: User cannot be found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+  #############################
+  /user/update:
+    put:
+      summary: Update user by uuid
+      tags: [User authenticated]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - uuid
+              properties:
+                uuid:
+                  type: string
+                  description: uuid of user to update
+                nickname:
+                  type: string
+                  description: new desired nickname
+                email:
+                  type: string
+                  description: new desired email
+              example:
+                uuid: 1234
+                nickname: Bill
+                email: bill@gmail.com
+      parameters:
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+        "400":
+          description: Format error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: object
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string
+  #############################
+  /user/update-password:
+    put:
+      summary: Update user by uuid
+      tags: [User authenticated]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - uuid
+                - currentPwd
+                - newPwd
+              properties:
+                uuid:
+                  type: string
+                  description: uuid of user to update
+                currentPwd:
+                  type: string
+                  description: current passwword
+                newPwd:
+                  type: string
+                  description: new desired passwword
+              example:
+                uuid: 1234-5678
+                currentPwd: 1234
+                newPwd: 1234
+      parameters:
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+        "400":
+          description: Format error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                      details:
+                        type: array
+                        items:
+                          type: object
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string
+  #############################
+  /user/update-avatar/:
+    put:
+      summary: Update avatar of user specified by uuid in body
+      tags: [User authenticated]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: uuid of user we want to add avatar
+                file:
+                  description: file to upload (accepted -> jpeg/jpg/png)
+                  type: string
+                  format: binary
+      parameters:
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: User id updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Response_With_Avatar"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "422":
+          description: Incorrect image data
+        "500":
+          description: Internal error
+    #############################
+  /user/delete/:uuid:
+    delete:
+      summary: Get user by uuid
+      tags: [User authenticated]
+      parameters:
+        - in: path
+          name: uuid
+          description: user uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+        "400":
+          description: Uuid required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string
+  #############################
+  /user/delete-avatar/:fileKey:
+    delete:
+      summary: Delete avatar from AWS S3 by fileKey
+      tags: [User authenticated]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User_Request_Body_Only_Uuid"
+      parameters:
+        - in: path
+          name: fileKey
+          description: id of AWS file
+          schema:
+            type: integer
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: Image correctly deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "500":
+          description: Image cannot be deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+  #############################
+
+components:
+  schemas:
+    User_Error_Unauthorized:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+    #############################
+    User_Response_With_Avatar:
+      type: object
+      properties:
+        uuid:
+          type: string
+        movies:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserMovie'
+        nickname:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+      example:
+        user:
+          uuid: 4c2d544a-803f-4668-b4ed-410a1f
+          nickname: Luc
+          email: luc@gmail.com
+          avatar: 123456
+    #############################
+    User_Request_Body_Only_Uuid:
+      type: object
+      required:
+        - uuid
+      properties:
+        uuid:
+          type: string
+          description: uuid of user we want to remove avatar
+      example:
+        uuid: 1234
+    #############################
+    Auth_User_To_Register:
+      type: object
+      required:
+        - nickname
+        - email
+        - password
+      properties:
+        nickname:
+          type: string
+          description: needs to be unique
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: min. 4 characters
+      example:
+        nickname: Luc
+        email: luc@gmail.com
+        password: luc1
+    #############################
+    Auth_User_To_Login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: luc@gmail.com
+        password: luc1
+    #############################
+    Auth_Response_Success:
+      type: object
+      properties:
+        uuid:
+          type: string
+        movies:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserMovie'
+        nickname:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+      example:
+        data:
+          user:
+            uuid: UUID
+            nickname: Luc
+            email: luc@gmail.com
+            avatar:
+        meta:
+          token: TOKEN
+    #############################
+    User_Error_Format:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  target:
+                    type: object
+                  value:
+                    type: string
+                  property:
+                    type: string
+                  children:
+                    type: array
+                    items:
+                      type: string
+                  constraints:
+                    type: object
+    #############################
+    UserMovie:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: UserMovie ID
+        movie:
+          type: string
+          description: Movie ID
+      example:
+        id: 4
+        movie: "tt0070909"
+  #############################
+  parameters:
+    Bearer_Token:
+      name: Authorization
+      in: header
+      required: true
+      description: Bearer + TOKEN
+      schema:
+        type: string
+        format: token

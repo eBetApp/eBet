@@ -52,13 +52,13 @@ describe('Tests to run sequentially in cleaned database', () => {
 	});
 	graphQlAuthRoutesSuite(server);
 
-	// it('Reset database (instruction - not a test)', async done => {
-	// 	await connection.dropDatabase()
-	// 	await connection.close()
-	// 	await connection.connect()
-	// 	done()
-	// })
-	// userLoggedRoutesSuite(server);
+	it('Reset database (instruction - not a test)', async done => {
+		await connection.dropDatabase()
+		await connection.close()
+		await connection.connect()
+		done()
+	})
+	userLoggedRoutesSuite(server);
 
 	it('Close database connection (instruction - not a test)', async done => {
 		await connection.close();

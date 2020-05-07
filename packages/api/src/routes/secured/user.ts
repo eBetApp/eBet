@@ -1,13 +1,15 @@
+// EXPRESS
 import { Router } from 'express';
-// import UserController from '../../controllers/UserController';
+// INTERNALS
+import UserController from '../../controllers/rest/UserController';
 
 const router: Router = Router();
 
-// router.get('/', UserController.all);
-// router.get('/:id', UserController.one);
-// router.delete('/:id', UserController.delete);
-// router.put('/', UserController.update);
-// router.post('/upload-avatar', UserController.uploadAvatar);
-// router.delete('/delete-avatar/:fileKey', UserController.deleteAvatar);
+router.get('/get/:uuid', UserController.getUser)
+router.put('/update', UserController.updateUser)
+router.put('/update-password', UserController.updateUserPwd)
+router.put('/update-avatar', UserController.updateAvatar)
+router.delete('/delete/:uuid', UserController.deleteUser)
+router.delete('/delete-avatar/:fileKey', UserController.deleteAvatar)
 
 export default router;

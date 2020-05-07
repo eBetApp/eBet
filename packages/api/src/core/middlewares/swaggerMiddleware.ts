@@ -19,9 +19,7 @@ const graphQlMiddleware = (app: Application): void => {
             ],
         },
         apis: [
-            './src/database/models/User.ts',
-            './src/controllers/AuthController.ts',
-            './src/controllers/UserController.ts',
+            './doc/User.yml',
         ],
     };
     const specs = swaggerJsdoc(options);

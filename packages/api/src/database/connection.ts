@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-require('dotenv').config();
 // ORM
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 // INTERNALS
