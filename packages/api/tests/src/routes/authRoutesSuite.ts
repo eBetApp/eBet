@@ -1,8 +1,8 @@
 import supertest from 'supertest';
 import request from 'superagent';
 // INTERNALS
-import User from '../../src/database/models/User';
-import AuthenticateService from '../../src/services/AuthServices';
+import User from '../../../src/database/models/User';
+import AuthenticateService from '../../../src/services/AuthServices';
 
 const authRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 	describe('Auth routes', () => {

@@ -3,9 +3,11 @@ import supertest from 'supertest';
 import { createConnection, Connection } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 // INTERNALS
-import { getSuite, authRoutesSuite, graphQlAuthRoutesSuite } from './suites';
-import app from '../src/core/app';
-import User from '../src/database/models/User';
+import app from '../../../src/core/app';
+import User from '../../../src/database/models/User';
+import authRoutesSuite from './authRoutesSuite';
+import graphQlAuthRoutesSuite from './graphQlAuthRoutesSuite';
+import userLoggedRoutesSuite from './secured/userLoggedRoutesSuite';
 
 let connection: Connection;
 
@@ -33,14 +35,6 @@ describe('Tests to run sequentially in cleaned database', () => {
 
 		done();
 	});
-
-	it('Reset database (instruction - not a test)', async done => {
-		await connection.dropDatabase();
-		await connection.close();
-		await connection.connect();
-		done();
-	});
-	getSuite(server);
 
 	it('Reset database (instruction - not a test)', async done => {
 		await connection.dropDatabase();

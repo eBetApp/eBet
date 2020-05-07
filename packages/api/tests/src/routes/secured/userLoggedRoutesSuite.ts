@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 import request from 'superagent';
-import User from '../../src/database/models/User';
+import User from '../../../../src/database/models/User';
 
 const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 	describe('User routes', () => {
