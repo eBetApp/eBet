@@ -1,8 +1,8 @@
 // EXPRESS
 import { Request, Response } from 'express';
 // INTERNALS
-import AuthService from '../services/AuthServices';
-import { DatabaseError } from '../core/ApiErrors';
+import AuthService from '../../services/AuthServices';
+import { DatabaseError } from '../../core/ApiErrors';
 
 class AuthController {
 	static signup = async (req: Request, res: Response): Promise<Response> => {

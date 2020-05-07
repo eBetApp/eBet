@@ -5,8 +5,8 @@ import { Length, IsNotEmpty, IsEmail } from 'class-validator';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 // INTERNALS
-import S3 from '../services/s3Service';
-import IStorageService from '../services/IStorageService';
+import S3 from '../../services/s3Service';
+import IStorageService from '../../services/IStorageService';
 
 @Entity()
 @Unique(['email'])

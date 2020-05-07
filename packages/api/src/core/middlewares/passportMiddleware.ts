@@ -5,9 +5,8 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 // GRAPHQL
 import { GraphQLLocalStrategy } from 'graphql-passport';
 // INTERNALS
-import UserRepository from '../repositories/userRepository';
-import User from '../entity/User';
-require('dotenv').config(); // TODO: move into main
+import UserRepository from '../../database/repositories/userRepository';
+import User from '../../database/models/User';
 
 passport.use(
 	new LocalStrategy(

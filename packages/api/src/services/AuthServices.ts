@@ -11,8 +11,8 @@ import { Context } from 'graphql-passport/lib/buildContext';
 // MAILGUN
 import { SendMail, Mail } from './mailGunService';
 // INTERNALS
-import User from '../entity/User';
-import UserRepository from '../repositories/userRepository';
+import User from '../database/models/User';
+import UserRepository from '../database/repositories/userRepository';
 import { DatabaseError } from '../core/ApiErrors';
 
 class AuthService {

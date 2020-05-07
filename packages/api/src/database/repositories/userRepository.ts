@@ -1,8 +1,8 @@
 // TYPEORM
 import { Repository, UpdateResult, DeleteResult } from 'typeorm';
 // INTERNALS
-import User from '../entity/User';
-import BaseRepository from './BaseRepository';
+import User from '../../database/models/User';
+import BaseRepository from '../../database/repositories/BaseRepository';
 
 class UserRepository extends BaseRepository<User> {
 	private static _instance: UserRepository;

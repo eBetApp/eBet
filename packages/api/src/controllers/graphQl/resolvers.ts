@@ -2,9 +2,9 @@
 import { AuthenticationError } from 'apollo-server-errors';
 import { Context } from 'graphql-passport/lib/buildContext';
 // INTERNALS
-import AuthService from '../services/AuthServices';
-import User from '../entity/User';
-import { DatabaseError } from '../core/ApiErrors';
+import AuthService from '../../services/AuthServices';
+import User from  '../../database/models/User';
+import { DatabaseError } from '../../core/ApiErrors';
 
 export const resolvers = {
 	Query: {

@@ -1,15 +1,14 @@
 import supertest from 'supertest';
 import request from 'superagent';
-import User from '../../src/entity/User';
 
 const resolversRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 	describe('GraphQL - Auth routes', () => {
 		describe('GraphQL - Sign Up routes', () => {
 			it('Sign Up with correct data should return 200 and body should contains a User', async done => {
 				const query = `mutation {
-				signUp(nickname: "bobi22", email: "bob@gmail.com", password: "boob1")
-				{uuid, nickname, email}
-			}`;
+					signUp(nickname: "bobi22", email: "bob@gmail.com", password: "boob1")
+					{uuid, nickname, email}
+				}`;
 				const res: request.Response = await server
 					.post('/graphql')
 					.set('Accept', 'application/json')

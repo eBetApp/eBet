@@ -4,8 +4,8 @@ import { createConnection, Connection } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 // INTERNALS
 import { getSuite, authRoutesSuite, graphQlAuthRoutesSuite } from './suites';
-import app from '../src/app';
-import User from '../src/entity/User';
+import app from '../src/core/app';
+import User from '../src/database/models/User';
 
 let connection: Connection;
 
