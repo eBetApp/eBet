@@ -33,7 +33,7 @@ export const resolvers = {
 		): Promise<Omit<User, 'password'>> => {
 			const { email, password } = args;
 			try {
-				const result = await AuthService.signinGraphQL(
+				const result = await AuthService.signin(
 					email,
 					password,
 					context,

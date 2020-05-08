@@ -15,8 +15,6 @@ class AuthController {
 			return res.status(result.status).json(result);
 		} catch (error) {
 			if (error instanceof ErrorBase){
-				console.log("CONTORLLER")
-				console.log(error)
 				return res.status(error.status).send({ error });
 			}
 			return res.status(500).send({error: new UnexpectedError("SignUp failed", error)});

@@ -170,7 +170,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 				done();
 			});
 
-			it('Should return 403 if correct token BUT no UUID and incomplete data (nickname or email) --> Forbidden', async done => {
+			it('Should return 400 if correct token BUT no UUID and incomplete data (nickname or email) --> BoddyError', async done => {
 				const resWithNoNickname: request.Response = await server
 					.put('/api/user/update/')
 					.set('Accept', 'application/json')
@@ -189,12 +189,12 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						email: 'new@gmail.com',
 						// no nickname but required
 					});
-				expect(resWithNoNickname.status).toBe(403);
-				expect(resWithNoEmail.status).toBe(403);
+				expect(resWithNoNickname.status).toBe(400);
+				expect(resWithNoEmail.status).toBe(400);
 				done();
 			});
 
-			it('Should return 403 if correct token BUT no UUID --> Forbidden', async done => {
+			it('Should return 400 if correct token BUT no UUID --> BodyError', async done => {
 				const res: request.Response = await server
 					.put('/api/user/update/')
 					.set('Accept', 'application/json')
@@ -204,7 +204,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						nickname: 'newNickname', // incorrect
 						email: 'new@gmail.com', // incorrect
 					});
-				expect(res.status).toBe(403);
+				expect(res.status).toBe(400);
 				done();
 			});
 		});
