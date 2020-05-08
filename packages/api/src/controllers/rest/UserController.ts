@@ -45,7 +45,6 @@ class UserController {
 		res: Response<ApiResponse>,
 	): Promise<Response<ApiResponse>> {
 		const { ...userProperties }: User = req.body;
-
 		try {
 			if (typeof userProperties.uuid == 'undefined')
 				throw new BodyError('<uuid> is required in body');

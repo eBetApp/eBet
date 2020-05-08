@@ -37,9 +37,8 @@ class AuthService {
 		user.email = email;
 
 		const errors: ValidationError[] = await validate(user);
-		if (errors.length > 0) {
+		if (errors.length > 0)
 			throw new FormatError(Object.values(errors[0].constraints)[0]);
-		}
 
 		try {
 			User.hashPassword(user);
@@ -65,7 +64,9 @@ class AuthService {
 			};
 		} catch (error) {
 			if (error instanceof QueryFailedError)
-				throw new FormatError(error.message);
+				throw error.message.includes('duplicate')
+					? new FormatError('Email already used')
+					: new FormatError(error.message);
 			throw new UnexpectedError('Unexpected error', error);
 		}
 	}
@@ -91,10 +92,7 @@ class AuthService {
 				paramTwo as string,
 				paramThree as Context<User>,
 			);
-		return await AuthService.signinRest(
-			paramOne,
-			paramTwo as Response,
-		);
+		return await AuthService.signinRest(paramOne, paramTwo as Response);
 	}
 
 	private static async signinRest(
