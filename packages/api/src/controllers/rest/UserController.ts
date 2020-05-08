@@ -1,205 +1,194 @@
 // SERVER
-import { Request, Response } from 'express'
+import { Request, Response } from 'express';
 // INTERNALS
-import UserService from '../../services/UserServices'
-import { DatabaseError, EndpointAccessError } from '../../core/apiErrors'
-import User from '../../database/models/User'
-import { getTokenFromHeader } from './utils'
+import UserService from '../../services/UserServices';
+import {
+	ErrorBase,
+	AuthorizationError,
+	UnexpectedError,
+	FormatError,
+	BodyError,
+} from '../../core/apiErrors';
+import User from '../../database/models/User';
+import { getTokenFromHeader } from './utils';
 
 class UserController {
+	/** Set response to return */
+	private static handleError(
+		res: Response<ApiResponse>,
+		error: any,
+	): Response<ApiResponse> {
+		if (error instanceof ErrorBase)
+			return res.status(error.status).json({ error });
+		else return res.status(500).json({ error: new UnexpectedError(undefined, error) });
+	}
 
 	// GETS
-	static async getUser(req: Request, res: Response): Promise<Response> {
+	static async get(
+		req: Request,
+		res: Response<ApiResponse>,
+	): Promise<Response<ApiResponse>> {
 		try {
-			const response = await UserService.getUser(
+			const response = await UserService.get(
 				getTokenFromHeader(req),
 				req.params.uuid,
-			)
-			return res.status(response.status).json({ user: response.data.user })
+			);
+			return res.status(response.status).json(response);
 		} catch (error) {
-			if (error instanceof DatabaseError)
-				return res
-					.status(error.status)
-					.json({ message: error.message, error: error.details })
-			if (error instanceof EndpointAccessError)
-				return res
-					.status(error.status)
-					.json({ error: { message: error.message } })
-			else return res.status(500).json({ message: 'Unexpected error', error })
+			return UserController.handleError(res, error);
 		}
 	}
 
 	// UPDATES
-	static async updateUser(req: Request, res: Response): Promise<Response> {
-		const { ...userProperties }: User = req.body
-
-		if (typeof userProperties.uuid == 'undefined')
-			return res
-				.status(403)
-				.json({ error: 'Uuid is required to edit any user' })
+	static async update(
+		req: Request,
+		res: Response<ApiResponse>,
+	): Promise<Response<ApiResponse>> {
+		const { ...userProperties }: User = req.body;
 
 		try {
-			const response = await UserService.updateUser(
+			if (typeof userProperties.uuid == 'undefined')
+				throw new BodyError('<uuid> is required in body');
+
+			const response = await UserService.update(
 				getTokenFromHeader(req),
 				userProperties,
-			)
+			);
 
 			if (response)
 				return res.status(200).json({
-					success: `User with uuid ${userProperties.uuid} succesfully updated`,
-				})
-			throw new Error('Incorrect keys in body')
+					status: 200,
+					data: {
+						message: `User with uuid ${userProperties.uuid} succesfully updated`
+					}
+				});
+			throw new FormatError('Incorrect keys in body');
 		} catch (error) {
-            console.log("ERROR")
-            console.log(error)
-			if (error instanceof EndpointAccessError)
-				return res
-					.status(error.status)
-					.json({ error: { message: error.message } })
-			if (error instanceof DatabaseError)
-				return res
-					.status(error.status)
-					.json({ error: { message: error.message, details: error.details } })
-			return res.status(500).json({
-				error: `Unexpected error: User with uuid ${userProperties.uuid} cannot be updated`,
-				details: error.message || error,
-			})
+			return UserController.handleError(res, error);
 		}
 	}
 
-	static async updateUserPwd(req: Request, res: Response): Promise<Response> {
-		const { uuid, currentPwd, newPwd } = req.body
-		if (
-			typeof uuid === 'undefined' ||
-			typeof currentPwd === 'undefined' ||
-			typeof newPwd === 'undefined'
-		)
-			return res
-				.status(400)
-				.json({ error: 'Uuid - currentPw and newPwd are required in body' })
+	static async updatePwd(
+		req: Request,
+		res: Response<ApiResponse>,
+	): Promise<Response<ApiResponse>> {
+		const { uuid, currentPwd, newPwd } = req.body;
 
 		try {
-			const response = await UserService.updateUserPwd(
+			if (typeof uuid === undefined)
+				throw new BodyError('<uuid> is required in body');
+			if (typeof currentPwd === undefined)
+				throw new BodyError('<currentPwd> is required in body');
+			if (typeof newPwd === undefined)
+				throw new BodyError('<newPwd> is required in body');
+
+			const response = await UserService.updatePwd(
 				getTokenFromHeader(req),
 				uuid,
 				currentPwd,
 				newPwd,
-			)
+			);
 
 			if (response)
 				return res.status(200).json({
-					success: `Password of user with uuid ${uuid} succesfully updated`,
-				})
-			throw new Error('Incorrect keys in body')
+					status: 200,
+					data: {
+						message: `Password of user with uuid ${uuid} succesfully updated`,
+					},
+				});
+			throw new UnexpectedError();
 		} catch (error) {
-			if (error instanceof EndpointAccessError)
-				return res
-					.status(error.status)
-					.json({ error: { message: error.message } })
-			if (error instanceof DatabaseError)
-				return res
-					.status(error.status)
-					.json({ error: { message: error.message, details: error.details } })
-			return res.status(500).json({
-				error: `Unexpected error: Password of user with uuid ${uuid} cannot be updated`,
-				details: error.message || error,
-			})
+			return UserController.handleError(res, error);
 		}
 	}
 
-	static async updateAvatar(req: Request, res: Response): Promise<void> {
-		const imageUpload = User.storageService.uploadImg.single('file')
+	static async updateAvatar(
+		req: Request,
+		res: Response<ApiResponse>,
+	): Promise<void> {
+		const imageUpload = User.storageService.uploadImg.single('file');
 
 		imageUpload(req, res, async (err: { message: any }) => {
 			if (err) {
 				return res.status(422).send({
-					error: 'Image Upload Error',
-					details: err.message,
-				})
+					error: {
+						status: 422,
+						name: 'Image Upload Error',
+						message: 'Probably wrong file format',
+						details: err.message,
+					},
+				});
 			}
 
-			const { uuid } = req.body
-			const avatar: string = req.file.location
+			const { uuid } = req.body;
+			const avatar: string = req.file.location;
 
 			try {
 				const response = await UserService.updateAvatar(
 					getTokenFromHeader(req),
 					uuid,
 					avatar,
-				)
-				return res.status(response.status).json({ user: response.data.user })
+				);
+				return res.status(response.status).json(response);
 			} catch (error) {
-				if (error instanceof DatabaseError)
-					return res
-						.status(error.status)
-						.json({ error: error.message, details: error.details })
-				if (error instanceof EndpointAccessError)
-					return res
-						.status(error.status)
-						.json({ error: { message: error.message } })
-				return res
-					.status(500)
-					.json({ error: 'Unexpected error', details: error })
+				return UserController.handleError(res, error);
 			}
-		})
+		});
 	}
 
 	// DELETIONS
-	static async deleteUser(req: Request, res: Response): Promise<Response> {
-		const { uuid } = req.params
-
-		if (typeof uuid == 'undefined')
-			return res
-				.status(400)
-				.json({ error: 'Uuid is required to delete any user' })
+	static async delete(
+		req: Request,
+		res: Response<ApiResponse>,
+	): Promise<Response<ApiResponse>> {
+		const { uuid } = req.params;
 
 		try {
-			const response = await UserService.deleteUser(
+			if (typeof uuid == 'undefined')
+				throw new BodyError('Uuid is required to delete any user');
+			const response = await UserService.delete(
 				getTokenFromHeader(req),
 				uuid,
-			)
-			return response
-				? res
-						.status(200)
-						.json({ success: `User with uuid ${uuid} succesfully deleted` })
-				: res.status(500).json({
-						message: `Error: User with uuid ${uuid} cannot be deleted`,
-					})
+			);
+			if (response)
+				return res.status(200).json({
+					status: 200,
+					data: {
+						message: `User with uuid ${uuid} succesfully deleted`,
+					},
+				});
+			throw new UnexpectedError(
+				'User with uuid ${uuid} cannot be deleted',
+			);
 		} catch (error) {
-			if (error instanceof EndpointAccessError)
-				return res
-					.status(error.status)
-					.json({ error: { message: error.message } })
-			return res.status(500).json({
-				error: `Unexpected error: User with uuid ${uuid} cannot be deleted`,
-				details: error,
-			})
+			return UserController.handleError(res, error);
 		}
 	}
 
-	static async deleteAvatar(req: Request, res: Response): Promise<Response> {
+	static async deleteAvatar(
+		req: Request,
+		res: Response<ApiResponse>,
+	): Promise<Response<ApiResponse>> {
 		try {
 			const result = await UserService.deleteAvatar(
 				getTokenFromHeader(req),
 				req.body.uuid,
 				req.params.fileKey,
-			)
-			if (!result) throw new Error()
-			return res.status(200).json({
-				message: 'Success - Image deleted from S3 or not existing',
-			})
+			);
+			if (!result) throw new UnexpectedError();
+			return res
+				.status(200)
+				.json({
+					status: 200,
+					data: {
+						message:
+							'Success - Image deleted from S3 or not existing',
+					},
+				});
 		} catch (error) {
-			if (error instanceof DatabaseError)
-				return res
-					.status(error.status)
-					.json({ message: error.message, error: error.details })
-			if (error instanceof EndpointAccessError)
-				return res
-					.status(error.status)
-					.json({ error: { message: error.message } })
-			else return res.status(500).json({ message: 'error', error })
+			return UserController.handleError(res, error);
 		}
 	}
 }
 
-export default UserController
+export default UserController;

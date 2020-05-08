@@ -22,7 +22,7 @@ passport.use(
 					email,
 				});
 
-				if (!user) return next('User does not exist');
+				if (!user) return next('Wrong email');
 
 				if (!User.checkIfUnencryptedPasswordIsValid(user, password))
 					return next('Password does not match');

@@ -13,7 +13,12 @@ import { SendMail, Mail } from './mailGunService';
 // INTERNALS
 import User from '../database/models/User';
 import UserRepository from '../database/repositories/userRepository';
-import { DatabaseError } from '../core/ApiErrors';
+import {
+	ErrorBase,
+	FormatError,
+	UnexpectedError,
+	AuthorizationError,
+} from '../core/ApiErrors';
 
 class AuthService {
 	static setToken(user: User): string {
@@ -25,15 +30,16 @@ class AuthService {
 		nickname: string,
 		password: string,
 		email: string,
-	): Promise<AuthServiceResponse> {
+	): Promise<IAuthServiceResponse> {
 		const user: User = new User();
 		user.nickname = nickname;
 		user.password = password;
 		user.email = email;
 
 		const errors: ValidationError[] = await validate(user);
-		if (errors.length > 0)
-			throw new DatabaseError('Incorrect data', 400, undefined, errors);
+		if (errors.length > 0) {
+			throw new FormatError(Object.values(errors[0].constraints)[0]);
+		}
 
 		try {
 			User.hashPassword(user);
@@ -59,17 +65,44 @@ class AuthService {
 			};
 		} catch (error) {
 			if (error instanceof QueryFailedError)
-				throw new DatabaseError(error.message, 400, undefined, error);
-			throw new DatabaseError('Unexpected error', 400);
+				throw new FormatError(error.message);
+			throw new UnexpectedError('Unexpected error', error);
 		}
 	}
 
 	static async signin(
 		req: Request,
 		res: Response,
-	): Promise<AuthServiceResponse> {
+	): Promise<IAuthServiceResponse>;
+	static async signin(
+		nickname: string,
+		pwd: string,
+		context: Context<User>,
+	): Promise<IAuthServiceResponse>;
+
+	static async signin(
+		paramOne: Request | string,
+		paramTwo: Response | string,
+		paramThree?: Context<User>,
+	): Promise<IAuthServiceResponse> {
+		if (typeof paramOne === 'string')
+			return await AuthService.signinGraphQL(
+				paramOne,
+				paramTwo as string,
+				paramThree as Context<User>,
+			);
+		return await AuthService.signinRest(
+			paramOne,
+			paramTwo as Response,
+		);
+	}
+
+	private static async signinRest(
+		req: Request,
+		res: Response,
+	): Promise<IAuthServiceResponse> {
 		return new Promise(
-			(resolve: (result: AuthServiceResponse) => void, reject: any) => {
+			(resolve: (result: IAuthServiceResponse) => void, reject: any) => {
 				passport.authenticate(
 					'local',
 					{ session: false },
@@ -77,52 +110,48 @@ class AuthService {
 						if (!error && user) {
 							const token = this.setToken(user);
 
-							const { ...userToReturn } = user;
-							delete userToReturn.password;
+							delete user.password;
 
 							return resolve({
 								status: 200,
-								data: { user: userToReturn },
+								data: { user },
 								meta: { token },
 							});
 						}
-						return reject(new DatabaseError(error, 400));
+						return reject(new FormatError(error));
 					},
 				)(req, res);
 			},
 		);
 	}
 
-	static async signinGraphQL(
+	private static async signinGraphQL(
 		nickname: string,
 		pwd: string,
 		context: Context<User>,
-	): Promise<AuthServiceResponse> {
+	): Promise<IAuthServiceResponse> {
 		try {
 			const { user } = await context.authenticate('graphql-local', {
 				username: nickname,
 				password: pwd,
 			});
 
-			if (user === undefined) {
-				throw new DatabaseError(
-					'[GRAPHQL] Unable to login with those credentials.',
-					400,
+			if (user === undefined)
+				throw new AuthorizationError(
+					'Unable to login with those credentials.',
 				);
-			}
 
 			const token = this.setToken(user);
-			const { ...userToReturn } = user;
-			delete userToReturn.password;
+			delete user.password;
 
 			return {
 				status: 200,
-				data: { user: userToReturn },
+				data: { user },
 				meta: { token },
 			};
 		} catch (error) {
-			if (error instanceof DatabaseError) throw error;
-			throw new DatabaseError('Unexpected error', 500, undefined, error);
+			if (error instanceof ErrorBase) throw error;
+			throw new UnexpectedError('Unexpected error', error);
 		}
 	}
 }

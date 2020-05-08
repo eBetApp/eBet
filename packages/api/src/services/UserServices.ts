@@ -6,26 +6,25 @@ import { transformAndValidate } from 'class-transformer-validator'
 /** ****** INTERNALS ****** **/
 import User from '../database/models/User'
 import UserRepository from '../database/repositories/UserRepository'
-import { DatabaseError } from '../core/apiErrors'
+import { ErrorBase, NotFoundError, AuthorizationError, FormatError, UnexpectedError } from '../core/apiErrors'
 import { throwIfManipulateSomeoneElse } from './utils'
 
 class UserServices {
-	static async getUser(
+	static async get(
 		token: string | undefined,
 		uuid: string,
-	): Promise<UserServiceResponse> {
+	): Promise<IUserServiceResponse> {
 		throwIfManipulateSomeoneElse(token, uuid)
 
-		const res = await UserRepository.instance.get({ uuid })
-		if (res == undefined)
-			throw new DatabaseError(`Uuid ${uuid} : user not found`, 404)
-		const { ...user } = res
+		const user = await UserRepository.instance.get({ uuid })
+		if (user == undefined)
+			throw new NotFoundError(`Uuid ${uuid} : user not found`)
 		delete user.password
 		return { status: 200, data: { user } }
 	}
 
 	/** Update everything from user except uuid and password */
-	static async updateUser(
+	static async update(
 		token: string | undefined,
 		partialUser: Partial<User>,
 	): Promise<boolean> {
@@ -45,17 +44,15 @@ class UserServices {
 			)
 			.then((res): boolean => res.affected != 0)
 			.catch(error => {
-				if (error instanceof DatabaseError) throw error
-				if (error instanceof QueryFailedError)
-					throw new DatabaseError(error.message, 400, error.stack, error)
+				if (error instanceof ErrorBase) throw error
 				if (Array.isArray(error) && error[0] instanceof ValidationError)
-					throw new DatabaseError(`Incorrect format - property : ${error[0].property}`, 400, undefined, error)
-				throw error
+					throw new FormatError(`Incorrect format - property : ${error[0].property}`, error)
+				throw new UnexpectedError(undefined, error)
 			})
 	}
 
 	/** Update user password only */
-	static async updateUserPwd(
+	static async updatePwd(
 		token: string | undefined,
 		uuid: string,
 		currentPwd: string,
@@ -69,9 +66,9 @@ class UserServices {
 			// Check provided current password
 			const userToUpdate = await UserRepository.instance.get({ uuid })
 			if (userToUpdate === undefined)
-				throw new DatabaseError('User not found', 404)
+				throw new NotFoundError('User not found')
 			if (!User.checkIfUnencryptedPasswordIsValid(userToUpdate, currentPwd))
-				throw new DatabaseError('Wrong current password', 403)
+				throw new AuthorizationError('Wrong current password')
 
 			// Check format of new password
 			userToUpdate.password = newPwd
@@ -91,10 +88,12 @@ class UserServices {
 			)
 			return res.affected != 0
 		} catch (error) {
-			if (error instanceof DatabaseError) throw error
+			if (error instanceof ErrorBase) throw error
+			if (error.length > 0 && error[0] instanceof ValidationError)
+				throw new FormatError(Object.values(error[0].constraints)[0]);
 			if (error instanceof ValidationError)
-				throw new DatabaseError('Invalid format of new password', 400)
-			throw error
+				throw new FormatError('Invalid format of new password', 400)
+			throw new UnexpectedError()
 		}
 	}
 
@@ -103,7 +102,7 @@ class UserServices {
 		token: string | undefined,
 		uuid: string,
 		avatar: string,
-	): Promise<UserServiceResponse> {
+	): Promise<IUserServiceResponse> {
 		throwIfManipulateSomeoneElse(token, uuid)
 
 		const connection = UserRepository.instance.connection
@@ -116,7 +115,7 @@ class UserServices {
 
 		try {
 			const initUser = await UserRepository.instance.get({ uuid })
-			if (initUser == undefined) throw new Error()
+			if (initUser == undefined) throw new NotFoundError(`User with uuid ${uuid} not found`)
 
 			// Set updatedUser by cloning init without any reference
 			updatedUser = Object.assign({}, initUser)
@@ -137,7 +136,8 @@ class UserServices {
 			if (updatedFileKey != null) User.storageService.deleteImg(updatedFileKey)
 			await queryRunner.rollbackTransaction()
 			await queryRunner.release()
-			throw new DatabaseError('Failed to update avatar', 500)
+			if(error instanceof ErrorBase) throw error
+			throw new UnexpectedError('Failed to update avatar')
 		} finally {
 			await queryRunner.release()
 			const { ...userToReturn } = updatedUser!
@@ -146,7 +146,7 @@ class UserServices {
 		}
 	}
 
-	static async deleteUser(
+	static async delete(
 		token: string | undefined,
 		uuid: string,
 	): Promise<boolean> {
