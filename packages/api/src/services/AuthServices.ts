@@ -30,15 +30,19 @@ class AuthService {
 		nickname: string,
 		password: string,
 		email: string,
+		birthdate: Date,
 	): Promise<IAuthServiceResponse> {
 		const user: User = new User();
 		user.nickname = nickname;
 		user.password = password;
 		user.email = email;
+		user.birthdate = birthdate;
 
 		const errors: ValidationError[] = await validate(user);
-		if (errors.length > 0)
+		if (errors.length > 0){
+console.log(errors)
 			throw new FormatError(Object.values(errors[0].constraints)[0]);
+		}
 
 		try {
 			User.hashPassword(user);

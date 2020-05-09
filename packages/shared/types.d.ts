@@ -3,6 +3,7 @@ interface IUser {
 	uuid: string;
 	nickname: string;
 	email: string;
+	birthdate: Date;
 	password: string;
 	avatar?: string;
 }
