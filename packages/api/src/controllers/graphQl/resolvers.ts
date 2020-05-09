@@ -4,7 +4,7 @@ import { Context } from 'graphql-passport/lib/buildContext';
 // INTERNALS
 import AuthService from '../../services/AuthServices';
 import User from  '../../database/models/User';
-import { ErrorBase } from '../../core/ApiErrors';
+import { ErrorBase } from '../../core/apiErrors';
 
 export const resolvers = {
 	Query: {

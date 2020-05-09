@@ -18,7 +18,7 @@ import {
 	FormatError,
 	UnexpectedError,
 	AuthorizationError,
-} from '../core/ApiErrors';
+} from '../core/apiErrors';
 
 class AuthService {
 	static setToken(user: User): string {

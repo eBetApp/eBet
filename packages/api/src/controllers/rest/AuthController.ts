@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 // INTERNALS
 import AuthService from '../../services/AuthServices';
-import { ErrorBase, UnexpectedError } from '../../core/ApiErrors';
+import { ErrorBase, UnexpectedError } from '../../core/apiErrors';
 
 class AuthController {
 	static signup = async (

@@ -21,7 +21,7 @@ jobs:
       - name: Lerna bootstrap
         run: npx lerna bootstrap
       - name: Run tests
-        run: npx lerna run test --stream
+        run: npm run tests
         env:
           CI: true
           DB_TEST_URL: ${{ secrets.DB_TEST_URL }}

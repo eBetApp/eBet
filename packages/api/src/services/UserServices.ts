@@ -1,11 +1,11 @@
 /** ****** TYPEORM ****** **/
-import { QueryFailedError, UpdateResult } from 'typeorm';
+import { UpdateResult } from 'typeorm';
 /** ****** VALIDATOR ****** **/
 import { ValidationError } from 'class-validator';
 import { transformAndValidate } from 'class-transformer-validator';
 /** ****** INTERNALS ****** **/
 import User from '../database/models/User';
-import UserRepository from '../database/repositories/UserRepository';
+import UserRepository from '../database/repositories/userRepository';
 import {
 	ErrorBase,
 	NotFoundError,
@@ -124,7 +124,7 @@ class UserServices {
 		throwIfManipulateSomeoneElse(token, uuid);
 
 		const connection = UserRepository.instance.connection;
-		let updatedUser: User | undefined = undefined;
+		let updatedUser!: User;
 
 		// Start sql transaction
 		const queryRunner = connection.createQueryRunner();
@@ -162,9 +162,8 @@ class UserServices {
 			throw new UnexpectedError('Failed to update avatar');
 		} finally {
 			await queryRunner.release();
-			const { ...userToReturn } = updatedUser!;
-			delete userToReturn.password;
-			return { status: 200, data: { user: userToReturn } };
+			delete updatedUser.password;
+			return { status: 200, data: { user: updatedUser } };
 		}
 	}
 
