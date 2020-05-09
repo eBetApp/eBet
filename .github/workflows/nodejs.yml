@@ -10,6 +10,23 @@ jobs:
       matrix:
         node-version: [12.x]
 
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DATABASE: postgres
+          POSTGRES_PORT: 5432
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -21,11 +38,11 @@ jobs:
       - name: Lerna bootstrap
         run: npx lerna bootstrap
       - name: Run tests
-        run: npx lerna run test --stream
+        run: npm run tests
         env:
           CI: true
-          DB_TEST_URL: ${{ secrets.DB_TEST_URL }}
-          DB_TEST_SSL: ${{ secrets.DB_TEST_SSL }}
+          DB_TEST_URL: postgres://postgres:postgres@localhost:5432/postgres
+          DB_TEST_SSL: false
           SECRET: ${{ secrets.SECRET }}
           MAIL_KEY: ${{ secrets.MAIL_KEY }}
           MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN }}

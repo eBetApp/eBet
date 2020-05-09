@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 import request from 'superagent';
-import { User } from '../../src/entity/User';
+import User from '../../../../src/database/models/User';
 
 const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 	describe('User routes', () => {
@@ -36,10 +36,10 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 			done();
 		});
 
-		describe('ALL route', () => {
+		describe('GET USER route', () => {
 			it('Should return of all users if existing token is given', async done => {
 				const res: request.Response = await server
-					.get('/api/user/')
+					.get(`/api/user/get/${userToBeDeletedUuid}`)
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${userToBeDeletedToken}`);
 				expect(res.status).toBe(200);
@@ -47,41 +47,16 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 			});
 			it('Should return 401 if false token is given', async done => {
 				const res: request.Response = await server
-					.get('/api/user/')
+					.get(`/api/user/get/${userToBeDeletedUuid}`)
 					.set('Accept', 'application/json')
 					.set('Authorization', 'Bearer falseToken');
 				expect(res.status).toBe(401);
 				done();
 			});
 			it('Should return 401 of all users if token is not given', async done => {
-				const res: request.Response = await server.get('/api/user/');
-				expect(res.status).toBe(401);
-				done();
-			});
-		});
-
-		describe('ONE route', () => {
-			it('Should return 200 if existing token and uuid are given', async done => {
-				const res: request.Response = await server
-					.get(`/api/user/${userToBeDeletedUuid}`)
-					.set('Accept', 'application/json')
-					.set('Authorization', `Bearer ${userToBeDeletedToken}`);
-				expect(res.status).toBe(200);
-				done();
-			});
-			it('Should return 401 if existing token and bad uuid are given', async done => {
-				const res: request.Response = await server
-					.get('/api/user/1234')
-					.set('Accept', 'application/json')
-					.set('Authorization', `Bearer ${userToBeDeletedToken}`);
-				expect(res.status).toBe(401);
-				done();
-			});
-			it('Should return 401 if bad token and bad uuid are given', async done => {
-				const res: request.Response = await server
-					.get('/api/user/1234')
-					.set('Accept', 'application/json')
-					.set('Authorization', 'Bearer falseToken');
+				const res: request.Response = await server.get(
+					`/api/user/get/${userToBeDeletedUuid}`,
+				);
 				expect(res.status).toBe(401);
 				done();
 			});
@@ -90,23 +65,23 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 		describe('DELETE route', () => {
 			it('Should return 200 with existing token and uuid', async done => {
 				const res: request.Response = await server
-					.delete(`/api/user/${userToBeDeletedUuid}`)
+					.delete(`/api/user/delete/${userToBeDeletedUuid}`)
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${userToBeDeletedToken}`);
 				expect(res.status).toBe(200);
 				done();
 			});
-			it('Should return 404 with existing token but not existing uuid', async done => {
+			it('Should return 403 with existing token but not existing uuid --> Unauthorized', async done => {
 				const res: request.Response = await server
-					.delete(`/api/user/${userToBeDeletedUuid}`) // user1 is already deleted
+					.delete(`/api/user/delete/${userToBeDeletedUuid}`) // user1 is already deleted
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`);
-				expect(res.status).toBe(404);
+				expect(res.status).toBe(403);
 				done();
 			});
-			it('Should return 500 if deleted token but existing uuid', async done => {
+			it('Should return 500 if wrong token but existing uuid', async done => {
 				const res: request.Response = await server
-					.delete(`/api/user/${permanentUserUuid}`)
+					.delete(`/api/user/delete/${permanentUserUuid}`)
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${userToBeDeletedToken}`);
 				expect(res.status).toBe(500);
@@ -117,11 +92,11 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 		describe('UPDATE route', () => {
 			it('Should return 200 if correct token - uuid - nickname - email', async done => {
 				const res: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
-						id: permanentUserUuid,
+						uuid: permanentUserUuid,
 						nickname: 'newNickname',
 						email: 'new@gmail.com',
 					});
@@ -129,13 +104,13 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 				done();
 			});
 
-			it('Should return 400 if correct token - uuid BUT empty nickname', async done => {
+			it('Should return 400 if correct token - uuid BUT empty nickname --> Format error', async done => {
 				const res: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
-						id: permanentUserUuid,
+						uuid: permanentUserUuid,
 						nickname: '', // incorrect
 						email: 'new@gmail.com',
 					});
@@ -143,13 +118,13 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 				done();
 			});
 
-			it('Should return 400 if correct token - uuid BUT incorrect email', async done => {
+			it('Should return 400 if correct token - uuid BUT incorrect email --> Format error', async done => {
 				const res: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
-						id: permanentUserUuid,
+						uuid: permanentUserUuid,
 						nickname: 'newNickname',
 						email: 'new@gmail', // incorrect
 					});
@@ -157,13 +132,13 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 				done();
 			});
 
-			it('Should return 400 if correct token - uuid BUT incorrect nickname AND email', async done => {
+			it('Should return 400 if correct token - uuid BUT incorrect nickname AND email --> Format error', async done => {
 				const res: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
-						id: permanentUserUuid,
+						uuid: permanentUserUuid,
 						nickname: '', // incorrect
 						email: 'new@gmail', // incorrect
 					});
@@ -171,33 +146,33 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 				done();
 			});
 
-			it('Should return 400 if correct token - uuid BUT incomplete data (nickname or email)', async done => {
+			it('Should return 200 if correct token - uuid and PARTIAL data is given (nickname or email)', async done => {
 				const resWithNoNickname: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
-						id: permanentUserUuid,
+						uuid: permanentUserUuid,
 						email: 'new@gmail.com',
 						// no nickname but required
 					});
 				const resWithNoEmail: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
-						id: permanentUserUuid,
+						uuid: permanentUserUuid,
 						email: 'new@gmail.com',
 						// no nickname but required
 					});
-				expect(resWithNoNickname.status).toBe(400);
-				expect(resWithNoEmail.status).toBe(400);
+				expect(resWithNoNickname.status).toBe(200);
+				expect(resWithNoEmail.status).toBe(200);
 				done();
 			});
 
-			it('Should return 400 if correct token BUT no UUID and incomplete data (nickname or email)', async done => {
+			it('Should return 400 if correct token BUT no UUID and incomplete data (nickname or email) --> BoddyError', async done => {
 				const resWithNoNickname: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
@@ -206,7 +181,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						// no nickname but required
 					});
 				const resWithNoEmail: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
@@ -219,9 +194,9 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 				done();
 			});
 
-			it('Should return 500 if correct token BUT no UUID', async done => {
+			it('Should return 400 if correct token BUT no UUID --> BodyError', async done => {
 				const res: request.Response = await server
-					.put('/api/user/')
+					.put('/api/user/update/')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer ${permanentUserToken}`)
 					.send({
@@ -229,7 +204,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						nickname: 'newNickname', // incorrect
 						email: 'new@gmail.com', // incorrect
 					});
-				expect(res.status).toBe(500);
+				expect(res.status).toBe(400);
 				done();
 			});
 		});

@@ -1,14 +1,15 @@
 import supertest from 'supertest';
 import request from 'superagent';
-import { User } from '../../src/entity/User';
-import AuthController from '../../src/controllers/AuthController';
+// INTERNALS
+import User from '../../../src/database/models/User';
+import AuthenticateService from '../../../src/services/AuthServices';
 
-const authRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
+const authRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 	describe('Auth routes', () => {
 		const userWithCorrectData: User = new User();
-		userWithCorrectData.nickname = 'Bob';
-		userWithCorrectData.password = 'bob1';
-		userWithCorrectData.email = 'bob@gmail.com';
+		userWithCorrectData.nickname = 'John';
+		userWithCorrectData.password = 'john';
+		userWithCorrectData.email = 'john77@gmail.com';
 
 		describe('Sign Up routes / Local PASSPORT strategy', () => {
 			it('Sign Up with correct data should return 201', async done => {
@@ -28,9 +29,9 @@ const authRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 			});
 			it('Sign Up with too short password should return 400', async done => {
 				const userWIthTooShortPwd: User = new User();
-				userWIthTooShortPwd.nickname = 'Bob';
-				userWIthTooShortPwd.password = 'bob';
-				userWIthTooShortPwd.email = 'bob@gmail.com';
+				userWIthTooShortPwd.nickname = 'John';
+				userWIthTooShortPwd.password = 'jo';
+				userWIthTooShortPwd.email = 'john@gmail.com';
 
 				const res: request.Response = await server
 					.post('/api/auth/signup')
@@ -40,9 +41,9 @@ const authRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 			});
 			it('Sign Up with unformatted mail should return 400', async done => {
 				const userWIthTooShortPwd: User = new User();
-				userWIthTooShortPwd.nickname = 'Bob1';
-				userWIthTooShortPwd.password = 'bob1';
-				userWIthTooShortPwd.email = 'bob@gmail';
+				userWIthTooShortPwd.nickname = 'John';
+				userWIthTooShortPwd.password = 'john';
+				userWIthTooShortPwd.email = 'john@gmail';
 
 				const res: request.Response = await server
 					.post('/api/auth/signup')
@@ -61,7 +62,6 @@ const authRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 				done();
 			});
 			it('Sign In with unexisting user should return 400', async done => {
-				console.log('### SIGNIN BAD1');
 				const userNotCreated: User = new User();
 				userNotCreated.nickname = 'unexists';
 				userNotCreated.password = 'unexists';
@@ -76,9 +76,9 @@ const authRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 			it('Sign In with wrong password should return 400', async done => {
 				console.log('### SIGNIN BAD2');
 				const userNotCreated: User = new User();
-				userNotCreated.nickname = 'Bob';
+				userNotCreated.nickname = 'John';
 				userNotCreated.password = 'wrongPassword';
-				userNotCreated.email = 'bob@gmail.com';
+				userNotCreated.email = 'john@gmail.com';
 
 				const res: request.Response = await server
 					.post('/api/auth/signin')
@@ -89,13 +89,13 @@ const authRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 		});
 
 		describe('PASSPORT JWT strategy', () => {
-			// Step 1 : Define a weel formatted JsonWebToken, but with false data
+			// Step 1 : Define a well formatted JsonWebToken, but with false data
 			const fictiveUser: User = new User();
 			fictiveUser.nickname = 'fictive';
 			fictiveUser.password = 'fictive';
 			fictiveUser.email = 'fictive@gmail.com';
 
-			const unexistingJWT = AuthController.setToken(fictiveUser);
+			const unexistingJWT = AuthenticateService.setToken(fictiveUser);
 
 			// Step 3 : Run test to auth with unformatted token
 			it('Should return 401 if given token is incorrectly formatted', async done => {
@@ -119,4 +119,4 @@ const authRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 		});
 	});
 
-export default authRoutesSuite;
+export default authRealTest;

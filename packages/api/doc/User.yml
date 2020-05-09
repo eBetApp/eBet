@@ -1,0 +1,610 @@
+openapi: 3.0.0
+
+paths:
+  #############################
+  #### USER AUTHENTICATION ####
+  #############################
+  /auth/signup:
+    post:
+      summary: Create a new user
+      tags: [User authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Auth_User_To_Register"
+      responses:
+        "201":
+          description: New user created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Auth_Response_Success"
+        "400":
+          description: Incorrect input data - User not created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Format"
+        "500":
+          description: Unexpected error - User not created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+  /auth/signin:
+    post:
+      summary: Log in
+      tags: [User authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Auth_User_To_Login"
+      responses:
+        "200":
+          description: User logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Auth_Response_Success"
+        "400":
+          description: Incorrect input format data - User not logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Format"
+        "500":
+          description: Unexpected error - User not logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+
+
+  #############################
+  #### USER AUTHENTICATED #####
+  #############################
+  /user/get/:uuid:
+    get:
+      summary: Get user by uuid
+      tags: [User authenticated]
+      parameters:
+        - in: path
+          name: uuid
+          description: user uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: "#/components/schemas/User_Response_With_Avatar"
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "404":
+          description: User cannot be found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_User_Not_Found"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+  /user/update:
+    put:
+      summary: Update user by uuid
+      tags: [User authenticated]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - uuid
+              properties:
+                uuid:
+                  type: string
+                  description: uuid of user to update
+                nickname:
+                  type: string
+                  description: new desired nickname
+                email:
+                  type: string
+                  description: new desired email
+              example:
+                uuid: 1234
+                nickname: Bill
+                email: bill@gmail.com
+      parameters:
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+        "400":
+          description: Format error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: object
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+  /user/update-password:
+    put:
+      summary: Update user by uuid
+      tags: [User authenticated]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - uuid
+                - currentPwd
+                - newPwd
+              properties:
+                uuid:
+                  type: string
+                  description: uuid of user to update
+                currentPwd:
+                  type: string
+                  description: current passwword
+                newPwd:
+                  type: string
+                  description: new desired passwword
+              example:
+                uuid: 1234-5678
+                currentPwd: 1234
+                newPwd: 1234
+      parameters:
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+        "400":
+          description: Wrong format of provided data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_User_Not_Found"
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "404":
+          description: User cannot be found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_User_Not_Found"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+  /user/update-avatar/:
+    put:
+      summary: Update avatar of user specified by uuid in body
+      tags: [User authenticated]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: uuid of user we want to add avatar
+                file:
+                  description: file to upload (accepted -> jpeg/jpg/png)
+                  type: string
+                  format: binary
+      parameters:
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: User id updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Response_With_Avatar"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "404":
+          description: User cannot be found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_User_Not_Found"
+        "422":
+          description: Incorrect image data
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+    #############################
+  /user/delete/:uuid:
+    delete:
+      summary: Get user by uuid
+      tags: [User authenticated]
+      parameters:
+        - in: path
+          name: uuid
+          description: user uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: Deletion is confirmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                example:
+                  status: 200
+                  data:
+                      message: Success - User with uuid 123 successfully deleted
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+  /user/delete-avatar/:fileKey:
+    delete:
+      summary: Delete avatar from AWS S3 by fileKey
+      tags: [User authenticated]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User_Request_Body_Only_Uuid"
+      parameters:
+        - in: path
+          name: fileKey
+          description: id of AWS file
+          schema:
+            type: integer
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+      # TODO
+        "200":
+          description: Image correctly deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+
+components:
+  schemas:
+    User_Error_Unauthorized:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status:
+              type: integer
+            name:
+              type: string
+            message:
+              type: string
+      example:
+        error:
+          status:
+            value: 403
+          name:
+            value: "Forbidden"
+          message:
+            value: "Token and uuid provided do not match"
+    #############################
+    User_Response_With_Avatar:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: object
+          properties:
+            uuid:
+              type: string
+            nickname:
+              type: string
+            email:
+              type: string
+            avatar:
+              type: string
+      example:
+        status: 200
+        data:
+          user:
+            uuid: UUID
+            nickname: Luc
+            email: luc@gmail.com
+            avatar: https://...
+    #############################
+    User_Request_Body_Only_Uuid:
+      type: object
+      required:
+        - uuid
+      properties:
+        uuid:
+          type: string
+          description: uuid of user we want to remove avatar
+      example:
+        uuid: 1234
+    #############################
+    Auth_User_To_Register:
+      type: object
+      required:
+        - nickname
+        - email
+        - password
+      properties:
+        nickname:
+          type: string
+          description: needs to be unique
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: min. 4 characters
+      example:
+        nickname: Luc
+        email: luc@gmail.com
+        password: luc1
+    #############################
+    Auth_User_To_Login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: luc@gmail.com
+        password: luc1
+    #############################
+    Auth_Response_Success:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: object
+          properties:
+            uuid:
+              type: string
+            nickname:
+              type: string
+            email:
+              type: string
+            avatar:
+              type: string
+        meta:
+          type: object
+          properties:
+            token:
+              type: string
+      example:
+        status: 201
+        data:
+          user:
+            uuid: UUID
+            nickname: Luc
+            email: luc@gmail.com
+            avatar:
+        meta:
+          token: TOKEN
+    #############################
+    User_Error_Format:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status:
+              type: integer
+            name:
+              type: string
+            message:
+              type: string
+              description: pwd too short, wrong email format, email already used, etc
+      example:
+        error:
+          status:
+            value: 400
+          name:
+            value: "FormatError"
+          message:
+            value: "Wrong email"
+    #############################
+    Error_User_Not_Found:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status:
+              type: integer
+            name:
+              type: string
+            message:
+              type: string
+      example:
+        error:
+          status:
+            value: 404
+          name:
+            value: "NotFoundError"
+          message:
+            value: ""
+    #############################
+    Response_Unexpected_Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status:
+              type: integer
+            name:
+              type: string
+            message:
+              type: string
+      example:
+        error:
+          status:
+            value: 500
+          name:
+            value: "UnexpectedError"
+          message:
+            value: ""
+    #############################
+    Token_Is_Not_Token:
+      example:
+        unauthorized
+  #############################
+  parameters:
+    Bearer_Token:
+      name: Authorization
+      in: header
+      required: true
+      description: Bearer + TOKEN
+      schema:
+        type: string
+        format: token

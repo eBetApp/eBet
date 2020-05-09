@@ -4,10 +4,7 @@
 		"target": "esnext",
 		"moduleResolution": "node",
 		"module": "commonjs",
-		"lib": [
-			"esnext",
-			"dom"
-		],
+		"lib": ["esnext", "dom"],
 		"allowJs": false,
 		"noEmit": true,
 		"strict": true,
@@ -15,11 +12,13 @@
 		"allowSyntheticDefaultImports": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"outDir": ".dist"
+		"outDir": ".dist",
 	},
 	"include": [
-		"src",
-		"types.d.ts"
+		"src", 
+		"types.d.ts",
+		"../shared/types.d.ts",
+		"tests"
 	],
 	"exclude": [
 		".eslintrc.js",
