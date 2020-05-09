@@ -1,4 +1,4 @@
-export abstract class ErrorBase implements IApiErrorBase {
+export abstract class ErrorBase implements IErrorBase {
 	public status: number;
 	public name: string;
 	public message: string;

@@ -14,10 +14,10 @@
 		"experimentalDecorators": true,
 		"outDir": ".dist",
 	},
-	"files": ["types.d.ts"],
 	"include": [
 		"src", 
 		"types.d.ts",
+		"../shared/types.d.ts",
 		"tests"
 	],
 	"exclude": [
