@@ -19,8 +19,8 @@ passport.use(
 				const user:
 					| User
 					| undefined = await UserRepository.instance.get({
-					email,
-				});
+						email,
+					});
 
 				if (!user) return next('Wrong email');
 
@@ -46,8 +46,8 @@ passport.use(
 				const user:
 					| User
 					| undefined = await UserRepository.instance.get({
-					email: username,
-				});
+						email: username,
+					});
 
 				if (!user) return next(null, false);
 				if (!User.checkIfUnencryptedPasswordIsValid(user, password))
@@ -72,8 +72,8 @@ passport.use(
 				const user:
 					| User
 					| undefined = await UserRepository.instance.get({
-					uuid: jwtPayload.uuid,
-				});
+						uuid: jwtPayload.uuid,
+					});
 
 				if (!user) throw new Error('user not found');
 

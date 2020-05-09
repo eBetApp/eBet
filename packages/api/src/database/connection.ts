@@ -19,4 +19,4 @@ const connection: PostgresConnectionOptions = {
 	},
 };
 
-export default connection
+export default connection;

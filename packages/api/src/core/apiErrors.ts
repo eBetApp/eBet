@@ -4,7 +4,7 @@ export abstract class ErrorBase implements IErrorBase {
 	public message: string;
 	public details: any;
 	public stack: any;
-	
+
 	constructor(
 		message: string,
 		status: number,
@@ -21,11 +21,7 @@ export abstract class ErrorBase implements IErrorBase {
 
 /** Status 403 */
 export class AuthorizationError extends ErrorBase {
-	constructor(
-		message: string,
-		details?: any,
-		stack?: string,
-	) {
+	constructor(message: string, details?: any, stack?: string) {
 		super(message, 403, stack, details);
 		this.name = 'Forbidden';
 		this.stack = stack;
@@ -34,22 +30,14 @@ export class AuthorizationError extends ErrorBase {
 
 /** Status 400 */
 export class FormatError extends ErrorBase {
-	constructor(
-		message: string,
-		details?: any,
-		stack?: string,
-	) {
+	constructor(message: string, details?: any, stack?: string) {
 		super(message, 400, stack, details);
 		this.name = 'FormatError';
 		this.stack = stack;
 	}
 }
 export class BodyError extends ErrorBase {
-	constructor(
-		message: string,
-		details?: any,
-		stack?: string,
-	) {
+	constructor(message: string, details?: any, stack?: string) {
 		super(message, 400, stack, details);
 		this.name = 'FormatError';
 		this.stack = stack;
@@ -58,11 +46,7 @@ export class BodyError extends ErrorBase {
 
 /** Status 404 */
 export class NotFoundError extends ErrorBase {
-	constructor(
-		message: string,
-		details?: any,
-		stack?: string,
-	) {
+	constructor(message: string, details?: any, stack?: string) {
 		super(message, 404, stack, details);
 		this.name = 'NotFoundError';
 		this.stack = stack;
@@ -71,11 +55,7 @@ export class NotFoundError extends ErrorBase {
 
 /** Status 500 */
 export class UnexpectedError extends ErrorBase {
-	constructor(
-		message: string = "",
-		details?: any,
-		stack?: string,
-	) {
+	constructor(message: string = '', details?: any, stack?: string) {
 		super(message, 500, stack, details);
 		this.name = 'UnexpectedError';
 		this.stack = stack;

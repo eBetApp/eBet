@@ -14,10 +14,12 @@ class AuthController {
 			const result = await AuthService.signup(nickname, password, email);
 			return res.status(result.status).json(result);
 		} catch (error) {
-			if (error instanceof ErrorBase){
+			if (error instanceof ErrorBase) {
 				return res.status(error.status).send({ error });
 			}
-			return res.status(500).send({error: new UnexpectedError("SignUp failed", error)});
+			return res
+				.status(500)
+				.send({ error: new UnexpectedError('SignUp failed', error) });
 		}
 	};
 
@@ -31,7 +33,9 @@ class AuthController {
 		} catch (error) {
 			if (error instanceof ErrorBase)
 				return res.status(error.status).send({ error });
-			return res.status(500).send({error: new UnexpectedError("SignIn failed", error)});
+			return res
+				.status(500)
+				.send({ error: new UnexpectedError('SignIn failed', error) });
 		}
 	};
 }
