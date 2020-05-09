@@ -23,7 +23,11 @@
 		"lintfix": "eslint src/*.ts* src/**/*.ts* --fix",
 		"pretty-quick": "npx pretty-quick --staged src/*.ts* src/**/*.ts*",
 		"dev": "nodemon",
-		"build": "npx babel src/ --out-dir .dist/ --extensions \".ts\" --source-maps inline --quiet --copy-files"
+		"build": "npx babel src/ --out-dir .dist/ --extensions \".ts\" --source-maps inline --quiet --copy-files",
+		"docker-build-dev": "docker build -f Dockerfile.dev .",
+		"docker-run-dev": "docker-compose -f docker-compose.dev.yml up",
+		"docker-build": "docker build -f Dockerfile .",
+		"docker-run": "docker-compose -f docker-compose up"
 	},
 	"bugs": {
 		"url": "https://github.com/eBetApp/eBet/issues"
