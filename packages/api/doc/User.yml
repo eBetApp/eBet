@@ -145,7 +145,7 @@ paths:
                 uuid: 1234
                 nickname: Bill
                 email: bill@gmail.com
-                birthdate: 01/01/2000
+                birthdate: 2000-12-31
       parameters:
         - $ref: "#/components/parameters/Bearer_Token"
       responses:
@@ -461,7 +461,7 @@ components:
             uuid: UUID
             nickname: Luc
             email: luc@gmail.com
-            birthdate: 01/01/2000
+            birthdate: 2000-12-31
             avatar: https://...
     #############################
     User_Request_Body_Only_Uuid:
@@ -498,7 +498,7 @@ components:
       example:
         nickname: Luc
         email: luc@gmail.com
-        birthdate: 01/01/2000
+        birthdate: 2000-12-31
         password: luc1
     #############################
     Auth_User_To_Login:
@@ -546,7 +546,7 @@ components:
             uuid: UUID
             nickname: Luc
             email: luc@gmail.com
-            birthdate: 01/01/2000
+            birthdate: 2000-12-31
             avatar:
         meta:
           token: TOKEN

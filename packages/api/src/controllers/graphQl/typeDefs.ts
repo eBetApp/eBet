@@ -20,5 +20,6 @@ export const typeDefs = gql`
 		nickname: String!
 		birthdate: Date!
 		email: String!
+		token: String!
 	}
 `;

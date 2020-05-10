@@ -14,7 +14,6 @@ export const SendMail = (data: Mail): void => {
 	mailgun.messages().send(data, (error: Error, body: Body) => {
 		if (body) {
 			console.log('Mail gun just sent an email:');
-			console.log(body);
 		} else if (error) {
 			console.log('Mail gun cannot send email:');
 			console.log(error);

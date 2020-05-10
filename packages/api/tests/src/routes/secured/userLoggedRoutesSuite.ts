@@ -9,11 +9,13 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 		userToBeDeleted.nickname = 'Bob1';
 		userToBeDeleted.password = 'bob1';
 		userToBeDeleted.email = 'bob1@gmail.com';
+		userToBeDeleted.birthdate = new Date('01/01/2000');
 
 		const permanentUser: User = new User();
 		permanentUser.nickname = 'Bob2';
 		permanentUser.password = 'bob2';
 		permanentUser.email = 'bob2@gmail.com';
+		permanentUser.birthdate = new Date('01/01/2000');
 
 		let userToBeDeletedToken: string, permanentUserToken: string;
 		let userToBeDeletedUuid: string, permanentUserUuid: string;
@@ -99,6 +101,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						uuid: permanentUserUuid,
 						nickname: 'newNickname',
 						email: 'new@gmail.com',
+						birthdate: new Date('2000-01-31'),
 					});
 				expect(res.status).toBe(200);
 				done();
@@ -113,6 +116,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						uuid: permanentUserUuid,
 						nickname: '', // incorrect
 						email: 'new@gmail.com',
+						birthdate: new Date('2000-01-31'),
 					});
 				expect(res.status).toBe(400);
 				done();
@@ -127,6 +131,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						uuid: permanentUserUuid,
 						nickname: 'newNickname',
 						email: 'new@gmail', // incorrect
+						birthdate: new Date('2000-01-31'),
 					});
 				expect(res.status).toBe(400);
 				done();
@@ -141,6 +146,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						uuid: permanentUserUuid,
 						nickname: '', // incorrect
 						email: 'new@gmail', // incorrect
+						birthdate: new Date('2000-01-31'),
 					});
 				expect(res.status).toBe(400);
 				done();
@@ -155,6 +161,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						uuid: permanentUserUuid,
 						email: 'new@gmail.com',
 						// no nickname but required
+						birthdate: new Date('2000-01-31'),
 					});
 				const resWithNoEmail: request.Response = await server
 					.put('/api/user/update/')
@@ -164,6 +171,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						uuid: permanentUserUuid,
 						email: 'new@gmail.com',
 						// no nickname but required
+						birthdate: new Date('2000-01-31'),
 					});
 				expect(resWithNoNickname.status).toBe(200);
 				expect(resWithNoEmail.status).toBe(200);
@@ -179,6 +187,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						// no ID
 						email: 'new@gmail.com',
 						// no nickname but required
+						birthdate: new Date('2000-01-31'),
 					});
 				const resWithNoEmail: request.Response = await server
 					.put('/api/user/update/')
@@ -188,6 +197,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						// no ID
 						email: 'new@gmail.com',
 						// no nickname but required
+						birthdate: new Date('2000-01-31'),
 					});
 				expect(resWithNoNickname.status).toBe(400);
 				expect(resWithNoEmail.status).toBe(400);
@@ -203,6 +213,7 @@ const userLoggedRoutesSuite = (server: supertest.SuperTest<supertest.Test>) =>
 						// no ID
 						nickname: 'newNickname', // incorrect
 						email: 'new@gmail.com', // incorrect
+						birthdate: new Date('2000-01-31'),
 					});
 				expect(res.status).toBe(400);
 				done();

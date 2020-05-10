@@ -39,10 +39,8 @@ class AuthService {
 		user.birthdate = birthdate;
 
 		const errors: ValidationError[] = await validate(user);
-		if (errors.length > 0){
-console.log(errors)
+		if (errors.length > 0)
 			throw new FormatError(Object.values(errors[0].constraints)[0]);
-		}
 
 		try {
 			User.hashPassword(user);
@@ -68,7 +66,7 @@ console.log(errors)
 			};
 		} catch (error) {
 			if (error instanceof QueryFailedError)
-				throw error.message.includes('duplicate')
+				throw (error.message.includes('duplicate') || error.message.includes('dupliquée'))
 					? new FormatError('Email already used')
 					: new FormatError(error.message);
 			throw new UnexpectedError('Unexpected error', error);

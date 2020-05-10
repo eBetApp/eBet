@@ -6,15 +6,13 @@ const resolversRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 		describe('GraphQL - Sign Up routes', () => {
 			it('Sign Up with correct data should return 200 and body should contains a User', async done => {
 				const query = `mutation {
-					signUp(nickname: "bobi22", email: "bob@gmail.com", password: "boob1")
+					signUp(nickname: "bobi22", email: "bob@gmail.com", password: "boob1", birthdate: "2000-01-30")
 					{uuid, nickname, email}
 				}`;
 				const res: request.Response = await server
 					.post('/graphql')
 					.set('Accept', 'application/json')
 					.send({ query });
-				console.log('res.body.errors');
-				console.log(res.body.errors);
 				expect(res.status).toBe(200);
 				expect(res.body.data).toBeDefined();
 				expect(res.body.errors).toBeUndefined();
@@ -22,7 +20,7 @@ const resolversRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 			});
 			it('Sign Up with an already used nickname should return 200 AND body should contains errors', async done => {
 				const query = `mutation {
-				signUp(nickname: "bobi22", email: "bob@gmail.com", password: "boob1")
+				signUp(nickname: "bobi22", email: "bob@gmail.com", password: "boob1", birthdate: "2000-01-30")
 				{uuid, nickname, email}
 			}`;
 				const res: request.Response = await server

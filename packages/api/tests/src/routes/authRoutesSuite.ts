@@ -10,6 +10,7 @@ const authRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 		userWithCorrectData.nickname = 'John';
 		userWithCorrectData.password = 'john';
 		userWithCorrectData.email = 'john77@gmail.com';
+		userWithCorrectData.birthdate = new Date('2000-01-31');
 
 		describe('Sign Up routes / Local PASSPORT strategy', () => {
 			it('Sign Up with correct data should return 201', async done => {
@@ -32,6 +33,7 @@ const authRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 				userWIthTooShortPwd.nickname = 'John';
 				userWIthTooShortPwd.password = 'jo';
 				userWIthTooShortPwd.email = 'john@gmail.com';
+				userWIthTooShortPwd.birthdate = new Date('2000-01-31');
 
 				const res: request.Response = await server
 					.post('/api/auth/signup')
@@ -44,6 +46,7 @@ const authRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 				userWIthTooShortPwd.nickname = 'John';
 				userWIthTooShortPwd.password = 'john';
 				userWIthTooShortPwd.email = 'john@gmail';
+				userWIthTooShortPwd.birthdate = new Date('2000-01-31');
 
 				const res: request.Response = await server
 					.post('/api/auth/signup')
@@ -66,6 +69,7 @@ const authRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 				userNotCreated.nickname = 'unexists';
 				userNotCreated.password = 'unexists';
 				userNotCreated.email = 'unexists@gmail.com';
+				userNotCreated.birthdate = new Date('2000-01-31');
 
 				const res: request.Response = await server
 					.post('/api/auth/signin')
@@ -74,11 +78,11 @@ const authRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 				done();
 			});
 			it('Sign In with wrong password should return 400', async done => {
-				console.log('### SIGNIN BAD2');
 				const userNotCreated: User = new User();
 				userNotCreated.nickname = 'John';
 				userNotCreated.password = 'wrongPassword';
 				userNotCreated.email = 'john@gmail.com';
+				userNotCreated.birthdate = new Date('2000-01-31');
 
 				const res: request.Response = await server
 					.post('/api/auth/signin')
@@ -94,6 +98,7 @@ const authRealTest = (server: supertest.SuperTest<supertest.Test>) =>
 			fictiveUser.nickname = 'fictive';
 			fictiveUser.password = 'fictive';
 			fictiveUser.email = 'fictive@gmail.com';
+			fictiveUser.birthdate = new Date('2000-01-31');
 
 			const unexistingJWT = AuthenticateService.setToken(fictiveUser);
 

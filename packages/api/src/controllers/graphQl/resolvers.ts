@@ -5,7 +5,7 @@ import { GraphQLScalarType } from 'graphql';
 import { Kind } from 'graphql/language';
 // INTERNALS
 import AuthService from '../../services/AuthServices';
-import User from  '../../database/models/User';
+import User from '../../database/models/User';
 import { ErrorBase } from '../../core/apiErrors';
 
 export const resolvers = {
@@ -13,7 +13,10 @@ export const resolvers = {
 		hello: (): string => 'Hello world!',
 	},
 	Mutation: {
-		signUp: async (_: any, args: User): Promise<Omit<User, 'password'>> => {
+		signUp: async (
+			_: any,
+			args: User,
+		): Promise<Omit<User, 'password'> & IToken> => {
 			const { nickname, password, email, birthdate } = args;
 			try {
 				const result = await AuthService.signup(
@@ -22,18 +25,18 @@ export const resolvers = {
 					email,
 					birthdate,
 				);
-				return result.data.user;
+				return { ...result.data.user, ...result.meta };
 			} catch (error) {
 				if (error instanceof ErrorBase)
-					throw new AuthenticationError(error.details);
-				throw new AuthenticationError(error);
+					throw new AuthenticationError(error.message);
+				throw new AuthenticationError('Unexpected error');
 			}
 		},
 		signIn: async (
 			_: any,
 			args: User,
 			context: Context<User>,
-		): Promise<Omit<User, 'password'>> => {
+		): Promise<Omit<User, 'password'> & IToken> => {
 			const { email, password } = args;
 			try {
 				const result = await AuthService.signin(
@@ -41,39 +44,28 @@ export const resolvers = {
 					password,
 					context,
 				);
-				return result.data.user;
+				return { ...result.data.user, ...result.meta };
 			} catch (error) {
 				if (error instanceof ErrorBase)
-					throw new AuthenticationError(error.details);
-				throw new AuthenticationError(error);
+					throw new AuthenticationError(error.message);
+				throw new AuthenticationError('Unexpected error');
 			}
 		},
 	},
-	// EN COURS -> sources
-	// https://www.apollographql.com/docs/graphql-tools/scalars/
-	// https://stackoverflow.com/a/49694083/12018849
-	// https://atheros.ai/blog/how-to-design-graphql-custom-scalars
-	// https://hasura.io/blog/postgres-date-time-data-types-on-graphql-fd926e86ee87/
-
 	Date: new GraphQLScalarType({
 		name: 'Date',
-		description: 'Date custom scalar type',
+		description: 'AAAA-MM-DD',
 		parseValue(value) {
-			console.log("VALUE1")
-			console.log(value)
-		  return new Date(value); // value from the client
+			return new Date(value).toISOString(); // value from the client
 		},
 		serialize(value) {
-			console.log("VALUE2")
-			console.log(value)
-
-		  return value.getTime(); // value sent to the client
+			return value; // value sent to the client
 		},
 		parseLiteral(ast) {
-		  if (ast.kind === Kind.INT) {
-			return new Date(+ast.value) // ast value is always in string format
-		  }
-		  return null;
+			if (ast.kind === Kind.STRING) {
+				return new Date(ast.value).toISOString();
+			}
+			return null;
 		},
-	  }),
+	}),
 };
