@@ -1,5 +1,10 @@
 // SERVER
 import { Request, Response } from 'express';
+// STRIPE
+import Stripe from 'stripe';
+const stripe = new Stripe(String(process.env.STRIPE_KEY), {
+	apiVersion: '2020-03-02',
+});
 // INTERNALS
 import UserService from '../../services/UserServices';
 import {
@@ -11,6 +16,7 @@ import {
 } from '../../core/apiErrors';
 import User from '../../database/models/User';
 import { getTokenFromHeader } from './utils';
+import { captureRejectionSymbol } from 'events';
 
 class UserController {
 	/** Set response to return */
@@ -151,6 +157,58 @@ class UserController {
 				return UserController.handleError(res, error);
 			}
 		});
+	}
+
+	// PAYMENTS
+	private static async createCustomer(): Promise<Stripe.Customer> {
+		const params: Stripe.CustomerCreateParams = {
+			description: 'test customer',
+			name: 'BOB',
+			email: 'BOB@gmail.com',
+			source: 'tok_amex',
+		};
+
+		const customer: Stripe.Customer = await stripe.customers.create(params);
+		return customer;
+	}
+
+	static async charge(req: Request, res: Response<ApiResponse>) {
+		try {
+			const customer = await UserController.createCustomer();
+			console.log('######### customer');
+			console.log(customer);
+
+			const charge = await stripe.charges.create({
+				amount: 1000,
+				currency: 'eur',
+				customer: customer.id,
+			});
+
+			console.log('########### charge');
+			console.log(charge);
+
+			// const updateCustomer = await stripe.customers.retrieve(customer.id);
+			// console.log('updateCustomer');
+			// console.log(updateCustomer); // Balance n'est pas mis à jour (action pour valider le paiement?)
+
+			stripe.balance.retrieve((err, balance) => {
+				console.log('########### balance');
+				console.log(balance); // Pending : Not yet avalaible in the balance, due to the 7-day rolling pay cycle (https://stripe.com/docs/api/balance/balance_object)
+			});
+
+			await stripe.charges.create({
+				amount: 2000,
+				currency: 'eur',
+				customer: customer.id,
+			});
+
+			stripe.balance.retrieve((err, balance) => {
+				console.log('########### balance after second charge');
+				console.log(balance);
+			});
+		} catch (err) {
+			res.send(err);
+		}
 	}
 
 	// DELETIONS
