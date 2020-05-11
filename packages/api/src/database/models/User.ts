@@ -1,5 +1,11 @@
 // ORM
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
+import {
+	Entity,
+	PrimaryGeneratedColumn,
+	Column,
+	Unique,
+	OneToMany,
+} from 'typeorm';
 import { Length, IsNotEmpty, IsEmail, IsDateString } from 'class-validator';
 // ENCRYPT
 import * as bcrypt from 'bcryptjs';
@@ -7,6 +13,7 @@ import * as jwt from 'jsonwebtoken';
 // INTERNALS
 import S3 from '../../services/s3Service';
 import IStorageService from '../../services/IStorageService';
+import Bet from './Bet';
 
 @Entity()
 @Unique(['email'])
@@ -35,6 +42,13 @@ export default class User implements IUser {
 
 	@Column('text', { nullable: true })
 	avatar?: string;
+
+	@OneToMany(
+		type => Bet,
+		bet => bet.user,
+		{ onDelete: 'CASCADE' },
+	)
+	bets!: Bet[];
 
 	static hashPassword(user: User): void {
 		user.password = bcrypt.hashSync(user.password, 8);

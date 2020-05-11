@@ -29,6 +29,19 @@ class UserServices {
 		return { status: 200, data: { user } };
 	}
 
+	static async getWithBets(
+		token: string | undefined,
+		uuid: string,
+	): Promise<IApiResponseSuccess> {
+		throwIfManipulateSomeoneElse(token, uuid);
+
+		const user = await UserRepository.instance.getWithBets({ uuid });
+		if (user == undefined)
+			throw new NotFoundError(`Uuid ${uuid} : user not found`);
+		delete user.password;
+		return { status: 200, data: { user } };
+	}
+
 	/** Update everything from user except uuid and password */
 	static async update(
 		token: string | undefined,

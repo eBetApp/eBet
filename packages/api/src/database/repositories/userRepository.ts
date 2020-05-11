@@ -25,6 +25,13 @@ class UserRepository extends BaseRepository<User> {
 		return await super.get(user);
 	}
 
+	async getWithBets(user: Partial<User>): Promise<User | undefined> {
+		return await this.repository.findOne({
+			relations: ['bets'],
+			where: user,
+		});
+	}
+
 	async update(
 		criteria: Partial<User>,
 		partialEntity: Partial<User>,

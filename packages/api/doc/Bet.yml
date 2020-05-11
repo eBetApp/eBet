@@ -1,0 +1,82 @@
+openapi: 3.0.0
+
+paths:
+  /bet/create/:userUuid:
+    post:
+      summary: Add a new bet to specified user
+      tags: [Bets]
+      parameters:
+        - in: path
+          name: userUuid
+          description: user uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Body_Bet_To_Add"
+      responses:
+        "201":
+          description: New user created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Bet_Added"
+        "400":
+          description: Incorrect input data - User not created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Format"
+        "500":
+          description: Unexpected error - User not created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+#############################
+#############################
+#############################
+
+components:
+  schemas:
+    Body_Bet_To_Add:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+      example:
+        name: My first Bet
+    #############################
+    Response_Bet_Added:
+      type: object
+      properties:
+        status:
+          type: number
+        data:
+          type: object
+          properties:
+            bet:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                name:
+                  type: string
+            user:
+              type: string
+              description: user email
+      example:
+        status: 201
+        data:
+          bet:
+            uuid: 1234
+            name: My first Bet
+          user: luc@gmail.com
+    #############################

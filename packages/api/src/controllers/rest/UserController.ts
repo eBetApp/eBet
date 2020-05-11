@@ -20,7 +20,10 @@ class UserController {
 	): Response<ApiResponse> {
 		if (error instanceof ErrorBase)
 			return res.status(error.status).json({ error });
-		else return res.status(500).json({ error: new UnexpectedError(undefined, error) });
+		else
+			return res
+				.status(500)
+				.json({ error: new UnexpectedError(undefined, error) });
 	}
 
 	// GETS
@@ -30,6 +33,21 @@ class UserController {
 	): Promise<Response<ApiResponse>> {
 		try {
 			const response = await UserService.get(
+				getTokenFromHeader(req),
+				req.params.uuid,
+			);
+			return res.status(response.status).json(response);
+		} catch (error) {
+			return UserController.handleError(res, error);
+		}
+	}
+
+	static async getWithBets(
+		req: Request,
+		res: Response<ApiResponse>,
+	): Promise<Response<ApiResponse>> {
+		try {
+			const response = await UserService.getWithBets(
 				getTokenFromHeader(req),
 				req.params.uuid,
 			);
@@ -58,8 +76,8 @@ class UserController {
 				return res.status(200).json({
 					status: 200,
 					data: {
-						message: `User with uuid ${userProperties.uuid} succesfully updated`
-					}
+						message: `User with uuid ${userProperties.uuid} succesfully updated`,
+					},
 				});
 			throw new FormatError('Incorrect keys in body');
 		} catch (error) {
@@ -175,15 +193,12 @@ class UserController {
 				req.params.fileKey,
 			);
 			if (!result) throw new UnexpectedError();
-			return res
-				.status(200)
-				.json({
-					status: 200,
-					data: {
-						message:
-							'Success - Image deleted from S3 or not existing',
-					},
-				});
+			return res.status(200).json({
+				status: 200,
+				data: {
+					message: 'Success - Image deleted from S3 or not existing',
+				},
+			});
 		} catch (error) {
 			return UserController.handleError(res, error);
 		}
