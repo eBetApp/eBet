@@ -66,10 +66,16 @@ export default class User implements IUser {
 	}
 
 	static tokenBelongsToUser(token: string, uuid: string): boolean {
-		const userFromJwt = jwt.verify(
-			token,
-			String(process.env.SECRET),
-		) as User;
+		const userFromJwt = this.getUserFromToken(token);
+		if (userFromJwt === undefined) return false;
 		return userFromJwt.uuid == uuid;
+	}
+
+	static getUserFromToken(token: string): User | undefined {
+		try {
+			return jwt.verify(token, String(process.env.SECRET)) as User;
+		} catch (e) {
+			return undefined;
+		}
 	}
 }

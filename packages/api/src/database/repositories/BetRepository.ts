@@ -22,7 +22,10 @@ class BetRepository extends BaseRepository<Bet> {
 	}
 
 	async get(bet: Partial<Bet>): Promise<Bet | undefined> {
-		return await super.get(bet);
+		return await this.repository.findOne({
+			relations: ['user'],
+			where: bet,
+		});
 	}
 
 	async update(

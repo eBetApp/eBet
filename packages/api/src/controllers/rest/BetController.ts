@@ -9,7 +9,6 @@ import {
 	FormatError,
 	BodyError,
 } from '../../core/apiErrors';
-import User from '../../database/models/User';
 import { getTokenFromHeader } from './utils';
 
 class BetController {
@@ -76,25 +75,25 @@ class BetController {
 		req: Request,
 		res: Response<ApiResponse>,
 	): Promise<Response<ApiResponse>> {
-		const { uuid } = req.params;
+		const { betUuid } = req.params;
 
 		try {
-			if (typeof uuid == 'undefined')
-				throw new BodyError('Uuid is required to delete any user');
+			if (typeof betUuid !== 'string')
+				throw new BodyError(
+					'<betUuid> is required and must be a string',
+				);
 			const response = await BetService.delete(
 				getTokenFromHeader(req),
-				uuid,
+				betUuid,
 			);
 			if (response)
 				return res.status(200).json({
 					status: 200,
 					data: {
-						message: `User with uuid ${uuid} succesfully deleted`,
+						message: 'Bet succesfully deleted',
 					},
 				});
-			throw new UnexpectedError(
-				'User with uuid ${uuid} cannot be deleted',
-			);
+			throw new UnexpectedError('Bet cannot be deleted');
 		} catch (error) {
 			return BetController.handleError(res, error);
 		}

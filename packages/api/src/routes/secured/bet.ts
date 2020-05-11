@@ -7,6 +7,6 @@ const router: Router = Router();
 
 router.post('/create/:userUuid', BetController.create);
 router.get('/get/:betUuid', BetController.get);
-router.delete('/delete/:uuid', BetController.delete); // TODO
+router.delete('/delete/:betUuid', BetController.delete);
 
 export default router;

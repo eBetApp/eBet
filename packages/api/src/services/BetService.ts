@@ -13,21 +13,14 @@ import {
 	FormatError,
 	UnexpectedError,
 } from '../core/apiErrors';
-import { throwIfManipulateSomeoneElse } from './utils';
+import {
+	throwIfManipulateSomeoneElse,
+	throwIfManipulateForeignBet,
+} from './utils';
 import UserRepository from '../database/repositories/userRepository';
+import User from '../database/models/User';
 
 class UserServices {
-	static async get(
-		token: string | undefined,
-		uuid: string,
-	): Promise<IApiResponseSuccess> {
-		// throwIfManipulateSomeoneElse(token, uuid);
-
-		const bet = await BetRepository.instance.get({ uuid });
-		if (bet == undefined) throw new NotFoundError('bet not found');
-		return { status: 200, data: { bet } };
-	}
-
 	static async create(
 		token: string | undefined,
 		userUuid: string,
@@ -58,14 +51,25 @@ class UserServices {
 		return { status: 201, data: { bet: createdBet, user: user.email } };
 	}
 
+	static async get(
+		token: string | undefined,
+		betUuid: string,
+	): Promise<IApiResponseSuccess> {
+		const { user, ...bet } = await throwIfManipulateForeignBet(
+			token,
+			betUuid,
+		);
+		return { status: 200, data: { bet } };
+	}
+
 	static async delete(
 		token: string | undefined,
-		uuid: string,
+		betUuid: string,
 	): Promise<boolean> {
-		throwIfManipulateSomeoneElse(token, uuid);
+		await throwIfManipulateForeignBet(token, betUuid);
 
 		try {
-			const res = await BetRepository.instance.delete(uuid);
+			const res = await BetRepository.instance.delete(betUuid);
 			return res.affected != 0;
 		} catch (error) {
 			return false;
