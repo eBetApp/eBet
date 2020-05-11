@@ -18,7 +18,7 @@ const graphQlMiddleware = (app: Application): void => {
 				},
 			],
 		},
-		apis: ['./doc/User.yml'],
+		apis: ['./doc/Global.yml', './doc/User.yml', './doc/Bet.yml'],
 	};
 	const specs = swaggerJsdoc(options);
 	app.use('/doc', swaggerUi.serve);

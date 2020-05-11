@@ -6,6 +6,7 @@ import UserController from '../../controllers/rest/UserController';
 const router: Router = Router();
 
 router.get('/get/:uuid', UserController.get);
+router.get('/get-bets/:uuid', UserController.getWithBets);
 router.put('/update', UserController.update);
 router.put('/update-password', UserController.updatePwd);
 router.put('/update-avatar', UserController.updateAvatar);

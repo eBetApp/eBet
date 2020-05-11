@@ -1,0 +1,101 @@
+openapi: 3.0.0
+
+components:
+  schemas:
+    Response_Unexpected_Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status:
+              type: integer
+            name:
+              type: string
+            message:
+              type: string
+      example:
+        error:
+          status:
+            value: 500
+          name:
+            value: "UnexpectedError"
+          message:
+            value: ""
+    #############################
+    Response_Delete_Success:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+      example:
+        status: 200
+        data:
+          message: Success ...
+    #############################
+    Token_Is_Not_Token:
+      example: unauthorized
+    #############################
+    Response_Format_Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status:
+              type: integer
+            name:
+              type: string
+            message:
+              type: string
+              description: pwd too short, wrong email format, email already used, etc
+      example:
+        error:
+          status:
+            value: 400
+          name:
+            value: "FormatError"
+          message:
+            value: "Wrong email"
+#############################
+    Response_Not_Found_Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status:
+              type: integer
+            name:
+              type: string
+            message:
+              type: string
+      example:
+        error:
+          status:
+            value: 404
+          name:
+            value: "NotFoundError"
+          message:
+            value: ""
+    #############################
+
+
+
+  #############################
+  ####### PARAMETERS ##########
+  #############################
+  parameters:
+    Bearer_Token:
+      name: Authorization
+      in: header
+      required: true
+      description: Bearer + TOKEN
+      schema:
+        type: string
+        format: token

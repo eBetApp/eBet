@@ -1,4 +1,9 @@
 
+// ENTITIES
+interface IBet {
+	uuid: string
+	name: string
+}
 
 // EXTENDED EXPRESS TYPES
 declare namespace Express {

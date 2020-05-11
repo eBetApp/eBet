@@ -1,0 +1,273 @@
+openapi: 3.0.0
+
+paths:
+  /bet/create/:userUuid:
+    post:
+      summary: Add a new bet to specified user
+      tags: [Bets]
+      parameters:
+        - in: path
+          name: userUuid
+          description: user uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Body_Bet_To_Add"
+      responses:
+        "201":
+          description: New bet created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Bet_Added"
+        "400":
+          description: Incorrect input data - bet not created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Format_Error"
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "500":
+          description: Unexpected error - bet not created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+  /user/get-bets/:userUuid:
+    get:
+      summary: Get user with bets by uuid
+      tags: [Bets]
+      parameters:
+        - in: path
+          name: userUuid
+          description: user uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: "#/components/schemas/User_Response_With_Bets"
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "403":
+          description: Only operations on its own user are allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Error_Unauthorized"
+        "404":
+          description: User cannot be found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Not_Found_Error"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+  /bet/get/:betUuid:
+    get:
+      summary: Get bet infos by uuid
+      tags: [Bets]
+      parameters:
+        - in: path
+          name: betUuid
+          description: bet uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: Bet found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Bet_Simple_Details"
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "404":
+          description: Incorrect input data - Bet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Not_Found_Error"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+  #############################
+  /bet/delete/:betUuid:
+    delete:
+      summary: Delete bet by uuid
+      tags: [Bets]
+      parameters:
+        - in: path
+          name: betUuid
+          description: bet uuid
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/Bearer_Token"
+      responses:
+        "200":
+          description: Bet deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Delete_Success"
+        "401":
+          description: Token provided is not JWT formatted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token_Is_Not_Token"
+        "404":
+          description: Incorrect input data - Bet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Not_Found_Error"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Unexpected_Error"
+#############################
+#############################
+#############################
+
+components:
+  schemas:
+    Body_Bet_To_Add:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+      example:
+        name: My first Bet
+    #############################
+    Response_Bet_Added:
+      type: object
+      properties:
+        status:
+          type: number
+        data:
+          type: object
+          properties:
+            bet:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                name:
+                  type: string
+            user:
+              type: string
+              description: user email
+      example:
+        status: 200
+        data:
+          bet:
+            uuid: 1234
+            name: My first Bet
+          user: luc@gmail.com
+    #############################
+    Response_Bet_Simple_Details:
+      type: object
+      properties:
+        status:
+          type: number
+        data:
+          type: object
+          properties:
+            bet:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                name:
+                  type: string
+            user:
+              type: string
+              description: user email
+      example:
+        status: 201
+        data:
+          bet:
+            uuid: 1234
+            name: My first Bet
+          user: luc@gmail.com
+    #############################
+    User_Response_With_Bets:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: object
+          properties:
+            uuid:
+              type: string
+            nickname:
+              type: string
+            email:
+              type: string
+            avatar:
+              type: string
+            bets:
+              type: array
+              items:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                  name:
+                    type: string
+      example:
+        status: 200
+        data:
+          user:
+            uuid: UUID
+            nickname: Luc
+            email: luc@gmail.com
+            avatar: https://...
+            bets:
+              - uuid: 1234
+                name: "my first bet"
+              - uuid: 4567
+                name: "my second bet"

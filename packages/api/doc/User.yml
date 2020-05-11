@@ -26,7 +26,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User_Error_Format"
+                $ref: "#/components/schemas/Response_Format_Error"
         "500":
           description: Unexpected error - User not created
           content:
@@ -56,14 +56,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User_Error_Format"
+                $ref: "#/components/schemas/Response_Format_Error"
         "500":
           description: Unexpected error - User not logged
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response_Unexpected_Error"
-
 
   #############################
   #### USER AUTHENTICATED #####
@@ -105,7 +104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error_User_Not_Found"
+                $ref: "#/components/schemas/Response_Not_Found_Error"
         "500":
           description: Unexpected error
           content:
@@ -233,7 +232,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error_User_Not_Found"
+                $ref: "#/components/schemas/Response_Not_Found_Error"
         "401":
           description: Token provided is not JWT formatted
           content:
@@ -251,7 +250,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error_User_Not_Found"
+                $ref: "#/components/schemas/Response_Not_Found_Error"
         "500":
           description: Unexpected error
           content:
@@ -303,7 +302,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error_User_Not_Found"
+                $ref: "#/components/schemas/Response_Not_Found_Error"
         "422":
           description: Incorrect image data
         "500":
@@ -331,19 +330,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                example:
-                  status: 200
-                  data:
-                      message: Success - User with uuid 123 successfully deleted
+                $ref: "#/components/schemas/Response_Delete_Success"
         "401":
           description: Token provided is not JWT formatted
           content:
@@ -382,7 +369,7 @@ paths:
           required: true
         - $ref: "#/components/parameters/Bearer_Token"
       responses:
-      # TODO
+        # TODO
         "200":
           description: Image correctly deleted
           content:
@@ -463,6 +450,7 @@ components:
             email: luc@gmail.com
             birthdate: 2000-12-31
             avatar: https://...
+
     #############################
     User_Request_Body_Only_Uuid:
       type: object
@@ -550,81 +538,3 @@ components:
             avatar:
         meta:
           token: TOKEN
-    #############################
-    User_Error_Format:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            status:
-              type: integer
-            name:
-              type: string
-            message:
-              type: string
-              description: pwd too short, wrong email format, email already used, etc
-      example:
-        error:
-          status:
-            value: 400
-          name:
-            value: "FormatError"
-          message:
-            value: "Wrong email"
-    #############################
-    Error_User_Not_Found:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            status:
-              type: integer
-            name:
-              type: string
-            message:
-              type: string
-      example:
-        error:
-          status:
-            value: 404
-          name:
-            value: "NotFoundError"
-          message:
-            value: ""
-    #############################
-    Response_Unexpected_Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            status:
-              type: integer
-            name:
-              type: string
-            message:
-              type: string
-      example:
-        error:
-          status:
-            value: 500
-          name:
-            value: "UnexpectedError"
-          message:
-            value: ""
-    #############################
-    Token_Is_Not_Token:
-      example:
-        unauthorized
-  #############################
-  parameters:
-    Bearer_Token:
-      name: Authorization
-      in: header
-      required: true
-      description: Bearer + TOKEN
-      schema:
-        type: string
-        format: token
