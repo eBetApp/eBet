@@ -16,7 +16,7 @@ export const resolvers = {
 		signUp: async (
 			_: any,
 			args: User,
-		): Promise<Omit<User, 'password'> & IToken> => {
+		): Promise<Omit<IUser, 'password'> & IToken> => {
 			const { nickname, password, email, birthdate } = args;
 			try {
 				const result = await AuthService.signup(
@@ -36,7 +36,7 @@ export const resolvers = {
 			_: any,
 			args: User,
 			context: Context<User>,
-		): Promise<Omit<User, 'password'> & IToken> => {
+		): Promise<Omit<IUser, 'password'> & IToken> => {
 			const { email, password } = args;
 			try {
 				const result = await AuthService.signin(

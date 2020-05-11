@@ -8,6 +8,7 @@ const betRoutesSuite = (server: supertest.SuperTest<supertest.Test>) => {
 		user.nickname = 'Bob1';
 		user.password = 'bob1';
 		user.email = 'bob1@gmail.com';
+		user.birthdate = new Date('2000-01-31');
 
 		let userToken: string;
 
