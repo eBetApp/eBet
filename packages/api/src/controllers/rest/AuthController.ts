@@ -9,9 +9,9 @@ class AuthController {
 		req: Request,
 		res: Response<ApiResponse>,
 	): Promise<Response<ApiResponse>> => {
-		const { nickname, password, email } = req.body;
+		const { nickname, password, email, birthdate } = req.body;
 		try {
-			const result = await AuthService.signup(nickname, password, email);
+			const result = await AuthService.signup(nickname, password, email, birthdate);
 			return res.status(result.status).json(result);
 		} catch (error) {
 			if (error instanceof ErrorBase) {

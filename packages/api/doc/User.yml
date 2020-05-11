@@ -132,13 +132,20 @@ paths:
                 nickname:
                   type: string
                   description: new desired nickname
+                  format: min length 4
                 email:
                   type: string
                   description: new desired email
+                  format: email
+                birthdate:
+                  type: string
+                  description: new desired birthdate
+                  format: Date
               example:
                 uuid: 1234
                 nickname: Bill
                 email: bill@gmail.com
+                birthdate: 2000-12-31
       parameters:
         - $ref: "#/components/parameters/Bearer_Token"
       responses:
@@ -442,6 +449,9 @@ components:
               type: string
             email:
               type: string
+            birthdate:
+              type: string
+              format: Date
             avatar:
               type: string
       example:
@@ -451,6 +461,7 @@ components:
             uuid: UUID
             nickname: Luc
             email: luc@gmail.com
+            birthdate: 2000-12-31
             avatar: https://...
     #############################
     User_Request_Body_Only_Uuid:
@@ -469,6 +480,7 @@ components:
       required:
         - nickname
         - email
+        - birthdate
         - password
       properties:
         nickname:
@@ -477,12 +489,16 @@ components:
         email:
           type: string
           format: email
+        birthdate:
+          type: string
+          format: Date
         password:
           type: string
           format: min. 4 characters
       example:
         nickname: Luc
         email: luc@gmail.com
+        birthdate: 2000-12-31
         password: luc1
     #############################
     Auth_User_To_Login:
@@ -513,6 +529,9 @@ components:
               type: string
             email:
               type: string
+            birthdate:
+              type: string
+              format: Date
             avatar:
               type: string
         meta:
@@ -527,6 +546,7 @@ components:
             uuid: UUID
             nickname: Luc
             email: luc@gmail.com
+            birthdate: 2000-12-31
             avatar:
         meta:
           token: TOKEN

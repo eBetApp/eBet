@@ -30,11 +30,13 @@ class AuthService {
 		nickname: string,
 		password: string,
 		email: string,
+		birthdate: Date,
 	): Promise<IAuthServiceResponse> {
 		const user: User = new User();
 		user.nickname = nickname;
 		user.password = password;
 		user.email = email;
+		user.birthdate = birthdate;
 
 		const errors: ValidationError[] = await validate(user);
 		if (errors.length > 0)
@@ -64,7 +66,7 @@ class AuthService {
 			};
 		} catch (error) {
 			if (error instanceof QueryFailedError)
-				throw error.message.includes('duplicate')
+				throw (error.message.includes('duplicate') || error.message.includes('dupliquée'))
 					? new FormatError('Email already used')
 					: new FormatError(error.message);
 			throw new UnexpectedError('Unexpected error', error);

@@ -1,6 +1,6 @@
 // ORM
 import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
-import { Length, IsNotEmpty, IsEmail } from 'class-validator';
+import { Length, IsNotEmpty, IsEmail, IsDateString } from 'class-validator';
 // ENCRYPT
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
@@ -10,7 +10,7 @@ import IStorageService from '../../services/IStorageService';
 
 @Entity()
 @Unique(['email'])
-export default class User {
+export default class User implements IUser {
 	@PrimaryGeneratedColumn('uuid')
 	uuid!: string;
 
@@ -22,6 +22,11 @@ export default class User {
 	@IsNotEmpty()
 	@IsEmail()
 	email!: string;
+
+	@Column('text')
+	@IsNotEmpty()
+	@IsDateString()
+	birthdate!: Date; // EN COURS : accepted value -> 2019-10-09T10:36:40.791Z
 
 	@Column('text')
 	@Length(4, 20)

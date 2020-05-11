@@ -3,6 +3,7 @@ interface IUser {
 	uuid: string;
 	nickname: string;
 	email: string;
+	birthdate: Date;
 	password: string;
 	avatar?: string;
 }
@@ -35,15 +36,16 @@ interface IApiResponseError {
 /** Format of all responses except these returning user */
 type ApiResponse = IApiResponseSuccess | IApiResponseError;
 
+interface IToken{
+	token: string
+}
 /** Authentication Responses returning user with token */
 interface IAuthServiceResponse extends IApiResponseSuccess {
 	status: number,
 	data: {
 		user: Omit<IUser, 'password'>;
 	};
-	meta: {
-		token: string;
-	};
+	meta: IToken;
 }
 
 /** Responses (when logged) returning user */
