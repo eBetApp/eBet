@@ -19,6 +19,7 @@ import {
 	UnexpectedError,
 	AuthorizationError,
 } from '../core/apiErrors';
+import UserController from '../controllers/rest/UserController'; // TODO: modifier!!
 
 class AuthService {
 	static setToken(user: User): string {
@@ -37,6 +38,9 @@ class AuthService {
 		user.password = password;
 		user.email = email;
 		user.birthdate = birthdate;
+		user.customerId = (
+			await UserController.createCustomer(nickname, email)
+		).id;
 
 		const errors: ValidationError[] = await validate(user);
 		if (errors.length > 0)
@@ -66,7 +70,8 @@ class AuthService {
 			};
 		} catch (error) {
 			if (error instanceof QueryFailedError)
-				throw (error.message.includes('duplicate') || error.message.includes('dupliquée'))
+				throw error.message.includes('duplicate') ||
+				error.message.includes('dupliquée')
 					? new FormatError('Email already used')
 					: new FormatError(error.message);
 			throw new UnexpectedError('Unexpected error', error);
