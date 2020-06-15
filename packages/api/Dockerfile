@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN yarn
 COPY . .
 RUN yarn build
+
 # Erase dev packages
 RUN yarn install --production
 COPY .dist/ .
