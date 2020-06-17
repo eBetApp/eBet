@@ -1,10 +1,5 @@
 // SERVER
 import { Request, Response } from 'express';
-// STRIPE
-import Stripe from 'stripe';
-const stripe = new Stripe(String(process.env.STRIPE_KEY), {
-	apiVersion: '2020-03-02',
-});
 // INTERNALS
 import UserService from '../../services/UserServices';
 import {
@@ -16,7 +11,6 @@ import {
 } from '../../core/apiErrors';
 import User from '../../database/models/User';
 import { getTokenFromHeader } from './utils';
-import UserRepository from '../../database/repositories/userRepository';
 
 class UserController {
 	/** Set response to return */
@@ -157,143 +151,6 @@ class UserController {
 				return UserController.handleError(res, error);
 			}
 		});
-	}
-
-	// PAYMENTS
-	static async createCustomer(
-		name: string,
-		email: string,
-	): Promise<Stripe.Customer> {
-		const params: Stripe.CustomerCreateParams = {
-			name,
-			email,
-			source: 'tok_amex', // A ajouter via une route user ou demander à chaque fois? (peut etre plus simple pour une v1 / MVP)
-		};
-
-		return await stripe.customers.create(params); // !! Création d'un nouveau user (même si les infos sont identiques)
-	}
-
-	static async payAccountFromCustomer(
-		fromCustomerId: string,
-		toAccountId: string,
-		amount: number,
-	): Promise<void> {
-		await stripe.charges.create({
-			amount,
-			currency: 'eur',
-			customer: fromCustomerId, // TODO: ajouter customerId à User.ts
-			destination: {
-				account: toAccountId, // TODO: ajouter accountId à User.ts
-			},
-		});
-	}
-
-	// TODO: tester (pas sûr que ça fonctionne avec type de compte actuel)
-	static async payAccountFromApp(
-		toAccountId: string,
-		amount: number,
-	): Promise<void> {
-		await stripe.charges.create({
-			amount,
-			currency: 'eur',
-			customer: toAccountId, // TODO: ajouter customerId à User.ts
-			source: process.env.appAccountId, // TODO: ajouter à .env
-		});
-	}
-
-	// Retrieve Money --> directly from stripe website for V1 / MVP
-
-	static async setNewAccountId(userId: string, code: string): Promise<void> {
-		const authResponse = await stripe.oauth.token({
-			grant_type: 'authorization_code',
-			code,
-		});
-		if (typeof authResponse !== 'string') return; // vérifier exécution ; throw ?
-
-		const userToUpdate = await UserRepository.instance.get({
-			uuid: userId,
-		});
-		if (userToUpdate === undefined) return; // vérifier exécution ; throw ?
-		if (
-			userToUpdate.accountId !== null ||
-			userToUpdate.accountId !== undefined
-		)
-			return; // vérifier exécution ; throw ?
-
-		await UserRepository.instance.update(
-			{ uuid: userId },
-			{ accountId: String(authResponse) },
-		);
-	}
-
-	static async charge(req: Request, res: Response<ApiResponse>) {
-		try {
-			// // ######## STEP : Treat auth response
-			// const response = await stripe.oauth.token({
-			// 	grant_type: 'authorization_code',
-			// 	// code: 'ac_HLPCG9ffhZxrGX2gEER6BGraxB3ZXCne',
-			// 	code: 'ac_HLPQNsmGFGz3WQ79KZKx64mWdFdcBFi5',
-			// });
-
-			// var connected_account_id = response.stripe_user_id;
-			// console.log('connected account: ');
-			// // console.log(connected_account_id); // ac_HLPCG9ffhZxrGX2gEER6BGraxB3ZXCne -> Response: acct_1GmiLjKtkqtaePkM
-			// console.log(connected_account_id); // ac_HLPQNsmGFGz3WQ79KZKx64mWdFdcBFi5 -> Response: acct_1GmibABDLMt3AFNF
-
-			// const customer = await UserController.createCustomer();
-			// console.log('######### customer');
-			// console.log(customer);
-
-			// // ######## Supply "customer"/connected account
-			// const chargeToAccount = await stripe.charges.create({
-			// 	amount: 1000,
-			// 	currency: 'eur',
-			// 	// customer: customer.id,
-			// 	customer: 'cus_HLOVO4vKH8yKN0',
-			// 	destination: {
-			// 		account: 'acct_1GmibABDLMt3AFNF', // account ID stored in Api DB - User.ts
-			// 	},
-			// });
-
-			// // ######## DEBIT CONNECTED ACCOUNT --> only possible with express and cutom accounts...
-			// const chargeFromAccount = await stripe.charges.create({
-			// 	amount: 500,
-			// 	currency: 'eur',
-			// 	// customer: customer.id,
-			// 	customer: 'cus_HLOVO4vKH8yKN0',
-			// 	source: 'acct_1GmibABDLMt3AFNF',
-			// });
-
-			stripe.balance.retrieve((err, balance) => {
-				console.log('########### balance');
-				console.log(balance); // Pending : Not yet avalaible in the balance, due to the 7-day rolling pay cycle (https://stripe.com/docs/api/balance/balance_object)
-			});
-			// stripe.balance.retrieve((err, balance) => {
-			// 	console.log('########### balance after second charge');
-			// 	console.log(balance);
-			// });
-
-			// const updateCustomer = await stripe.customers.retrieve(customer.id);
-			const updateCustomer = await stripe.customers.retrieve(
-				'cus_HLOVO4vKH8yKN0',
-			);
-			console.log('updateCustomer');
-			console.log(updateCustomer); // Balance n'est pas mis à jour (action pour valider le paiement?)
-
-			const updatedAccount = await stripe.accounts.retrieve(
-				'acct_1GmibABDLMt3AFNF',
-			);
-			console.log('updatedAccount');
-			console.log(updatedAccount); // Balance n'est pas mis à jour (action pour valider le paiement?)
-
-			const updatedAccountBalance = await stripe.balance.retrieve({
-				stripe_account: 'acct_1GmibABDLMt3AFNF',
-			});
-			console.log('updatedAccount balance');
-			console.log(updatedAccountBalance); // Balance n'est pas mis à jour (action pour valider le paiement?)
-		} catch (err) {
-			res.send(err);
-		}
 	}
 
 	// DELETIONS

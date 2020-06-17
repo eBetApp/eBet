@@ -19,7 +19,7 @@ import {
 	UnexpectedError,
 	AuthorizationError,
 } from '../core/apiErrors';
-import UserController from '../controllers/rest/UserController'; // TODO: modifier!!
+import StripeServices from '../services/StripeServices';
 
 class AuthService {
 	static setToken(user: User): string {
@@ -39,7 +39,7 @@ class AuthService {
 		user.email = email;
 		user.birthdate = birthdate;
 		user.customerId = (
-			await UserController.createCustomer(nickname, email)
+			await StripeServices.createCustomer(nickname, email)
 		).id;
 
 		const errors: ValidationError[] = await validate(user);

@@ -12,6 +12,5 @@ router.put('/update-password', UserController.updatePwd);
 router.put('/update-avatar', UserController.updateAvatar);
 router.delete('/delete/:uuid', UserController.delete);
 router.delete('/delete-avatar/:fileKey', UserController.deleteAvatar);
-router.post('/charge', UserController.charge);
 
 export default router;
