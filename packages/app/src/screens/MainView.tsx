@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
 // Types imports
-import { User } from "@shared/apiTypes/User";
+import { User } from "@shared/apiTypes/User"; // TODO: shared a été supprimé => ajouter dans les types de app
 
 // Redux import
 import { useStore } from "../hooks/store";
@@ -11,6 +11,13 @@ import { dispatchAvatar } from "../hooks/dispatchers";
 // Services import
 import userService from "../Services/userService";
 
+// Stripe imports
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import CheckoutForm from "../components/CheckoutForm";
+
+const stripePromise = loadStripe(process.env.STRIPE_PK);
+
 export default function MainView() {
   const { state, dispatch } = useStore();
 
@@ -18,7 +25,7 @@ export default function MainView() {
     uuid: "80e97e1a-11fd-48be-85c8-dbcb7d65dc46",
     nickname: "bob31",
     email: "bob31@gmail.com",
-    password: "123456"
+    password: "123456",
   };
 
   const token =
@@ -51,6 +58,10 @@ export default function MainView() {
         <Text>Press Here</Text>
       </TouchableOpacity>
 
+      <Elements stripe={stripePromise}>
+        <CheckoutForm />
+      </Elements>
+
       <Image style={styles.avatar} source={{ uri: state.avatar }} />
     </View>
   );
@@ -61,14 +72,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   avatar: {
     width: 130,
     height: 130,
     borderRadius: 63,
     borderWidth: 2,
-    borderColor: "white"
+    borderColor: "white",
   },
   touchable: {
     width: 130,
@@ -76,6 +87,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignSelf: "center",
     position: "absolute",
-    marginTop: 90
-  }
+    marginTop: 90,
+  },
 });

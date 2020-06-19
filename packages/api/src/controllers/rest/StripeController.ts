@@ -117,7 +117,10 @@ class StripeController {
 		}
 	}
 
-	// TODO: charge from customer to ebet service => comment faire pour la soure / numero de cb à passer??? ==> voir https://stripe.com/docs/payments/accept-a-payment#web
+	// TODO: charge from customer to ebet service => comment faire pour la soure / numero de cb à passer???
+	// ==> voir https://stripe.com/docs/payments/accept-a-payment#web
+	// ==> voir https://docs.expo.io/versions/latest/sdk/payments/
+	// ==> voir https://github.com/expo/stripe-expo
 	// TODO: restreindre à des paiements en EURO uniquement !!
 	// ==> Se passe probablement au niveau client avec méthodes déjà fournies par strip
 	static async chargeCreditCard(req: Request, res: Response<ApiResponse>) {
@@ -139,6 +142,21 @@ class StripeController {
 		} catch (error) {
 			return StripeController.handleError(res, error);
 		}
+	}
+
+	static async getSecret(req: Request, res: Response<ApiResponse>) {
+		const paymentIntent = await stripe.paymentIntents.create({
+			amount: 500,
+			currency: 'eur',
+			metadata: { integration_check: 'accept_a_payment' },
+		});
+
+		return res.status(200).json({
+			status: 200,
+			data: {
+				client_secret: paymentIntent.client_secret,
+			},
+		});
 	}
 }
 
