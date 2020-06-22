@@ -33,20 +33,21 @@ class AuthService {
 		email: string,
 		birthdate: Date,
 	): Promise<IAuthServiceResponse> {
-		const user: User = new User();
-		user.nickname = nickname;
-		user.password = password;
-		user.email = email;
-		user.birthdate = birthdate;
-		user.customerId = (
-			await StripeServices.createCustomer(nickname, email)
-		).id;
-
-		const errors: ValidationError[] = await validate(user);
-		if (errors.length > 0)
-			throw new FormatError(Object.values(errors[0].constraints)[0]);
-
 		try {
+			const user: User = new User();
+			user.nickname = nickname;
+			user.password = password;
+			user.email = email;
+			user.birthdate = birthdate;
+
+			const errors: ValidationError[] = await validate(user);
+			if (errors.length > 0)
+				throw new FormatError(Object.values(errors[0].constraints)[0]);
+
+			user.customerId = (
+				await StripeServices.createCustomer(nickname, email)
+			).id;
+
 			User.hashPassword(user);
 
 			const createdUser = await UserRepository.instance.create(user);
@@ -69,6 +70,7 @@ class AuthService {
 				meta: { token },
 			};
 		} catch (error) {
+			if (error instanceof ErrorBase) throw error;
 			if (error instanceof QueryFailedError)
 				throw error.message.includes('duplicate') ||
 				error.message.includes('dupliquée')

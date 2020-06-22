@@ -144,7 +144,7 @@ class StripeController {
 		}
 	}
 
-	static async getSecret(req: Request, res: Response<ApiResponse>) {
+	static async getProductSecret(req: Request, res: Response<ApiResponse>) {
 		const paymentIntent = await stripe.paymentIntents.create({
 			amount: 500,
 			currency: 'eur',

@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { REACT_NATIVE_STRIPE_PK } from "react-native-dotenv";
 
 // Types imports
 import { User } from "@shared/apiTypes/User"; // TODO: shared a été supprimé => ajouter dans les types de app
@@ -11,14 +12,7 @@ import { dispatchAvatar } from "../hooks/dispatchers";
 // Services import
 import userService from "../Services/userService";
 
-// Stripe imports
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import CheckoutForm from "../components/CheckoutForm";
-
-const stripePromise = loadStripe(process.env.STRIPE_PK);
-
-export default function MainView() {
+export default function MainView({ navigation }) {
   const { state, dispatch } = useStore();
 
   const user: User = {
@@ -58,11 +52,11 @@ export default function MainView() {
         <Text>Press Here</Text>
       </TouchableOpacity>
 
-      <Elements stripe={stripePromise}>
-        <CheckoutForm />
-      </Elements>
-
       <Image style={styles.avatar} source={{ uri: state.avatar }} />
+
+      <TouchableOpacity onPress={() => navigation.navigate("Pay")}>
+        <Text>Pay</Text>
+      </TouchableOpacity>
     </View>
   );
 }
