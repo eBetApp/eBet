@@ -29,7 +29,8 @@ import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 // API types imports
 import { classifyError, errorType } from "../Utils/parseApiError";
 
-import moment from "moment";
+// LocalStorage imports
+import { setStorage } from "../Utils/asyncStorage";
 
 export default function SignUpView({ navigation }) {
   const { dispatch } = useStore();
@@ -65,7 +66,7 @@ export default function SignUpView({ navigation }) {
       birthdate: new Date(birthdate).toISOString(),
     };
 
-    var requestOptions = {
+    const requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: queryString.stringify(payload),
@@ -76,6 +77,7 @@ export default function SignUpView({ navigation }) {
       .then((result) => {
         if (result.status === 201) {
           dispatchNewUser(dispatch, result.data.user);
+          setStorage("token", result.meta.token);
           navigation.navigate("Home");
         } else if (result.error?.status === 400) {
           switch (classifyError(result.error.message)) {

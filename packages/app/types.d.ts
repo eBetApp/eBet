@@ -6,6 +6,8 @@ interface User {
   birthdate: Date;
   password: string;
   avatar?: string;
+  customerId?: string;
+  accountId?: string;
 }
 
 interface IErrorBase {

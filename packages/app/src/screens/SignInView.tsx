@@ -19,6 +19,9 @@ import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 
 import { classifyError, errorType } from "../Utils/parseApiError";
 
+// LocalStorage imports
+import { setStorage } from "../Utils/asyncStorage";
+
 export default function SignInView({ navigation }) {
   const { state, dispatch } = useStore();
   const useEmail = useInput();
@@ -45,10 +48,9 @@ export default function SignInView({ navigation }) {
     fetch(`${REACT_NATIVE_BACK_URL}/api/auth/signin`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log("RESULT");
-        console.log(result);
         if (result.status === 200) {
           dispatchNewUser(dispatch, result.data.user);
+          setStorage("token", result.meta.token);
           navigation.navigate("Home");
         } else if (result.error?.status === 400) {
           switch (classifyError(result.error.message)) {

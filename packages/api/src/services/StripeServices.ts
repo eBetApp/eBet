@@ -47,28 +47,29 @@ class AuthService {
 	static async setNewAccountId(
 		userUuid: string,
 		code: string,
-	): Promise<boolean> {
+	): Promise<string | null> {
 		try {
 			const authResponse = await stripe.oauth.token({
 				grant_type: 'authorization_code',
 				code,
 			});
-			if (typeof authResponse === undefined) return false;
+			if (typeof authResponse === undefined) return null;
 
 			const userToUpdate = await UserRepository.instance.get({
 				uuid: userUuid,
 			});
-			if (userToUpdate === undefined || userToUpdate.accountId !== null)
-				return false; // user does not exist OR its account already exists
+			// if (userToUpdate === undefined || userToUpdate.accountId !== null)
+			// 	return false; // user does not exist OR its account already exists
 
 			await UserRepository.instance.update(
 				{ uuid: userUuid },
 				{ accountId: String(authResponse.stripe_user_id) },
 			);
-			console.log('AccountId: ', String(authResponse.stripe_user_id));
-			return true;
+			return String(authResponse.stripe_user_id);
 		} catch (e) {
-			return false;
+			console.log('STRIPE ERROR');
+			console.log(e);
+			return null;
 		}
 	}
 

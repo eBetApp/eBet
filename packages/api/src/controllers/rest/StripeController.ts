@@ -104,13 +104,16 @@ class StripeController {
 	): Promise<Response<ApiResponse>> {
 		try {
 			const { uuid, code } = req.body; // CODE is obtained on connect.stripe url
-			if (await StripeService.setNewAccountId(uuid, code))
+			const newAccount = await StripeService.setNewAccountId(uuid, code);
+			if (newAccount !== null) {
 				return res.status(200).json({
 					status: 200,
 					data: {
 						message: 'SUCCESS',
+						accountId: newAccount,
 					},
 				});
+			}
 			throw new Error();
 		} catch (error) {
 			return StripeController.handleError(res, error);
