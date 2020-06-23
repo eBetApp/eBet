@@ -62,6 +62,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@react-native-community/datetimepicker": "^2.4.2",
     "@react-navigation/bottom-tabs": "^5.5.2",
     "@react-navigation/native": "^5.5.1",
     "@types/express": "^4.17.5",
@@ -70,6 +71,7 @@
     "babel-preset-expo": "^8.1.0",
     "babel-preset-react-native": "^4.0.1",
     "jest": "^25.1.0",
+    "moment": "^2.27.0",
     "react-native-credit-card-input": "^0.4.1",
     "react-native-dotenv": "^0.2.0",
     "react-native-gesture-handler": "~1.6.0",

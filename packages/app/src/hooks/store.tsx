@@ -3,7 +3,7 @@ import React, { createContext, useReducer, useContext } from "react";
 import { IAction, ReducerActions, IState } from "./ReducerTypes";
 
 const _initialState: IState = {
-  user: "",
+  user: null,
   avatar: "",
 };
 
@@ -23,7 +23,7 @@ const _reducer: React.Reducer<IState, IAction> = (
     case ReducerActions.unregister:
       return {
         ...state,
-        user: "",
+        user: null,
       };
     case ReducerActions.changeAvatar:
       console.log("PAYLOAD");

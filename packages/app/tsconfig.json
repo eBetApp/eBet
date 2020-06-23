@@ -11,6 +11,9 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
+  "include": [
+    "types.d.ts",
+  ],
   "exclude": [
     "node_modules",
     "babel.config.js",

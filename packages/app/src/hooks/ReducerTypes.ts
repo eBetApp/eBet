@@ -1,12 +1,12 @@
 export interface IState {
-  user?: string;
+  user?: User | null;
   avatar?: string;
 }
 
 export interface IAction {
   type: ReducerActions;
-  payload: {
-    user?: string;
+  payload?: {
+    user?: User;
     avatar?: string;
   };
 }

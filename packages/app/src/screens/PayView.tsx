@@ -26,13 +26,30 @@ import { Button, Icon } from "react-native-elements";
 // Stripe imports
 var stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
 import { CreditCardInput } from "react-native-credit-card-input";
-import { useStripe } from "@stripe/react-stripe-js";
 
 export default function PayView() {
   let _form;
 
+  const _updateForm = (form) => (_form = form);
+
+  const _handlePayment = async () => {
+    const formIsValid = await _getPaymentToken();
+    if (formIsValid == null) return;
+    await _submitPayment(formIsValid);
+  };
+
+  const _getPaymentToken: () => Promise<string | null> = async () => {
+    if (!_checkPaymentInfosCompletion(_form)) return null;
+
+    var card = await stripeClient.createToken(_paymentInfos(_form));
+    var token = card.id;
+    return token;
+  };
+
+  const _checkPaymentInfosCompletion = (form) => form.valid;
+
   const _paymentInfos = (_form) => {
-    const infos = {
+    return {
       card: {
         number: _form?.values.number,
         exp_month: _form?.values.expiry.substr(0, 2),
@@ -40,21 +57,6 @@ export default function PayView() {
         cvc: _form?.values.cvc,
       },
     };
-    return infos;
-  };
-
-  const _checkForm = (form) => {
-    console.log("--- FORM");
-    console.log(form);
-    return form.valid;
-  };
-
-  const _handleForm: () => Promise<string | null> = async () => {
-    if (!_checkForm(_form)) return null;
-
-    var card = await stripeClient.createToken(_paymentInfos(_form));
-    var token = card.id;
-    return token;
   };
 
   const _submitPayment = async (token) => {
@@ -83,15 +85,6 @@ export default function PayView() {
       .catch((error) => console.log("error", error));
   };
 
-  const onPayment = async () => {
-    const formIsValid = await _handleForm();
-    if (formIsValid == null) return;
-
-    await _submitPayment(formIsValid);
-  };
-
-  const _updateForm = (form) => (_form = form);
-
   return (
     <View>
       <CreditCardInput
@@ -100,35 +93,11 @@ export default function PayView() {
       />
       <Button
         title="PAY"
-        onPress={onPayment}
+        onPress={_handlePayment}
         icon={
           <Icon name="ios-wallet" type="ionicon" size={15} color="#ffffff" />
         }
-      ></Button>
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatar: {
-    width: 130,
-    height: 130,
-    borderRadius: 63,
-    borderWidth: 2,
-    borderColor: "white",
-  },
-  touchable: {
-    width: 130,
-    height: 130,
-    marginBottom: 10,
-    alignSelf: "center",
-    position: "absolute",
-    marginTop: 90,
-  },
-});
