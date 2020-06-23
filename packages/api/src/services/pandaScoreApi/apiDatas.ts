@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { fetchPastMatch } from './apiFetchs';
 
 interface Match {
 	id: number;
@@ -77,6 +78,7 @@ export default class ApiDatas {
 	}
 
 	chargePastMatch() {
+		const yousk = fetchPastMatch();
 		const pastMatchFileRaw = readFileSync(__dirname + '/../../datas/matches.past.json', { encoding: 'utf8' });
 
 		const pastMatchFile = JSON.parse(pastMatchFileRaw);
