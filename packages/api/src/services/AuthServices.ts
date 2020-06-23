@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 // ORM
 import { QueryFailedError } from 'typeorm';
 import { validate, ValidationError } from 'class-validator';
+import { transformAndValidate } from 'class-transformer-validator';
 // PASSPORT
 import * as jwt from 'jsonwebtoken';
 import passport from 'passport';
@@ -125,7 +126,38 @@ class AuthService {
 								meta: { token },
 							});
 						}
-						return reject(new FormatError(error));
+
+						if (error) return reject(new FormatError(error));
+
+						const { email, password } = req.body;
+
+						transformAndValidate(
+							User,
+							{
+								email,
+								password,
+							},
+							{
+								validator: { skipMissingProperties: true },
+							},
+						)
+							.then(() => {
+								return reject(new FormatError(error));
+							})
+							.catch(errors => {
+								if (
+									errors.length > 0 &&
+									errors[0] instanceof ValidationError
+								) {
+									return reject(
+										new FormatError(
+											Object.values(
+												errors[0].constraints,
+											)[0],
+										),
+									);
+								}
+							});
 					},
 				)(req, res);
 			},
