@@ -1,8 +1,18 @@
 import axios from 'axios';
 import { writeFileSync } from 'fs';
+import schedule from 'node-schedule';
+
+export const startSchedule = () => {
+	fetchPastMatch();
+	fetchlivesMatch();
+	fetchUpcomingMatch();
+
+	schedule.scheduleJob('0 2 * * *', fetchPastMatch);
+	schedule.scheduleJob('*/5 * * * *', fetchlivesMatch);
+	schedule.scheduleJob('0 2 * * *', fetchUpcomingMatch);
+}
 
 export const fetchPastMatch = () => {
-	console.log("fetching api")
 	axios.get("https://api.pandascore.co/matches/past", {
 		headers: {
 			"authorization": `Bearer ${process.env.PANDA_SCORE_API}`
@@ -14,7 +24,6 @@ export const fetchPastMatch = () => {
 }
 
 export const fetchUpcomingMatch = () => {
-	console.log("fetching api")
 	axios.get("https://api.pandascore.co/matches/upcoming", {
 		headers: {
 			"authorization": `Bearer ${process.env.PANDA_SCORE_API}`
@@ -26,7 +35,6 @@ export const fetchUpcomingMatch = () => {
 }
 
 export const fetchlivesMatch = () => {
-	console.log("fetching api")
 	axios.get("https://api.pandascore.co/lives", {
 		headers: {
 			"authorization": `Bearer ${process.env.PANDA_SCORE_API}`

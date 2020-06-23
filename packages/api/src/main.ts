@@ -6,6 +6,7 @@ import { createConnection } from 'typeorm';
 import app from './core/app';
 // import User from './database/models/User';
 import connection from './database/connection';
+import { startSchedule } from './services/pandaScoreApi/apiFetchs';
 
 if (process.env.DB_DEV_URL == null)
 	throw new Error('DB_DEV_URL is required in .env file');
@@ -17,3 +18,5 @@ createConnection(connection)
 		});
 	})
 	.catch(error => console.log(error));
+
+startSchedule();
