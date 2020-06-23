@@ -1,4 +1,3 @@
-import { fetchPastMatch, fetchUpcomingMatch, fetchlivesMatch } from './services/pandaScoreApi/apiFetchs';
 import 'reflect-metadata';
 require('dotenv').config();
 // ORM
@@ -18,7 +17,3 @@ createConnection(connection)
 		});
 	})
 	.catch(error => console.log(error));
-
-fetchPastMatch()
-fetchUpcomingMatch()
-fetchlivesMatch()
