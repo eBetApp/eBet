@@ -20,13 +20,42 @@ export default class Bet implements IBet {
 	@PrimaryGeneratedColumn('uuid')
 	uuid!: string;
 
-	@Column('text')
-	@IsNotEmpty()
-	name!: string;
-
 	@ManyToOne(
 		type => User,
 		user => user.bets,
 	)
 	user!: User;
+
+	@Column('int')
+	amount!: number;
+
+	@Column('bool')
+	ended!: boolean;
+
+	@Column('int')
+	idMatch!: number;
+
+	@Column('int')
+	idTournament!: number;
+
+	@Column('int')
+	idTeamBet!: number;
+
+	@Column('int')
+	idWinner!: number;
+
+	@Column('text')
+	game!: string;
+
+	@Column('text')
+	team1!: string;
+
+	@Column('int')
+	idTeam1!: number;
+
+	@Column('text')
+	team2!: string;
+
+	@Column('int')
+	idTeam2!: number;
 }

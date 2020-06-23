@@ -1,8 +1,16 @@
-
 // ENTITIES
 interface IBet {
-	uuid: string
-	name: string
+	uuid: string;
+	amount: number;
+	idMatch: number;
+	idTournament: number;
+	idTeamBet: number
+	idWinner: number;
+	game: string;
+	team1: string;
+	idTeam1: number;
+	team2: string;
+	idTeam2: number;
 }
 
 // EXTENDED EXPRESS TYPES

@@ -20,11 +20,13 @@ import {
 import UserRepository from '../database/repositories/userRepository';
 import User from '../database/models/User';
 
-class UserServices {
+class BetServices {
 	static async create(
 		token: string | undefined,
 		userUuid: string,
-		name: string,
+		idMatch: number,
+		amount: number,
+		idTeamBet: number
 	): Promise<IApiResponseSuccess> {
 		throwIfManipulateSomeoneElse(token, userUuid);
 
@@ -37,7 +39,6 @@ class UserServices {
 
 		// Prepare new bet
 		const bet = new Bet();
-		bet.name = name;
 		bet.user = userToUpdate;
 
 		const errors: ValidationError[] = await validate(bet);
@@ -77,4 +78,4 @@ class UserServices {
 	}
 }
 
-export default UserServices;
+export default BetServices;

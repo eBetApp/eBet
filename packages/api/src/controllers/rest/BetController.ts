@@ -50,19 +50,25 @@ class BetController {
 		req: Request,
 		res: Response<ApiResponse>,
 	): Promise<Response<ApiResponse>> {
-		const { name } = req.body;
+		const { idMatch, amount, idTeamBet } = req.body;
 		const { userUuid } = req.params;
 
 		try {
 			if (typeof userUuid !== 'string')
 				throw new BodyError('<uuid> is required and must be a string');
-			if (typeof name !== 'string')
-				throw new BodyError('<name> is required and must be a string');
+			if (typeof idMatch !== 'number')
+				throw new BodyError('<idMatch> is required and must be a number');
+			if (typeof amount !== 'number')
+				throw new BodyError('<amount> is required and must be a number');
+			if (typeof idTeamBet !== 'number')
+				throw new BodyError('<idTeamBet> is required and must be a number');
 
 			const response = await BetService.create(
 				getTokenFromHeader(req),
 				userUuid,
-				name,
+				idMatch,
+				amount,
+				idTeamBet
 			);
 			return res.status(response.status).json(response);
 		} catch (error) {
