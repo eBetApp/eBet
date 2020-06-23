@@ -31,14 +31,29 @@ const _CRUD = {
       throw err;
     }
   },
+  put: async (endPoint: string, body: FormData, token: string) => {
+    try {
+      let response = await fetch(`${urlApi}${endPoint}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body,
+      });
+      const json = await response.json();
+      return json;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
-const postPicture = async (body: FormData, token) =>
-  _CRUD.post("user/upload-avatar", body, token);
+const putPicture = async (body: FormData, token) =>
+  _CRUD.put("user/update-avatar", body, token);
 
 const deletePicture = (urlS3: string, token: string) => {
   const fileKey = urlS3.replace(urlS3Base, "");
   _CRUD.delete(`user/delete-avatar/${fileKey}`, token);
 };
 
-export default { postPicture, deletePicture };
+export default { postPicture: putPicture, deletePicture };

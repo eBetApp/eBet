@@ -29,6 +29,10 @@ const _reducer: React.Reducer<IState, IAction> = (
         user: { ...state.user, ...action.payload.partialUser },
       };
     case ReducerActions.changeAvatar:
+      console.log("STORE action");
+      console.log(action);
+      console.log("STORE state");
+      console.log(state);
       return {
         ...state,
         avatar: action.payload.avatar,

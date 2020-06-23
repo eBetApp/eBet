@@ -27,6 +27,9 @@ import parseUrl from "../Utils/parseUrl";
 // LocalStorage imports
 import { readStorage } from "../Utils/asyncStorage";
 
+// Components imports
+import Avatar from "../components/Avatar";
+
 export default function LoggedView({ navigation }) {
   const { dispatch, state } = useStore();
   let stripeAccount = "";
@@ -51,6 +54,7 @@ export default function LoggedView({ navigation }) {
   const _renderLoggedView = () => (
     <View>
       <Text>LOGGED</Text>
+      <Avatar />
       <Button title="LOG OUT" onPress={() => dispatchVoidUser(dispatch)} />
     </View>
   );
