@@ -17,6 +17,10 @@ import { dispatchUserNew } from "../hooks/dispatchers";
 // .env imports
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 
+// Services import
+import userService from "../Services/userService";
+
+// utils imports
 import { classifyError, errorType } from "../Utils/parseApiError";
 
 // LocalStorage imports
@@ -30,24 +34,16 @@ export default function SignInView({ navigation }) {
   const [errorPassword, setErrorPassword] = useState("");
 
   const _submitForm = () => {
-    const myHeaders = new Headers({
-      "Content-Type": "application/x-www-form-urlencoded",
-    });
-
     const payload = {
       email: useEmail.value,
       password: usePassword.value,
     };
 
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: queryString.stringify(payload),
-    };
-
-    fetch(`${REACT_NATIVE_BACK_URL}/api/auth/signin`, requestOptions)
-      .then((response) => response.json())
+    userService
+      .signInAsync(payload)
       .then((result) => {
+        console.log("RESULT");
+        console.log(result);
         if (result.status === 200) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);

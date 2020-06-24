@@ -3,6 +3,9 @@ import { Platform } from "react-native";
 // Expo imports
 import * as ImagePicker from "expo-image-picker";
 
+// Fetch imports
+import queryString from "query-string";
+
 // Repositories imports
 import UserRepository from "../Repositories/userRepository";
 
@@ -62,4 +65,47 @@ const _createFormData = (uuid: any, photo: any) => {
   return data;
 };
 
-export default { chooseImageFromGaleryAsync, postImageAsync: putAvatarAsync };
+interface ISignUpPayload {
+  nickname: string;
+  email: string;
+  password: string;
+  birthdate: string;
+}
+
+const signUpAsync = async (
+  payload: ISignUpPayload
+): Promise<IAuthServiceResponse | null> => {
+  try {
+    return await UserRepository.post(
+      "auth/signup",
+      queryString.stringify(payload)
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
+interface ISignInPayload {
+  email: string;
+  password: string;
+}
+
+const signInAsync = async (
+  payload: ISignInPayload
+): Promise<IAuthServiceResponse | null> => {
+  try {
+    return await UserRepository.post(
+      "auth/signin",
+      queryString.stringify(payload)
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
+export default {
+  chooseImageFromGaleryAsync,
+  postImageAsync: putAvatarAsync,
+  signUpAsync,
+  signInAsync,
+};
