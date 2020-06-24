@@ -12,7 +12,7 @@ import useInput from "../hooks/useInput";
 
 // Redux import
 import { useStore } from "../hooks/store";
-import { dispatchNewUser } from "../hooks/dispatchers";
+import { dispatchUserNew } from "../hooks/dispatchers";
 
 // .env imports
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
@@ -49,7 +49,7 @@ export default function SignInView({ navigation }) {
       .then((response) => response.json())
       .then((result) => {
         if (result.status === 200) {
-          dispatchNewUser(dispatch, result.data.user);
+          dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
           navigation.navigate("Home");
         } else if (result.error?.status === 400) {

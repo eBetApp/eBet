@@ -4,9 +4,9 @@ import { Text, View } from "react-native";
 // Redux import
 import { useStore } from "../hooks/store";
 import {
-  dispatchVoidUser,
-  dispatchEditUser,
-  dispatchNewUser,
+  dispatchUserNull,
+  dispatchUserEdit,
+  dispatchAvatarNull,
 } from "../hooks/dispatchers";
 
 // UI imports
@@ -25,7 +25,7 @@ import { WebView } from "react-native-webview";
 import parseUrl from "../Utils/parseUrl";
 
 // LocalStorage imports
-import { readStorage } from "../Utils/asyncStorage";
+import { readStorage, removeStorage } from "../Utils/asyncStorage";
 
 // Components imports
 import Avatar from "../components/Avatar";
@@ -40,7 +40,6 @@ export default function LoggedView({ navigation }) {
         uri:
           "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_HLOVRxlYXifqJlpAxypmnbp3OPhd8dXU&scope=read_write",
       }}
-      onMessage={(event) => console.log("On Message", event.nativeEvent.data)}
       onNavigationStateChange={(navState) => {
         const params = parseUrl(navState.url);
         if (params?.code !== undefined && params?.code != stripeAccount) {
@@ -53,9 +52,14 @@ export default function LoggedView({ navigation }) {
 
   const _renderLoggedView = () => (
     <View>
-      <Text>LOGGED</Text>
       <Avatar />
-      <Button title="LOG OUT" onPress={() => dispatchVoidUser(dispatch)} />
+      <Button
+        title="LOG OUT"
+        onPress={() => {
+          dispatchUserNull(dispatch);
+          removeStorage("token");
+        }}
+      />
     </View>
   );
 
@@ -81,7 +85,7 @@ export default function LoggedView({ navigation }) {
     fetch(`${REACT_NATIVE_BACK_URL}/api/payments/set-account`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        dispatchEditUser(dispatch, { accountId: result?.data?.accountId });
+        dispatchUserEdit(dispatch, { accountId: result?.data?.accountId });
       })
       .catch((error) => console.log("error", error));
   };

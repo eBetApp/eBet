@@ -55,8 +55,6 @@ class StripeController {
 				},
 			});
 		} catch (error) {
-			console.log('ERROR');
-			console.log(error);
 			return StripeController.handleError(res, error);
 		}
 	}
@@ -69,8 +67,6 @@ class StripeController {
 			const { accountId } = req.body;
 			const balance = await StripeService.getAccountBalance(accountId);
 			if (balance == null) throw new Error();
-			console.log('BALANCE');
-			console.log(balance);
 			return res.status(200).json({
 				status: 200,
 				data: {

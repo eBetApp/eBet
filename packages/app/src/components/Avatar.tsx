@@ -6,7 +6,7 @@ import { readStorage } from "../Utils/asyncStorage";
 
 // Redux import
 import { useStore } from "../hooks/store";
-import { dispatchAvatar } from "../hooks/dispatchers";
+import { dispatchUserEdit } from "../hooks/dispatchers";
 
 // Services import
 import userService from "../Services/userService";
@@ -16,27 +16,20 @@ export default function Avatar() {
 
   const chooseImage = async () => {
     const token = await readStorage("token");
-    console.log("TOKEN: ", token);
     try {
       const newImage = await userService.chooseImageFromGaleryAsync();
-      console.log("NEW IMAGE: ", newImage);
-      console.log("NEW IMAGE uri: ", newImage.uri);
       if (newImage === null) return;
 
       // (Optimistic UI) Dispatch expected res before fetch API
-      dispatchAvatar(dispatch, newImage.uri);
-      console.log("user: ");
-      console.log(state.user);
+      dispatchUserEdit(dispatch, { avatar: newImage.uri });
       const updatedUser = await userService.postImageAsync(
         state.user,
         token,
         newImage
       );
-      console.log("updatedUser");
-      console.log(updatedUser);
       // (Optimistic UI) Dispatch previous value on API error
       if (updatedUser === null)
-        return dispatchAvatar(dispatch, state.user.avatar);
+        return dispatchUserEdit(dispatch, { avatar: state.user.avatar });
     } catch (err) {
       console.log(`Error on changing avatar: ${err}`);
     }
@@ -45,10 +38,15 @@ export default function Avatar() {
   return (
     <View>
       <TouchableOpacity onPress={chooseImage}>
-        <Text>Change avatar by press Here</Text>
+        <Image
+          style={styles.avatar}
+          source={
+            state.user.avatar != null
+              ? { uri: state.user.avatar }
+              : require("../../assets/defaultAvatar.png")
+          }
+        />
       </TouchableOpacity>
-
-      <Image style={styles.avatar} source={{ uri: state.avatar }} />
     </View>
   );
 }
