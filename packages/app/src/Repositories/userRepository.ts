@@ -1,10 +1,13 @@
-// API imports
-import { urlApi, urlS3Base } from "../res/apiConstants";
+// .env imports
+import {
+  REACT_NATIVE_BACK_URL,
+  REACT_NATIVE_S3_URL,
+} from "react-native-dotenv";
 
 const _CRUD = {
   delete: async (endPoint: string, token: string) => {
     try {
-      let response = await fetch(`${urlApi}${endPoint}`, {
+      let response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -19,7 +22,7 @@ const _CRUD = {
   },
   post: async (endPoint: string, body: FormData, token: string) => {
     try {
-      let response = await fetch(`${urlApi}${endPoint}`, {
+      let response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -31,14 +34,29 @@ const _CRUD = {
       throw err;
     }
   },
+  put: async (endPoint: string, body: FormData, token: string) => {
+    try {
+      let response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body,
+      });
+      const json = await response.json();
+      return json;
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
-const postPicture = async (body: FormData, token) =>
-  _CRUD.post("user/upload-avatar", body, token);
+const putPicture = async (body: FormData, token) =>
+  _CRUD.put("user/update-avatar", body, token);
 
 const deletePicture = (urlS3: string, token: string) => {
-  const fileKey = urlS3.replace(urlS3Base, "");
+  const fileKey = urlS3.replace(REACT_NATIVE_S3_URL, "");
   _CRUD.delete(`user/delete-avatar/${fileKey}`, token);
 };
 
-export default { postPicture, deletePicture };
+export default { postPicture: putPicture, deletePicture };

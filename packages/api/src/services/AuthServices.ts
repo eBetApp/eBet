@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 // ORM
 import { QueryFailedError } from 'typeorm';
 import { validate, ValidationError } from 'class-validator';
+import { transformAndValidate } from 'class-transformer-validator';
 // PASSPORT
 import * as jwt from 'jsonwebtoken';
 import passport from 'passport';
@@ -19,6 +20,7 @@ import {
 	UnexpectedError,
 	AuthorizationError,
 } from '../core/apiErrors';
+import StripeServices from '../services/StripeServices';
 
 class AuthService {
 	static setToken(user: User): string {
@@ -32,17 +34,21 @@ class AuthService {
 		email: string,
 		birthdate: Date,
 	): Promise<IAuthServiceResponse> {
-		const user: User = new User();
-		user.nickname = nickname;
-		user.password = password;
-		user.email = email;
-		user.birthdate = birthdate;
-
-		const errors: ValidationError[] = await validate(user);
-		if (errors.length > 0)
-			throw new FormatError(Object.values(errors[0].constraints)[0]);
-
 		try {
+			const user: User = new User();
+			user.nickname = nickname;
+			user.password = password;
+			user.email = email;
+			user.birthdate = birthdate;
+
+			const errors: ValidationError[] = await validate(user);
+			if (errors.length > 0)
+				throw new FormatError(Object.values(errors[0].constraints)[0]);
+
+			user.customerId = (
+				await StripeServices.createCustomer(nickname, email)
+			).id;
+
 			User.hashPassword(user);
 
 			const createdUser = await UserRepository.instance.create(user);
@@ -65,8 +71,10 @@ class AuthService {
 				meta: { token },
 			};
 		} catch (error) {
+			if (error instanceof ErrorBase) throw error;
 			if (error instanceof QueryFailedError)
-				throw (error.message.includes('duplicate') || error.message.includes('dupliquée'))
+				throw error.message.includes('duplicate') ||
+				error.message.includes('dupliquée')
 					? new FormatError('Email already used')
 					: new FormatError(error.message);
 			throw new UnexpectedError('Unexpected error', error);
@@ -118,7 +126,38 @@ class AuthService {
 								meta: { token },
 							});
 						}
-						return reject(new FormatError(error));
+
+						if (error) return reject(new FormatError(error));
+
+						const { email, password } = req.body;
+
+						transformAndValidate(
+							User,
+							{
+								email,
+								password,
+							},
+							{
+								validator: { skipMissingProperties: true },
+							},
+						)
+							.then(() => {
+								return reject(new FormatError(error));
+							})
+							.catch(errors => {
+								if (
+									errors.length > 0 &&
+									errors[0] instanceof ValidationError
+								) {
+									return reject(
+										new FormatError(
+											Object.values(
+												errors[0].constraints,
+											)[0],
+										),
+									);
+								}
+							});
 					},
 				)(req, res);
 			},

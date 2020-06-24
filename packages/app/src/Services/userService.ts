@@ -10,7 +10,6 @@ import UserRepository from "../Repositories/userRepository";
 import { cameraPermissions } from "./devicePermissionsService";
 
 // Types imports
-import { User } from "../../../shared/apiTypes/User";
 import { ImageInfo } from "expo-image-picker/build/ImagePicker.types";
 
 const chooseImageFromGaleryAsync = async (): Promise<ImageInfo | null> => {
@@ -25,7 +24,7 @@ const chooseImageFromGaleryAsync = async (): Promise<ImageInfo | null> => {
   return responseImage.cancelled ? null : (responseImage as ImageInfo);
 };
 
-const postImageAsync = async (
+const putAvatarAsync = async (
   user: User,
   token: string,
   image: ImageInfo
@@ -35,13 +34,8 @@ const postImageAsync = async (
       _createFormData(user.uuid, image),
       token
     );
+    user.avatar = responseFetch.data?.user.avatar;
 
-    let oldImageUri = user.avatar;
-    user.avatar = responseFetch.user.avatar;
-
-    if (oldImageUri != null && oldImageUri != "") {
-      UserRepository.deletePicture(oldImageUri, token);
-    }
     return user;
   } catch (err) {
     return null;
@@ -68,4 +62,4 @@ const _createFormData = (uuid: any, photo: any) => {
   return data;
 };
 
-export default { chooseImageFromGaleryAsync, postImageAsync };
+export default { chooseImageFromGaleryAsync, postImageAsync: putAvatarAsync };
