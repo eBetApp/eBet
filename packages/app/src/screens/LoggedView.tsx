@@ -3,11 +3,7 @@ import { Text, View } from "react-native";
 
 // Redux import
 import { useStore } from "../hooks/store";
-import {
-  dispatchUserNull,
-  dispatchUserEdit,
-  dispatchAvatarNull,
-} from "../hooks/dispatchers";
+import { dispatchUserNull, dispatchUserEdit } from "../hooks/dispatchers";
 
 // UI imports
 import { Button } from "react-native-elements";

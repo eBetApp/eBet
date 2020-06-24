@@ -12,6 +12,7 @@ import { NavigationContainer } from "@react-navigation/native";
 
 // Screens imports
 import MainScreen from "./src/screens/MainView";
+import ShopScreen from "./src/screens/ShopView";
 import PayScreen from "./src/screens/PayView";
 import SignInScreen from "./src/screens/SignInView";
 import SignUpScreen from "./src/screens/SignUpView";
@@ -38,9 +39,28 @@ function HomeStackScreen({ navigation }) {
           ),
         }}
       />
-      <HomeStack.Screen name="Pay" component={PayScreen} />
       <HomeStack.Screen name="Account" component={AccountStackScreen} />
     </HomeStack.Navigator>
+  );
+}
+
+const ShopStack = createStackNavigator();
+function ShopStackScreen({ navigation }) {
+  return (
+    <ShopStack.Navigator>
+      <ShopStack.Screen
+        name="Shopping cart"
+        component={ShopScreen}
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => navigation.navigate("Account")}>
+              <Icon name="ios-person" type="ionicon" color="#000000" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <ShopStack.Screen name="Pay" component={PayScreen} />
+    </ShopStack.Navigator>
   );
 }
 
@@ -69,7 +89,7 @@ export default function App() {
       <NavigationContainer>
         <Tab.Navigator>
           <Tab.Screen name="Home" component={HomeStackScreen} />
-          <Tab.Screen name="Une" component={MainScreen} />
+          <Tab.Screen name="Panier" component={ShopStackScreen} />
         </Tab.Navigator>
       </NavigationContainer>
     </StoreProvider>
