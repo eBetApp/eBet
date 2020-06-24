@@ -1,6 +1,3 @@
-import { readFileSync } from 'fs';
-import { fetchPastMatch } from './apiFetchs';
-
 interface Match {
 	id: number;
 	name: string;
@@ -77,12 +74,7 @@ export default class ApiDatas {
 		return match;
 	}
 
-	chargePastMatch() {
-		const yousk = fetchPastMatch();
-		const pastMatchFileRaw = readFileSync(__dirname + '/../../datas/matches.past.json', { encoding: 'utf8' });
-
-		const pastMatchFile = JSON.parse(pastMatchFileRaw);
-
+	chargePastMatch(pastMatchFile: any) {
 		let newPastMatch: Match[] = [];
 
 		pastMatchFile.forEach((match: Match) => {
@@ -92,11 +84,7 @@ export default class ApiDatas {
 		this.pastMatch = newPastMatch;
 	}
 
-	chargeLiveMatch() {
-		const liveMatchFileRaw = readFileSync(__dirname + '/../../datas/lives.json', { encoding: 'utf8' });
-
-		const liveMatchFile = JSON.parse(liveMatchFileRaw);
-
+	chargeLiveMatch(liveMatchFile: any) {
 		let newLiveMatch: Match[] = [];
 
 		liveMatchFile.forEach((event: any) => {
@@ -107,11 +95,7 @@ export default class ApiDatas {
 		this.liveMatch = newLiveMatch;
 	}
 
-	chargeUpcomingMatch() {
-		const upcomingMatchFileRaw = readFileSync(__dirname + '/../../datas/matches.upcoming.json', { encoding: 'utf8' });
-
-		const upcomingMatchFile = JSON.parse(upcomingMatchFileRaw);
-
+	chargeUpcomingMatch(upcomingMatchFile: any) {
 		let newUpcomingMatch: Match[] = [];
 
 		upcomingMatchFile.forEach((match: Match) => {

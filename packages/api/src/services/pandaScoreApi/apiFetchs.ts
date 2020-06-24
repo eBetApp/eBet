@@ -1,15 +1,18 @@
 import axios from 'axios';
 import { writeFileSync } from 'fs';
 import schedule from 'node-schedule';
+import ApiDatas from './apiDatas';
+
+const apiDatas = new ApiDatas()
 
 export const startSchedule = () => {
 	fetchPastMatch();
 	fetchlivesMatch();
 	fetchUpcomingMatch();
 
-	schedule.scheduleJob('0 2 * * *', fetchPastMatch);
-	schedule.scheduleJob('*/5 * * * *', fetchlivesMatch);
-	schedule.scheduleJob('0 2 * * *', fetchUpcomingMatch);
+	schedule.scheduleJob('0 2 * * *', fetchPastMatch);		// tout les jour a 2H
+	schedule.scheduleJob('*/5 * * * *', fetchlivesMatch);	// toute les 5 minutes
+	schedule.scheduleJob('0 2 * * *', fetchUpcomingMatch);	// tout les jour a 2H
 }
 
 export const fetchPastMatch = () => {
@@ -19,7 +22,7 @@ export const fetchPastMatch = () => {
 		}
 	})
 		.then(response => {
-			writeFileSync(__dirname + '/../../../datas/matches.past.json', JSON.stringify(response.data, null, '\t'));
+			new ApiDatas().chargePastMatch(response.data);
 		})
 }
 
@@ -30,7 +33,7 @@ export const fetchUpcomingMatch = () => {
 		}
 	})
 		.then(response => {
-			writeFileSync(__dirname + '/../../../datas/matches.upcoming.json', JSON.stringify(response.data, null, '\t'));
+			new ApiDatas().chargeUpcomingMatch(response.data);
 		})
 }
 
@@ -41,6 +44,6 @@ export const fetchlivesMatch = () => {
 		}
 	})
 		.then(response => {
-			writeFileSync(__dirname + '/../../../datas/lives.json', JSON.stringify(response.data, null, '\t'));
+			new ApiDatas().chargeLiveMatch(response.data);
 		})
 }
