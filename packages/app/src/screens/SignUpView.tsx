@@ -32,6 +32,9 @@ import { classifyError, errorType } from "../Utils/parseApiError";
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
 
+// Services import
+import userService from "../Services/userService";
+
 export default function SignUpView({ navigation }) {
   const { dispatch } = useStore();
   const useNickname = useInput();
@@ -55,10 +58,6 @@ export default function SignUpView({ navigation }) {
   };
 
   const _submitForm = () => {
-    const myHeaders = new Headers({
-      "Content-Type": "application/x-www-form-urlencoded",
-    });
-
     const payload = {
       nickname: useEmail.value,
       email: useEmail.value,
@@ -66,14 +65,8 @@ export default function SignUpView({ navigation }) {
       birthdate: new Date(birthdate).toISOString(),
     };
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: queryString.stringify(payload),
-    };
-
-    fetch(`${REACT_NATIVE_BACK_URL}/api/auth/signup`, requestOptions)
-      .then((response) => response.json())
+    userService
+      .signUpAsync(payload)
       .then((result) => {
         if (result.status === 201) {
           dispatchUserNew(dispatch, result.data.user);

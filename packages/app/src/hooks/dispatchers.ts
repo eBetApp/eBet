@@ -11,7 +11,6 @@ export const dispatchUserEdit = (
   dispatch: React.Dispatch<IAction>,
   partialUser: Partial<User>
 ) => {
-  console.log("##### DISPATCHER");
   return dispatch({ type: ReducerActions.editUser, payload: { partialUser } });
 };
 
