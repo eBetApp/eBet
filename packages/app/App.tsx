@@ -4,6 +4,7 @@ import { TouchableOpacity } from "react-native";
 
 // Redux imports
 import { StoreProvider } from "./src/hooks/store";
+import { useStore } from "./src/hooks/store";
 
 // Navigation imports
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -19,49 +20,68 @@ import SignUpScreen from "./src/screens/SignUpView";
 import LoggedScreen from "./src/screens/LoggedView";
 
 // UI imports
-import { Icon, ThemeProvider } from "react-native-elements";
-
-// Redux import
-import { useStore } from "./src/hooks/store";
+import { Icon, ThemeProvider, Theme } from "react-native-elements";
+import Palette from "./src/Res/Palette";
 
 //#region COMMON NAV OPTIONS & STYLES
+interface CustomTheme extends Theme {
+  customColors?: {
+    readonly primaryBg?: string;
+    readonly secondaryBg?: string;
+    readonly ternaryBgValid?: string;
+    readonly ternaryBgCancel?: string;
+    readonly ternaryBg3?: string;
+    readonly ternaryBg4?: string;
+  };
+}
+
+const theme: CustomTheme = {
+  customColors: {
+    primaryBg: Palette.primaryBg,
+    secondaryBg: Palette.secondaryBg,
+    ternaryBgValid: Palette.ternaryBgValid,
+    ternaryBgCancel: Palette.ternaryBgCancel,
+    ternaryBg3: Palette.ternaryBg3,
+  },
+  colors: {
+    primary: Palette.primaryText,
+    secondary: Palette.secondaryText,
+  },
+  Text: {
+    style: {
+      color: Palette.primaryText,
+    },
+  },
+};
+
 const commonNavScreenOptions = {
   headerStyle: {
-    backgroundColor: "#F26419",
+    backgroundColor: theme.customColors.secondaryBg,
   },
-  cardStyle: { backgroundColor: "#39454D" },
+  headerTintColor: theme.colors.primary,
+  cardStyle: { backgroundColor: theme.customColors.primaryBg },
 };
 
 const commonStackScreenOptions = ({ navigation }) => {
   return {
     headerRight: () => (
       <TouchableOpacity onPress={() => navigation.navigate("Account")}>
-        <Icon name="ios-person" type="ionicon" color="#000000" />
+        <Icon
+          name="ios-person"
+          type="ionicon"
+          color={theme.colors.primary}
+          style={{ marginRight: 5 }}
+        />
       </TouchableOpacity>
     ),
   };
 };
 
-const theme = {
-  colors: {
-    primary: "#F26419",
-  },
-  "TypedNavigator.Navigator": {
-    screenOptions: {
-      headerStyle: {
-        backgroundColor: "#F26419",
-      },
-      cardStyle: { backgroundColor: "#39454D" },
-    },
-  },
-
-  // View: {
-  //   style: {
-  //     backgroundColor: "#39454D",
-  //   },
-  // },
-  Button: {
-    raised: true,
+const tabBarOptions = {
+  activeTintColor: theme.colors.primary,
+  inactiveTintColor: theme.colors.secondary,
+  style: {
+    backgroundColor: theme.customColors.secondaryBg,
   },
 };
 //#endregion COMMON NAV OPTIONS & STYLES
@@ -90,13 +110,7 @@ function ShopStackScreen({ navigation }) {
       <ShopStack.Screen
         name="Shopping cart"
         component={ShopScreen}
-        options={{
-          headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("Account")}>
-              <Icon name="ios-person" type="ionicon" color="#000000" />
-            </TouchableOpacity>
-          ),
-        }}
+        options={(navigation) => commonStackScreenOptions(navigation)}
       />
       <ShopStack.Screen name="Pay" component={PayScreen} />
     </ShopStack.Navigator>
@@ -108,7 +122,7 @@ function AccountStackScreen() {
   const { state } = useStore();
 
   return (
-    <AccountStack.Navigator>
+    <AccountStack.Navigator screenOptions={commonNavScreenOptions}>
       {state.user == null ? (
         <>
           <AccountStack.Screen name="signin" component={SignInScreen} />
@@ -127,15 +141,7 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <StoreProvider>
         <NavigationContainer>
-          <Tab.Navigator
-            tabBarOptions={{
-              activeTintColor: "#F6AE2D",
-              inactiveTintColor: "#39454D",
-              style: {
-                backgroundColor: theme.colors.primary,
-              },
-            }}
-          >
+          <Tab.Navigator tabBarOptions={tabBarOptions}>
             <Tab.Screen name="Home" component={HomeStackScreen} />
             <Tab.Screen name="Panier" component={ShopStackScreen} />
           </Tab.Navigator>

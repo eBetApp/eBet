@@ -1,5 +1,9 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+
+// UI imports
+import { Text } from "react-native-elements";
+import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 
 // Redux import
 import { useStore } from "../hooks/store";
@@ -9,7 +13,9 @@ export default function MainView({ navigation }) {
 
   return (
     <View>
-      <Text>A LA UNE</Text>
+      <Text>TEST DES DIFFERENTS BOUTONS</Text>
+      <ButtonValid title="VALID" />
+      <ButtonCancel title="CANCEL" />
     </View>
   );
 }

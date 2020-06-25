@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 // Redux import
 import { useStore } from "../hooks/store";
 import { dispatchUserNull, dispatchUserEdit } from "../hooks/dispatchers";
 
 // UI imports
-import { Button } from "react-native-elements";
+import { Text } from "react-native-elements";
+import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 
 // Fetch imports
 import queryString from "query-string";
@@ -49,7 +50,7 @@ export default function LoggedView({ navigation }) {
   const _renderLoggedView = () => (
     <View>
       <Avatar />
-      <Button
+      <ButtonCancel
         title="LOG OUT"
         onPress={() => {
           dispatchUserNull(dispatch);

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 
 // UI imports
 import { Button, Input, Icon } from "react-native-elements";
@@ -25,6 +25,10 @@ import { classifyError, errorType } from "../Utils/parseApiError";
 
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
+
+// UI imports
+import { Text } from "react-native-elements";
+import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 
 export default function SignInView({ navigation }) {
   const { state, dispatch } = useStore();
@@ -80,7 +84,7 @@ export default function SignInView({ navigation }) {
         {...usePassword}
         errorMessage={errorPassword}
       />
-      <Button
+      <ButtonValid
         title="SIGN IN"
         onPress={_submitForm}
         icon={<Icon name="ios-checkmark" type="ionicon" color="#ffffff" />}

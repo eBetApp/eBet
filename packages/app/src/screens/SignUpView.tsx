@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   Image,
   TouchableOpacity,
@@ -34,6 +33,10 @@ import { setStorage } from "../Utils/asyncStorage";
 
 // Services import
 import userService from "../Services/userService";
+
+// UI imports
+import { Text } from "react-native-elements";
+import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 
 export default function SignUpView({ navigation }) {
   const { dispatch } = useStore();
@@ -132,7 +135,7 @@ export default function SignUpView({ navigation }) {
         {...usePassword}
         errorMessage={errorPassword}
       />
-      <Button
+      <ButtonValid
         title="SIGN UP"
         onPress={_submitForm}
         icon={<Icon name="ios-checkmark" type="ionicon" color="#ffffff" />}
