@@ -19,25 +19,64 @@ import SignUpScreen from "./src/screens/SignUpView";
 import LoggedScreen from "./src/screens/LoggedView";
 
 // UI imports
-import { Icon } from "react-native-elements";
+import { Icon, ThemeProvider } from "react-native-elements";
 
 // Redux import
 import { useStore } from "./src/hooks/store";
 
+//#region COMMON NAV OPTIONS & STYLES
+const commonNavScreenOptions = {
+  headerStyle: {
+    backgroundColor: "#F26419",
+  },
+  cardStyle: { backgroundColor: "#39454D" },
+};
+
+const commonStackScreenOptions = ({ navigation }) => {
+  return {
+    headerRight: () => (
+      <TouchableOpacity onPress={() => navigation.navigate("Account")}>
+        <Icon name="ios-person" type="ionicon" color="#000000" />
+      </TouchableOpacity>
+    ),
+  };
+};
+
+const theme = {
+  colors: {
+    primary: "#F26419",
+  },
+  "TypedNavigator.Navigator": {
+    screenOptions: {
+      headerStyle: {
+        backgroundColor: "#F26419",
+      },
+      cardStyle: { backgroundColor: "#39454D" },
+    },
+  },
+
+  // View: {
+  //   style: {
+  //     backgroundColor: "#39454D",
+  //   },
+  // },
+  Button: {
+    raised: true,
+  },
+};
+//#endregion COMMON NAV OPTIONS & STYLES
+
+//#region NAV ELEMENTS
+const Tab = createBottomTabNavigator();
+
 const HomeStack = createStackNavigator();
 function HomeStackScreen({ navigation }) {
   return (
-    <HomeStack.Navigator>
+    <HomeStack.Navigator screenOptions={commonNavScreenOptions}>
       <HomeStack.Screen
         name="Home"
         component={MainScreen}
-        options={{
-          headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("Account")}>
-              <Icon name="ios-person" type="ionicon" color="#000000" />
-            </TouchableOpacity>
-          ),
-        }}
+        options={(navigation) => commonStackScreenOptions(navigation)}
       />
       <HomeStack.Screen name="Account" component={AccountStackScreen} />
     </HomeStack.Navigator>
@@ -47,7 +86,7 @@ function HomeStackScreen({ navigation }) {
 const ShopStack = createStackNavigator();
 function ShopStackScreen({ navigation }) {
   return (
-    <ShopStack.Navigator>
+    <ShopStack.Navigator screenOptions={commonNavScreenOptions}>
       <ShopStack.Screen
         name="Shopping cart"
         component={ShopScreen}
@@ -81,17 +120,27 @@ function AccountStackScreen() {
     </AccountStack.Navigator>
   );
 }
-const Tab = createBottomTabNavigator();
+//#endregion NAV ELEMENTS
 
 export default function App() {
   return (
-    <StoreProvider>
-      <NavigationContainer>
-        <Tab.Navigator>
-          <Tab.Screen name="Home" component={HomeStackScreen} />
-          <Tab.Screen name="Panier" component={ShopStackScreen} />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </StoreProvider>
+    <ThemeProvider theme={theme}>
+      <StoreProvider>
+        <NavigationContainer>
+          <Tab.Navigator
+            tabBarOptions={{
+              activeTintColor: "#F6AE2D",
+              inactiveTintColor: "#39454D",
+              style: {
+                backgroundColor: theme.colors.primary,
+              },
+            }}
+          >
+            <Tab.Screen name="Home" component={HomeStackScreen} />
+            <Tab.Screen name="Panier" component={ShopStackScreen} />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </StoreProvider>
+    </ThemeProvider>
   );
 }

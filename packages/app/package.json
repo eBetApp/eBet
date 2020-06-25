@@ -15,7 +15,7 @@
     "url": "git+https://github.com/eBetApp/eBet.git"
   },
   "scripts": {
-    "start": "expo start",
+    "start": "expo start -c",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
