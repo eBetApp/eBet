@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 
 // UI imports
-import { Button, Input, Icon } from "react-native-elements";
+import { Button, Input, Icon, Text } from "react-native-elements";
 
 // Redux import
 import { useStore } from "../hooks/store";

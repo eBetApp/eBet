@@ -2,20 +2,31 @@ import React from "react";
 import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import { Text, Button } from "react-native-elements";
 import Palette from "../../Res/Palette";
-export function ButtonValid(props) {
+
+function ButtonBase(props) {
   return (
     <Button
-      buttonStyle={{ backgroundColor: Palette.ternaryBgValid }}
       {...props}
+      buttonStyle={{ ...props.buttonStyle, borderRadius: 20 }}
+      containerStyle={{ margin: 20 }}
+    />
+  );
+}
+
+export function ButtonValid(props) {
+  return (
+    <ButtonBase
+      {...props}
+      buttonStyle={{ backgroundColor: Palette.ternaryBgValid }}
     />
   );
 }
 
 export function ButtonCancel(props) {
   return (
-    <Button
-      buttonStyle={{ backgroundColor: Palette.ternaryBgCancel }}
+    <ButtonBase
       {...props}
+      buttonStyle={{ backgroundColor: Palette.ternaryBgCancel }}
     />
   );
 }
