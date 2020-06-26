@@ -8,7 +8,10 @@ import { useStore } from "./src/hooks/store";
 
 // Navigation imports
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  StackNavigationOptions,
+} from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 
 // Screens imports
@@ -22,6 +25,7 @@ import LoggedScreen from "./src/screens/LoggedView";
 // UI imports
 import { Icon, ThemeProvider, Theme } from "react-native-elements";
 import Palette from "./src/Res/Palette";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 //#region COMMON NAV OPTIONS & STYLES
 interface CustomTheme extends Theme {
@@ -52,9 +56,16 @@ const theme: CustomTheme = {
       color: Palette.primaryText,
     },
   },
+  Input: {
+    placeholderTextColor: Palette.primaryText,
+    keyboardAppearance: "dark",
+    inputStyle: {
+      color: Palette.primaryText,
+    },
+  },
 };
 
-const commonNavScreenOptions = {
+const commonNavScreenOptions: StackNavigationOptions = {
   headerStyle: {
     backgroundColor: theme.customColors.secondaryBg,
   },
@@ -108,7 +119,7 @@ function ShopStackScreen({ navigation }) {
   return (
     <ShopStack.Navigator screenOptions={commonNavScreenOptions}>
       <ShopStack.Screen
-        name="Shopping cart"
+        name="Shopping"
         component={ShopScreen}
         options={(navigation) => commonStackScreenOptions(navigation)}
       />
@@ -141,7 +152,20 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <StoreProvider>
         <NavigationContainer>
-          <Tab.Navigator tabBarOptions={tabBarOptions}>
+          <Tab.Navigator
+            tabBarOptions={tabBarOptions}
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+                if (route.name === "Home") {
+                  iconName = "ios-home";
+                } else if (route.name === "Panier") {
+                  iconName = "ios-basket";
+                }
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+            })}
+          >
             <Tab.Screen name="Home" component={HomeStackScreen} />
             <Tab.Screen name="Panier" component={ShopStackScreen} />
           </Tab.Navigator>

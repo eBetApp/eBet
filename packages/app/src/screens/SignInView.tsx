@@ -1,8 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 
 // UI imports
-import { Button, Input, Icon } from "react-native-elements";
+import {
+  Button,
+  Input,
+  Icon,
+  ThemeConsumer,
+  Text,
+} from "react-native-elements";
+import { ThemeContext } from "react-native-elements";
+import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
+import { TextLink } from "../components/styled/TextLink";
 
 // Fetch imports
 import queryString from "query-string";
@@ -26,11 +35,8 @@ import { classifyError, errorType } from "../Utils/parseApiError";
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
 
-// UI imports
-import { Text } from "react-native-elements";
-import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
-
 export default function SignInView({ navigation }) {
+  const { theme } = useContext(ThemeContext);
   const { state, dispatch } = useStore();
   const useEmail = useInput();
   const usePassword = useInput();
@@ -87,10 +93,17 @@ export default function SignInView({ navigation }) {
       <ButtonValid
         title="SIGN IN"
         onPress={_submitForm}
-        icon={<Icon name="ios-checkmark" type="ionicon" color="#ffffff" />}
+        icon={
+          <Icon
+            name="ios-checkmark"
+            type="ionicon"
+            color="#ffffff"
+            style={{ marginRight: 5 }}
+          />
+        }
       />
       <TouchableOpacity onPress={() => navigation.navigate("signup")}>
-        <Text style={{ color: "blue" }}>Already have an account? SIGN UP</Text>
+        <TextLink>New to eBet? Go to REGISTER!!</TextLink>
       </TouchableOpacity>
     </View>
   );

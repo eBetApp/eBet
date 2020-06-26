@@ -4,7 +4,6 @@ import { IAction, ReducerActions, IState } from "./ReducerTypes";
 
 const _initialState: IState = {
   user: null,
-  avatar: "",
 };
 
 // REDUCER
