@@ -15,7 +15,7 @@ interface CustomTheme extends Theme {
     readonly secondaryBg?: string;
     readonly ternaryBgValid?: string;
     readonly ternaryBgCancel?: string;
-    readonly ternaryBg3?: string;
+    readonly ternaryBgEdit?: string;
     readonly ternaryBg4?: string;
   };
 }
@@ -26,7 +26,7 @@ const theme: CustomTheme = {
     secondaryBg: Palette.secondaryBg,
     ternaryBgValid: Palette.ternaryBgValid,
     ternaryBgCancel: Palette.ternaryBgCancel,
-    ternaryBg3: Palette.ternaryBg3,
+    ternaryBgEdit: Palette.ternaryBgEdit,
   },
   colors: {
     primary: Palette.primaryText,

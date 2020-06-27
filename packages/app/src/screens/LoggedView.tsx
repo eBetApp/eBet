@@ -1,13 +1,23 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
+} from "react-native";
 
 // Redux import
 import { useStore } from "../hooks/store";
 import { dispatchUserNull, dispatchUserEdit } from "../hooks/dispatchers";
 
 // UI imports
-import { Text } from "react-native-elements";
-import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
+import { Text, Input } from "react-native-elements";
+import {
+  ButtonValid,
+  ButtonCancel,
+  ButtonEdit,
+} from "../components/styled/Buttons";
 
 // Fetch imports
 import queryString from "query-string";
@@ -27,8 +37,18 @@ import { readStorage, removeStorage } from "../Utils/asyncStorage";
 // Components imports
 import Avatar from "../components/Avatar";
 
+// Custom hooks imports
+import useInput from "../hooks/useInput";
+import userService from "../Services/userService";
+import { classifyError, errorType } from "../Utils/parseApiError";
+import { Screens } from "../Resources/Navigation";
+
 export default function LoggedView({ navigation }) {
   const { dispatch, state } = useStore();
+  const useEmail = useInput(state.user?.email ?? "");
+  const useNickname = useInput(state.user?.nickname ?? "");
+  const [errorNickname, setErrorNickname] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
   let stripeAccount = "";
 
   const _renderWebView = () => (
@@ -45,19 +65,6 @@ export default function LoggedView({ navigation }) {
         }
       }}
     />
-  );
-
-  const _renderLoggedView = () => (
-    <View>
-      <Avatar />
-      <ButtonCancel
-        title="LOG OUT"
-        onPress={() => {
-          dispatchUserNull(dispatch);
-          removeStorage("token");
-        }}
-      />
-    </View>
   );
 
   const _createStripeAccount = async (code: string) => {
@@ -87,9 +94,81 @@ export default function LoggedView({ navigation }) {
       .catch((error) => console.log("error", error));
   };
 
+  const _submitEdit = async () => {
+    const payload = {
+      uuid: state.user.uuid,
+      email: useEmail.value,
+      nickname: useNickname.value,
+    };
+
+    const token = await readStorage("token");
+
+    console.log("payload: ", payload);
+    userService
+      .updateAsync(payload, token)
+      .then((res) => {
+        if (res.status === 200) {
+          console.log("SUCCESS: ", res);
+          delete payload.uuid;
+          dispatchUserEdit(dispatch, { ...payload });
+          navigation.goBack();
+        }
+        if (res.error?.status === 400) {
+          switch (classifyError(res.error.message)) {
+            case errorType.nickname:
+              setErrorNickname("Wrong format");
+            case errorType.email:
+              console.log("HERE");
+              setErrorEmail("Wrong format");
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
+
+  const _renderLoggedView = () => (
+    <>
+      <ScrollView>
+        <View style={{ alignSelf: "center" }}>
+          <Avatar />
+        </View>
+        <Input {...useNickname} label="Nickname" errorMessage={errorNickname} />
+        <Input {...useEmail} label="Email" errorMessage={errorEmail} />
+      </ScrollView>
+      <View style={styles.container}>
+        <View style={styles.buttonContainer}>
+          <ButtonEdit title="EDIT" onPress={() => _submitEdit()} />
+        </View>
+        <View style={styles.buttonContainer}>
+          <ButtonCancel
+            title="LOG OUT"
+            onPress={() => {
+              dispatchUserNull(dispatch);
+              removeStorage("token");
+            }}
+          />
+        </View>
+      </View>
+    </>
+  );
+
   return (
     <>
       {state.user?.accountId != null ? _renderLoggedView() : _renderWebView()}
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonContainer: {
+    flex: 1,
+  },
+});

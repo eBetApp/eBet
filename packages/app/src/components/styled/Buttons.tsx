@@ -30,3 +30,12 @@ export function ButtonCancel(props) {
     />
   );
 }
+
+export function ButtonEdit(props) {
+  return (
+    <ButtonBase
+      {...props}
+      buttonStyle={{ backgroundColor: Palette.ternaryBgEdit }}
+    />
+  );
+}

@@ -5,8 +5,8 @@ export default function useInput(initialState = "") {
   const [value, setValue] = useState(initialState);
   return {
     value,
-    onChange(event: NativeSyntheticEvent<TextInputChangeEventData>) {
-      setValue(event.nativeEvent.text);
+    onChangeText(text: string) {
+      setValue(text);
     },
   };
 }

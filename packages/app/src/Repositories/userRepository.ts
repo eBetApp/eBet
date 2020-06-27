@@ -81,4 +81,9 @@ const deletePicture = (urlS3: string, token: string) => {
   _CRUD.delete(`user/delete-avatar/${fileKey}`, token);
 };
 
-export default { postPicture: putPicture, deletePicture, post: _CRUD.post };
+export default {
+  postPicture: putPicture,
+  deletePicture,
+  post: _CRUD.post,
+  put: _CRUD.put,
+};

@@ -103,9 +103,25 @@ const signInAsync = async (
   }
 };
 
+const updateAsync = async (
+  payload: User,
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await UserRepository.put(
+      "user/update",
+      queryString.stringify(payload),
+      token
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
 export default {
   chooseImageFromGaleryAsync,
   postImageAsync: putAvatarAsync,
   signUpAsync,
   signInAsync,
+  updateAsync,
 };
