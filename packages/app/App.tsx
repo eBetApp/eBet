@@ -26,6 +26,7 @@ import LoggedScreen from "./src/screens/LoggedView";
 import { Icon, ThemeProvider, Theme } from "react-native-elements";
 import Palette from "./src/Res/Palette";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { State } from "react-native-gesture-handler";
 
 //#region COMMON NAV OPTIONS & STYLES
 interface CustomTheme extends Theme {
@@ -73,13 +74,13 @@ const commonNavScreenOptions: StackNavigationOptions = {
   cardStyle: { backgroundColor: theme.customColors.primaryBg },
 };
 
-const commonStackScreenOptions = ({ navigation }) => {
+const commonStackScreenOptions = ({ navigation }, state) => {
   return {
     headerRight: () => (
       <TouchableOpacity onPress={() => navigation.navigate("Account")}>
         <Icon
-          name="ios-person"
-          type="ionicon"
+          name={state.user != null ? "user" : "user-times"}
+          type="font-awesome"
           color={theme.colors.primary}
           style={{ marginRight: 5 }}
         />
@@ -102,12 +103,14 @@ const Tab = createBottomTabNavigator();
 
 const HomeStack = createStackNavigator();
 function HomeStackScreen({ navigation }) {
+  const { state } = useStore();
+
   return (
     <HomeStack.Navigator screenOptions={commonNavScreenOptions}>
       <HomeStack.Screen
         name="Home"
         component={MainScreen}
-        options={(navigation) => commonStackScreenOptions(navigation)}
+        options={(navigation) => commonStackScreenOptions(navigation, state)}
       />
       <HomeStack.Screen name="Account" component={AccountStackScreen} />
     </HomeStack.Navigator>
@@ -116,12 +119,14 @@ function HomeStackScreen({ navigation }) {
 
 const ShopStack = createStackNavigator();
 function ShopStackScreen({ navigation }) {
+  const { state } = useStore();
+
   return (
     <ShopStack.Navigator screenOptions={commonNavScreenOptions}>
       <ShopStack.Screen
         name="Shopping"
         component={ShopScreen}
-        options={(navigation) => commonStackScreenOptions(navigation)}
+        options={(navigation) => commonStackScreenOptions(navigation, state)}
       />
       <ShopStack.Screen name="Pay" component={PayScreen} />
     </ShopStack.Navigator>
@@ -149,8 +154,8 @@ function AccountStackScreen() {
 
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <StoreProvider>
+    <StoreProvider>
+      <ThemeProvider theme={theme}>
         <NavigationContainer>
           <Tab.Navigator
             tabBarOptions={tabBarOptions}
@@ -170,7 +175,7 @@ export default function App() {
             <Tab.Screen name="Panier" component={ShopStackScreen} />
           </Tab.Navigator>
         </NavigationContainer>
-      </StoreProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </StoreProvider>
   );
 }
