@@ -35,7 +35,7 @@ import { classifyError, errorType } from "../Utils/parseApiError";
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
 
-//Resources imports
+// Navigation imports
 import { Screens } from "../Resources/Navigation";
 
 export default function SignInView({ navigation }) {

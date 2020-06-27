@@ -10,9 +10,6 @@ import {
 // Fetch imports
 import queryString from "query-string";
 
-// Types imports
-import { User } from "@shared/apiTypes/User"; // TODO: shared a été supprimé => ajouter dans les types de app
-
 // Redux import
 import { useStore } from "../hooks/store";
 

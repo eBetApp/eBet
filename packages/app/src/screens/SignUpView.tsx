@@ -37,7 +37,7 @@ import { setStorage } from "../Utils/asyncStorage";
 // Services import
 import userService from "../Services/userService";
 
-//Resources imports
+// Navigation imports
 import { Screens } from "../Resources/Navigation";
 
 export default function SignUpView({ navigation }) {
