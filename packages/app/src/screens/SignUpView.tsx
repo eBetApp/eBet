@@ -37,6 +37,9 @@ import { setStorage } from "../Utils/asyncStorage";
 // Services import
 import userService from "../Services/userService";
 
+//Resources imports
+import { Screens } from "../Resources/Navigation";
+
 export default function SignUpView({ navigation }) {
   const { theme } = useContext(ThemeContext);
   const { dispatch } = useStore();
@@ -74,7 +77,7 @@ export default function SignUpView({ navigation }) {
         if (result.status === 201) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
-          navigation.navigate("Home");
+          navigation.navigate(Screens.account);
         } else if (result.error?.status === 400) {
           switch (classifyError(result.error.message)) {
             case errorType.nickname:
@@ -147,7 +150,7 @@ export default function SignUpView({ navigation }) {
           />
         }
       />
-      <TouchableOpacity onPress={() => navigation.navigate("signin")}>
+      <TouchableOpacity onPress={() => navigation.navigate(Screens.signIn)}>
         <TextLink style={{ color: "blue" }}>
           Already have an account? Go to SIGN IN
         </TextLink>

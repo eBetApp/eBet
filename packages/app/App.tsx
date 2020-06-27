@@ -1,6 +1,6 @@
 // React imports
 import React from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, TextInputBase } from "react-native";
 
 // Redux imports
 import { StoreProvider } from "./src/hooks/store";
@@ -11,6 +11,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   createStackNavigator,
   StackNavigationOptions,
+  HeaderTitle,
 } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -24,9 +25,14 @@ import LoggedScreen from "./src/screens/LoggedView";
 
 // UI imports
 import { Icon, ThemeProvider, Theme } from "react-native-elements";
-import Palette from "./src/Res/Palette";
+import Palette from "./src/Resources/Palette";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { State } from "react-native-gesture-handler";
+import { StackHeaderOptions } from "@react-navigation/stack/lib/typescript/src/types";
+import { IState } from "./src/hooks/ReducerTypes";
+
+// Resources imports
+import { Tabs, Screens } from "./src/Resources/Navigation";
 
 //#region COMMON NAV OPTIONS & STYLES
 interface CustomTheme extends Theme {
@@ -74,10 +80,15 @@ const commonNavScreenOptions: StackNavigationOptions = {
   cardStyle: { backgroundColor: theme.customColors.primaryBg },
 };
 
-const commonStackScreenOptions = ({ navigation }, state) => {
+const commonStackScreenOptions = (
+  { navigation },
+  state: IState,
+  localOptions?: StackHeaderOptions
+) => {
   return {
+    ...localOptions,
     headerRight: () => (
-      <TouchableOpacity onPress={() => navigation.navigate("Account")}>
+      <TouchableOpacity onPress={() => navigation.navigate(Screens.account)}>
         <Icon
           name={state.user != null ? "user" : "user-times"}
           type="font-awesome"
@@ -108,11 +119,11 @@ function HomeStackScreen({ navigation }) {
   return (
     <HomeStack.Navigator screenOptions={commonNavScreenOptions}>
       <HomeStack.Screen
-        name="Home"
+        name={Screens.home}
         component={MainScreen}
         options={(navigation) => commonStackScreenOptions(navigation, state)}
       />
-      <HomeStack.Screen name="Account" component={AccountStackScreen} />
+      <HomeStack.Screen name={Screens.account} component={AccountStackScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -124,11 +135,13 @@ function ShopStackScreen({ navigation }) {
   return (
     <ShopStack.Navigator screenOptions={commonNavScreenOptions}>
       <ShopStack.Screen
-        name="Shopping"
+        name={Screens.cart}
         component={ShopScreen}
-        options={(navigation) => commonStackScreenOptions(navigation, state)}
+        options={(navigation) =>
+          commonStackScreenOptions(navigation, state, { headerTitle: "Cart" })
+        }
       />
-      <ShopStack.Screen name="Pay" component={PayScreen} />
+      <ShopStack.Screen name={Screens.pay} component={PayScreen} />
     </ShopStack.Navigator>
   );
 }
@@ -141,11 +154,14 @@ function AccountStackScreen() {
     <AccountStack.Navigator screenOptions={commonNavScreenOptions}>
       {state.user == null ? (
         <>
-          <AccountStack.Screen name="signin" component={SignInScreen} />
-          <AccountStack.Screen name="signup" component={SignUpScreen} />
+          <AccountStack.Screen name={Screens.signIn} component={SignInScreen} />
+          <AccountStack.Screen name={Screens.signUp} component={SignUpScreen} />
         </>
       ) : (
-        <AccountStack.Screen name="LoggedHome" component={LoggedScreen} />
+        <AccountStack.Screen
+          name={Screens.loggedHome}
+          component={LoggedScreen}
+        />
       )}
     </AccountStack.Navigator>
   );
@@ -162,17 +178,25 @@ export default function App() {
             screenOptions={({ route }) => ({
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
-                if (route.name === "Home") {
+                if (route.name === Tabs.home) {
                   iconName = "ios-home";
-                } else if (route.name === "Panier") {
+                } else if (route.name === Tabs.cart) {
                   iconName = "ios-basket";
                 }
                 return <Ionicons name={iconName} size={size} color={color} />;
               },
             })}
           >
-            <Tab.Screen name="Home" component={HomeStackScreen} />
-            <Tab.Screen name="Panier" component={ShopStackScreen} />
+            <Tab.Screen
+              name={Tabs.home}
+              options={{ title: "Home" }}
+              component={HomeStackScreen}
+            />
+            <Tab.Screen
+              name={Tabs.cart}
+              options={{ title: "Cart" }}
+              component={ShopStackScreen}
+            />
           </Tab.Navigator>
         </NavigationContainer>
       </ThemeProvider>

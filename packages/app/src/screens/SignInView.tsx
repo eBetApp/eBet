@@ -35,6 +35,9 @@ import { classifyError, errorType } from "../Utils/parseApiError";
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
 
+//Resources imports
+import { Screens } from "../Resources/Navigation";
+
 export default function SignInView({ navigation }) {
   const { theme } = useContext(ThemeContext);
   const { state, dispatch } = useStore();
@@ -57,7 +60,7 @@ export default function SignInView({ navigation }) {
         if (result.status === 200) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
-          navigation.navigate("Home");
+          navigation.navigate(Screens.loggedHome);
         } else if (result.error?.status === 400) {
           switch (classifyError(result.error.message)) {
             case errorType.email:
@@ -102,7 +105,7 @@ export default function SignInView({ navigation }) {
           />
         }
       />
-      <TouchableOpacity onPress={() => navigation.navigate("signup")}>
+      <TouchableOpacity onPress={() => navigation.navigate(Screens.signUp)}>
         <TextLink>New to eBet? Go to REGISTER!!</TextLink>
       </TouchableOpacity>
     </View>

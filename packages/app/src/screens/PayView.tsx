@@ -15,7 +15,6 @@ import { User } from "@shared/apiTypes/User"; // TODO: shared a été supprimé 
 
 // Redux import
 import { useStore } from "../hooks/store";
-import { dispatchAvatar } from "../hooks/dispatchers";
 
 // Services import
 import userService from "../Services/userService";
