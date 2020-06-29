@@ -93,7 +93,7 @@ export default function LoggedView({ navigation }) {
     />
   );
 
-  const _createStripeAccount = async (code: string) => {
+  const _createStripeAccount = async (code: string): Promise<void> => {
     const token = await readStorage("token");
 
     const myHeaders = new Headers({
@@ -120,7 +120,7 @@ export default function LoggedView({ navigation }) {
       .catch((error) => console.log("error", error));
   };
 
-  const _submitEdit = async () => {
+  const _submitEdit = async (): Promise<void> => {
     const payload = {
       uuid: state.user.uuid,
       email: useEmail.value,
@@ -130,7 +130,6 @@ export default function LoggedView({ navigation }) {
 
     const token = await readStorage("token");
 
-    console.log("payload: ", payload);
     userService
       .updateAsync(payload, token)
       .then((res) => {
@@ -192,6 +191,9 @@ export default function LoggedView({ navigation }) {
             value={birthdate}
             errorMessage={formError.birthdate}
           />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate(Screens.password)}>
+          <Input editable={false} label="Password" placeholder="••••••••••••" />
         </TouchableOpacity>
       </ScrollView>
       <View style={styles.bottomContainer}>

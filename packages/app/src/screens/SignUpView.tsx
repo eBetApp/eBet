@@ -67,7 +67,7 @@ export default function SignUpView({ navigation }) {
     setShow(true);
   };
 
-  const _submitForm = () => {
+  const _submitForm = (): void => {
     const payload = {
       nickname: useEmail.value,
       email: useEmail.value,
@@ -139,6 +139,7 @@ export default function SignUpView({ navigation }) {
         )}
         <Input
           placeholder="Password"
+          textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
           errorMessage={formError.password}

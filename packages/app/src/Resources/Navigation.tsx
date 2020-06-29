@@ -15,6 +15,7 @@ import PayScreen from "../screens/PayView";
 import SignInScreen from "../screens/SignInView";
 import SignUpScreen from "../screens/SignUpView";
 import LoggedScreen from "../screens/LoggedView";
+import PasswordScreen from "../screens/PasswordView";
 
 // UI imports
 import { Icon } from "react-native-elements";
@@ -39,6 +40,7 @@ export enum Screens {
   loggedHome = "LoggedHome",
   pay = "Pay",
   account = "Account",
+  password = "Password",
 }
 //#endregion NAVIGATION CONSTANTS
 
@@ -119,10 +121,16 @@ export function AccountStackScreen() {
           <AccountStack.Screen name={Screens.signUp} component={SignUpScreen} />
         </>
       ) : (
-        <AccountStack.Screen
-          name={Screens.loggedHome}
-          component={LoggedScreen}
-        />
+        <>
+          <AccountStack.Screen
+            name={Screens.loggedHome}
+            component={LoggedScreen}
+          />
+          <AccountStack.Screen
+            name={Screens.password}
+            component={PasswordScreen}
+          />
+        </>
       )}
     </AccountStack.Navigator>
   );

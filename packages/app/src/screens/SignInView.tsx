@@ -21,7 +21,7 @@ import { TextLink } from "../components/styled/TextLink";
 import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
 
 // Fetch imports
-import queryString from "query-string";
+import userService from "../Services/userService";
 
 // Custom hooks imports
 import useInput from "../hooks/useInput";
@@ -32,9 +32,6 @@ import { dispatchUserNew } from "../hooks/dispatchers";
 
 // .env imports
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
-
-// Services import
-import userService from "../Services/userService";
 
 // utils imports
 import {
@@ -57,7 +54,7 @@ export default function SignInView({ navigation }) {
 
   const [formError, setFormError] = useState<AuthError>(new AuthError());
 
-  const _submitForm = () => {
+  const _submitForm = (): void => {
     const payload = {
       email: useEmail.value,
       password: usePassword.value,
@@ -99,6 +96,7 @@ export default function SignInView({ navigation }) {
         />
         <Input
           placeholder="Password"
+          textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
           errorMessage={formError.password}

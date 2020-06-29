@@ -118,10 +118,26 @@ const updateAsync = async (
   }
 };
 
+const updatePwdAsync = async (
+  payload: { uuid: string; currentPwd: string; newPwd: string },
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await UserRepository.put(
+      "user/update-password",
+      queryString.stringify(payload),
+      token
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
 export default {
   chooseImageFromGaleryAsync,
   postImageAsync: putAvatarAsync,
   signUpAsync,
   signInAsync,
   updateAsync,
+  updatePwdAsync,
 };
