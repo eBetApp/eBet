@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 // UI imports
 import { Input, Icon, Text } from "react-native-elements";
 import { ButtonValid } from "../components/styled/Buttons";
-import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
+import { MainKeyboardAvoidingView } from "../components/styled/Views";
 
 // Redux import
 import { useStore } from "../hooks/store";
 import useInput from "../hooks/useInput";
+import { dispatchUserEdit } from "../hooks/dispatchers";
 
 // Fetch imports
 import userService from "../Services/userService";
@@ -21,7 +22,6 @@ import {
 
 // LocalStorage imports
 import { readStorage } from "../Utils/asyncStorage";
-import { dispatchUserEdit } from "../hooks/dispatchers";
 
 export default function PasswordView({ navigation }) {
   const { state, dispatch } = useStore();

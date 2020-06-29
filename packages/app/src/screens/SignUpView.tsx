@@ -45,7 +45,7 @@ import { setStorage } from "../Utils/asyncStorage";
 import userService from "../Services/userService";
 
 // Navigation imports
-import { Screens } from "../Resources/Navigation";
+import { Screens } from "../Resources/NavigationStacks";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function SignUpView({ navigation }) {

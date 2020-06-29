@@ -41,7 +41,7 @@ import {
 import { setStorage } from "../Utils/asyncStorage";
 
 // Navigation imports
-import { Screens } from "../Resources/Navigation";
+import { Screens } from "../Resources/NavigationStacks";
 
 // Toast import
 import Toast, { DURATION } from "react-native-easy-toast";
@@ -65,7 +65,6 @@ export default function SignInView({ navigation }) {
   const toastErrRef = useRef(null);
 
   const _submitForm = () => {
-    console.log("SUBMIT");
     const payload = {
       email: useEmail.value,
       password: usePassword.value,

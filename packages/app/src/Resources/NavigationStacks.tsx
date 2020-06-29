@@ -18,9 +18,6 @@ import LoggedScreen from "../screens/LoggedView";
 import PasswordScreen from "../screens/PasswordView";
 
 // UI imports
-import { Icon } from "react-native-elements";
-import { StackHeaderOptions } from "@react-navigation/stack/lib/typescript/src/types";
-import { IState } from "../hooks/ReducerTypes";
 import theme from "./Theme";
 
 // Redux imports
@@ -28,19 +25,20 @@ import { useStore } from "../hooks/store";
 
 //#region NAVIGATION CONSTANTS
 export enum Tabs {
-  home = "HomeTab",
+  store = "StoreTab",
   cart = "CartTab",
+  account = "AccountTab",
 }
 
 export enum Screens {
-  home = "Home",
-  cart = "Cart",
-  signIn = "SignIn",
-  signUp = "SignUp",
-  loggedHome = "LoggedHome",
+  store = "Store",
+  cart = "My cart",
+  signIn = "Sign in",
+  signUp = "Sign up",
+  loggedHome = "My account",
   pay = "Pay",
   account = "Account",
-  password = "Password",
+  password = "Change my password",
 }
 //#endregion NAVIGATION CONSTANTS
 
@@ -52,26 +50,6 @@ const commonNavScreenOptions: StackNavigationOptions = {
   headerTintColor: theme.colors.primary,
   cardStyle: { backgroundColor: theme.customColors.primaryBg },
 };
-
-const commonStackScreenOptions = (
-  { navigation },
-  state: IState,
-  localOptions?: StackHeaderOptions
-) => {
-  return {
-    ...localOptions,
-    headerRight: () => (
-      <TouchableOpacity onPress={() => navigation.navigate(Screens.account)}>
-        <Icon
-          name={state.user != null ? "user" : "user-times"}
-          type="font-awesome"
-          color={theme.colors.primary}
-          style={{ marginRight: 5 }}
-        />
-      </TouchableOpacity>
-    ),
-  };
-};
 //#endregion COMMON NAVIGATION OPTIONS
 
 //#region STACKS
@@ -81,12 +59,7 @@ export function HomeStackScreen({ navigation }) {
 
   return (
     <HomeStack.Navigator screenOptions={commonNavScreenOptions}>
-      <HomeStack.Screen
-        name={Screens.home}
-        component={MainScreen}
-        options={(navigation) => commonStackScreenOptions(navigation, state)}
-      />
-      <HomeStack.Screen name={Screens.account} component={AccountStackScreen} />
+      <HomeStack.Screen name={Screens.store} component={MainScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -100,9 +73,7 @@ export function ShopStackScreen({ navigation }) {
       <ShopStack.Screen
         name={Screens.cart}
         component={ShopScreen}
-        options={(navigation) =>
-          commonStackScreenOptions(navigation, state, { headerTitle: "Cart" })
-        }
+        options={{ headerTitle: "Cart" }}
       />
       <ShopStack.Screen name={Screens.pay} component={PayScreen} />
     </ShopStack.Navigator>

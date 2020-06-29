@@ -52,7 +52,7 @@ import Avatar from "../components/Avatar";
 import useInput from "../hooks/useInput";
 
 // Navigation imports
-import { Screens } from "../Resources/Navigation";
+import { Screens } from "../Resources/NavigationStacks";
 
 export default function LoggedView({ navigation }) {
   let stripeAccount = "";
