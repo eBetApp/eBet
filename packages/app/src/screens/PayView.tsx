@@ -17,12 +17,14 @@ import { readStorage } from "../Utils/asyncStorage";
 import betService from "../Services/betService";
 
 // UI import
-import { Button, Icon, Text, ThemeContext } from "react-native-elements";
+import { Icon, Text, ThemeContext } from "react-native-elements";
+import { CreditCardInput } from "react-native-credit-card-input";
+import { ButtonValid } from "../components/styled/Buttons";
+import { MainView } from "../components/styled/Views";
+import { ScrollView } from "react-native-gesture-handler";
 
 // Stripe imports
 var stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
-import { CreditCardInput } from "react-native-credit-card-input";
-import { ButtonValid } from "../components/styled/Buttons";
 
 export default function PayView({ navigation }) {
   const { theme } = useContext(ThemeContext);
@@ -96,20 +98,32 @@ export default function PayView({ navigation }) {
   };
 
   return (
-    <View>
-      <CreditCardInput allowScroll={true} onChange={(data) => setForm(data)} />
-      <ButtonValid
-        title="PAY"
-        onPress={handlePayment}
-        icon={
-          <Icon name="ios-wallet" type="ionicon" size={15} color="#ffffff" />
-        }
-      />
-      <Text
-        style={{ fontSize: 12, alignSelf: "center", color: theme.colors.error }}
-      >
-        {paymentError}
-      </Text>
-    </View>
+    <MainView>
+      <ScrollView>
+        <CreditCardInput
+          allowScroll={true}
+          invalidColor={theme.colors.error}
+          labelStyle={{ color: theme.colors.secondary }}
+          inputStyle={{ color: theme.colors.primary }}
+          onChange={(data) => setForm(data)}
+        />
+        <ButtonValid
+          title="PAY"
+          onPress={handlePayment}
+          icon={
+            <Icon name="ios-wallet" type="ionicon" size={15} color="#ffffff" />
+          }
+        />
+        <Text
+          style={{
+            fontSize: 12,
+            alignSelf: "center",
+            color: theme.colors.error,
+          }}
+        >
+          {paymentError}
+        </Text>
+      </ScrollView>
+    </MainView>
   );
 }

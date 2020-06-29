@@ -1,6 +1,6 @@
 const Palette = {
   primaryText: "#FFFFFF",
-  secondaryText: "#39454D",
+  secondaryText: "#F6AE2D",
   errorText: "#f26419",
   primaryBg: "#39454D",
   secondaryBg: "#f26419",

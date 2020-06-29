@@ -29,7 +29,7 @@ export default function NestedApp() {
   const { theme } = useContext(ThemeContext);
   const tabBarOptions: BottomTabBarOptions = {
     activeTintColor: theme.colors.primary,
-    inactiveTintColor: theme.colors.secondary,
+    inactiveTintColor: theme.customColors.primaryBg,
     keyboardHidesTabBar: true,
     style: {
       backgroundColor: theme.customColors.secondaryBg,
