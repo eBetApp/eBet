@@ -14,6 +14,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 import { ThemeContext } from "react-native-elements";
 import { TextLink } from "../components/styled/TextLink";
+import { MainView } from "../components/styled/MainView";
 
 // Fetch imports
 import queryString from "query-string";
@@ -39,6 +40,7 @@ import userService from "../Services/userService";
 
 // Navigation imports
 import { Screens } from "../Resources/Navigation";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function SignUpView({ navigation }) {
   const { theme } = useContext(ThemeContext);
@@ -103,58 +105,74 @@ export default function SignUpView({ navigation }) {
   };
 
   return (
-    <View>
-      <Input
-        placeholder="Nickname"
-        {...useNickname}
-        errorMessage={errorNickname}
-      />
-      <Input
-        placeholder="Email"
-        keyboardType="email-address"
-        {...useEmail}
-        errorMessage={errorEmail}
-      />
-      <TouchableOpacity onPress={showDatepicker}>
+    <MainView style={styles.container}>
+      <ScrollView style={styles.formContainer}>
         <Input
-          editable={false}
-          placeholder="Birthdate"
-          value={birthdate}
-          errorMessage={errorBirthdate}
+          placeholder="Nickname"
+          {...useNickname}
+          errorMessage={errorNickname}
         />
-      </TouchableOpacity>
-      {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode="date"
-          display="default"
-          onChange={onChange}
+        <Input
+          placeholder="Email"
+          keyboardType="email-address"
+          {...useEmail}
+          errorMessage={errorEmail}
         />
-      )}
-      <Input
-        placeholder="Password"
-        secureTextEntry={true}
-        {...usePassword}
-        errorMessage={errorPassword}
-      />
-      <ButtonValid
-        title="SIGN UP"
-        onPress={_submitForm}
-        icon={
-          <Icon
-            name="ios-checkmark"
-            type="ionicon"
-            color="#ffffff"
-            style={{ marginRight: 5 }}
+        <TouchableOpacity onPress={showDatepicker}>
+          <Input
+            editable={false}
+            placeholder="Birthdate"
+            value={birthdate}
+            errorMessage={errorBirthdate}
           />
-        }
-      />
-      <TouchableOpacity onPress={() => navigation.navigate(Screens.signIn)}>
-        <TextLink style={{ color: "blue" }}>
-          Already have an account? Go to SIGN IN
-        </TextLink>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onChange}
+          />
+        )}
+        <Input
+          placeholder="Password"
+          secureTextEntry={true}
+          {...usePassword}
+          errorMessage={errorPassword}
+        />
+      </ScrollView>
+      <View style={styles.bottomContainer}>
+        <ButtonValid
+          title="SIGN UP"
+          onPress={_submitForm}
+          icon={
+            <Icon
+              name="ios-checkmark"
+              type="ionicon"
+              style={{ marginRight: 5 }}
+            />
+          }
+        />
+        <TouchableOpacity onPress={() => navigation.navigate(Screens.signIn)}>
+          <TextLink style={{ color: "blue" }}>
+            Already have an account? Go to SIGN IN
+          </TextLink>
+        </TouchableOpacity>
+      </View>
+    </MainView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  formContainer: {
+    alignSelf: "stretch",
+  },
+  bottomContainer: {
+    flexGrow: 1,
+    justifyContent: "flex-end",
+  },
+});

@@ -1,5 +1,11 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 
 // UI imports
 import {
@@ -12,6 +18,7 @@ import {
 import { ThemeContext } from "react-native-elements";
 import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 import { TextLink } from "../components/styled/TextLink";
+import { MainView } from "../components/styled/MainView";
 
 // Fetch imports
 import queryString from "query-string";
@@ -80,34 +87,50 @@ export default function SignInView({ navigation }) {
   };
 
   return (
-    <View>
-      <Input
-        placeholder="Email"
-        keyboardType="email-address"
-        {...useEmail}
-        errorMessage={errorEmail}
-      />
-      <Input
-        placeholder="Password"
-        secureTextEntry={true}
-        {...usePassword}
-        errorMessage={errorPassword}
-      />
-      <ButtonValid
-        title="SIGN IN"
-        onPress={_submitForm}
-        icon={
-          <Icon
-            name="ios-checkmark"
-            type="ionicon"
-            color="#ffffff"
-            style={{ marginRight: 5 }}
-          />
-        }
-      />
-      <TouchableOpacity onPress={() => navigation.navigate(Screens.signUp)}>
-        <TextLink>New to eBet? Go to REGISTER!!</TextLink>
-      </TouchableOpacity>
-    </View>
+    <MainView style={styles.container}>
+      <ScrollView style={styles.formContainer}>
+        <Input
+          placeholder="Email"
+          keyboardType="email-address"
+          {...useEmail}
+          errorMessage={errorEmail}
+        />
+        <Input
+          placeholder="Password"
+          secureTextEntry={true}
+          {...usePassword}
+          errorMessage={errorPassword}
+        />
+      </ScrollView>
+      <View style={styles.bottomContainer}>
+        <ButtonValid
+          title="SIGN IN"
+          onPress={_submitForm}
+          icon={
+            <Icon
+              name="ios-checkmark"
+              type="ionicon"
+              style={{ marginRight: 5 }}
+            />
+          }
+        />
+        <TouchableOpacity onPress={() => navigation.navigate(Screens.signUp)}>
+          <TextLink>New to eBet? Go to REGISTER!!</TextLink>
+        </TouchableOpacity>
+      </View>
+    </MainView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  formContainer: {
+    alignSelf: "stretch",
+  },
+  bottomContainer: {
+    flexGrow: 1,
+    justifyContent: "flex-end",
+  },
+});

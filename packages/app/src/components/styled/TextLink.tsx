@@ -8,7 +8,11 @@ export function TextLink(props) {
   return (
     <Text
       {...props}
-      style={{ color: theme.customColors.ternaryBgValid, textAlign: "center" }}
+      style={{
+        ...props.style,
+        color: theme.customColors.ternaryBgValid,
+        textAlign: "center",
+      }}
     />
   );
 }

@@ -44,6 +44,9 @@ const theme: CustomTheme = {
       color: Palette.primaryText,
     },
   },
+  Icon: {
+    color: Palette.primaryText,
+  },
 };
 
 export default theme;

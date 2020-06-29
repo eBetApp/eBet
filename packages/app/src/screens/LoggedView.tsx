@@ -5,6 +5,8 @@ import {
   StyleSheet,
   NativeSyntheticEvent,
   TextInputChangeEventData,
+  TouchableOpacity,
+  Platform,
 } from "react-native";
 
 // Redux import
@@ -18,6 +20,8 @@ import {
   ButtonCancel,
   ButtonEdit,
 } from "../components/styled/Buttons";
+import { MainView } from "../components/styled/MainView";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 // Fetch imports
 import queryString from "query-string";
@@ -47,9 +51,28 @@ export default function LoggedView({ navigation }) {
   const { dispatch, state } = useStore();
   const useEmail = useInput(state.user?.email ?? "");
   const useNickname = useInput(state.user?.nickname ?? "");
+  const [birthdate, setBirthdate] = useState(
+    new Date(state.user?.birthdate).toDateString() ?? ""
+  );
   const [errorNickname, setErrorNickname] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
+  const [errorBirthdate, setErrorBirthdate] = useState("");
+
   let stripeAccount = "";
+
+  //#region DATEPICKER
+  const date = new Date(state.user?.birthdate);
+  const [show, setShow] = useState(false);
+
+  const onDateChange = (event, selectedDate) => {
+    setShow(Platform.OS === "ios");
+    setBirthdate(selectedDate.toDateString());
+  };
+
+  const showDatepicker = () => {
+    setShow(true);
+  };
+  //#endregion DATEPICKER
 
   const _renderWebView = () => (
     <WebView
@@ -99,6 +122,7 @@ export default function LoggedView({ navigation }) {
       uuid: state.user.uuid,
       email: useEmail.value,
       nickname: useNickname.value,
+      birthdate: new Date(birthdate).toISOString(),
     };
 
     const token = await readStorage("token");
@@ -107,8 +131,9 @@ export default function LoggedView({ navigation }) {
     userService
       .updateAsync(payload, token)
       .then((res) => {
+        console.log("###RES");
+        console.log(res);
         if (res.status === 200) {
-          console.log("SUCCESS: ", res);
           delete payload.uuid;
           dispatchUserEdit(dispatch, { ...payload });
           navigation.goBack();
@@ -117,9 +142,18 @@ export default function LoggedView({ navigation }) {
           switch (classifyError(res.error.message)) {
             case errorType.nickname:
               setErrorNickname("Wrong format");
+            // setErrorEmail("");
+            // setErrorBirthdate("");
             case errorType.email:
-              console.log("HERE");
+              console.log("###");
+              console.log(res.error.message);
               setErrorEmail("Wrong format");
+            // setErrorBirthdate("");
+            // setErrorNickname("");
+            case errorType.birthdate:
+              setErrorBirthdate("Wrong format");
+            // setErrorEmail("");
+            // setErrorNickname("");
           }
         }
       })
@@ -129,29 +163,53 @@ export default function LoggedView({ navigation }) {
   };
 
   const _renderLoggedView = () => (
-    <>
+    <MainView>
       <ScrollView>
         <View style={{ alignSelf: "center" }}>
           <Avatar />
         </View>
         <Input {...useNickname} label="Nickname" errorMessage={errorNickname} />
-        <Input {...useEmail} label="Email" errorMessage={errorEmail} />
-      </ScrollView>
-      <View style={styles.container}>
-        <View style={styles.buttonContainer}>
-          <ButtonEdit title="EDIT" onPress={() => _submitEdit()} />
-        </View>
-        <View style={styles.buttonContainer}>
-          <ButtonCancel
-            title="LOG OUT"
-            onPress={() => {
-              dispatchUserNull(dispatch);
-              removeStorage("token");
-            }}
+        <Input
+          {...useEmail}
+          label="Email"
+          keyboardType="email-address"
+          errorMessage={errorEmail}
+        />
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
           />
+        )}
+        <TouchableOpacity onPress={showDatepicker}>
+          <Input
+            editable={false}
+            label="Birthdate"
+            placeholder="Birthdate"
+            value={birthdate}
+            errorMessage={errorBirthdate}
+          />
+        </TouchableOpacity>
+        {/* </ScrollView> */}
+        <View style={styles.container}>
+          <View style={styles.buttonContainer}>
+            <ButtonEdit title="EDIT" onPress={() => _submitEdit()} />
+          </View>
+          <View style={styles.buttonContainer}>
+            <ButtonCancel
+              title="LOG OUT"
+              onPress={() => {
+                dispatchUserNull(dispatch);
+                removeStorage("token");
+              }}
+            />
+          </View>
         </View>
-      </View>
-    </>
+      </ScrollView>
+    </MainView>
   );
 
   return (
