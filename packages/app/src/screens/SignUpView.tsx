@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 
 // UI imports
@@ -14,7 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 import { ThemeContext } from "react-native-elements";
 import { TextLink } from "../components/styled/TextLink";
-import { MainView } from "../components/styled/MainView";
+import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
 
 // Fetch imports
 import queryString from "query-string";
@@ -105,7 +106,7 @@ export default function SignUpView({ navigation }) {
   };
 
   return (
-    <MainView style={styles.container}>
+    <MainKeyboardAvoidingView style={{ flex: 1 }}>
       <ScrollView style={styles.formContainer}>
         <Input
           placeholder="Nickname"
@@ -160,7 +161,7 @@ export default function SignUpView({ navigation }) {
           </TextLink>
         </TouchableOpacity>
       </View>
-    </MainView>
+    </MainKeyboardAvoidingView>
   );
 }
 

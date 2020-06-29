@@ -20,7 +20,7 @@ import {
   ButtonCancel,
   ButtonEdit,
 } from "../components/styled/Buttons";
-import { MainView } from "../components/styled/MainView";
+import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 // Fetch imports
@@ -163,7 +163,7 @@ export default function LoggedView({ navigation }) {
   };
 
   const _renderLoggedView = () => (
-    <MainView style={styles.mainContainer}>
+    <MainKeyboardAvoidingView style={styles.mainContainer}>
       <ScrollView style={styles.formContainer}>
         <View style={{ alignSelf: "center" }}>
           <Avatar />
@@ -194,7 +194,7 @@ export default function LoggedView({ navigation }) {
           />
         </TouchableOpacity>
       </ScrollView>
-      <View style={styles.buttonsContainer}>
+      <View style={styles.bottomContainer}>
         <View style={styles.buttonContainer}>
           <ButtonEdit title="EDIT" onPress={() => _submitEdit()} />
         </View>
@@ -208,7 +208,7 @@ export default function LoggedView({ navigation }) {
           />
         </View>
       </View>
-    </MainView>
+    </MainKeyboardAvoidingView>
   );
 
   return (
@@ -225,17 +225,13 @@ const styles = StyleSheet.create({
   formContainer: {
     alignSelf: "stretch",
   },
-  buttonsContainer: {
-    flex: 1,
+  bottomContainer: {
+    flexGrow: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
   },
   buttonContainer: {
     flex: 1,
-  },
-  bottomContainer: {
-    flexGrow: 1,
-    justifyContent: "flex-end",
   },
 });

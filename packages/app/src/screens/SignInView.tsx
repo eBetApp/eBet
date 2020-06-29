@@ -18,7 +18,7 @@ import {
 import { ThemeContext } from "react-native-elements";
 import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 import { TextLink } from "../components/styled/TextLink";
-import { MainView } from "../components/styled/MainView";
+import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
 
 // Fetch imports
 import queryString from "query-string";
@@ -87,7 +87,7 @@ export default function SignInView({ navigation }) {
   };
 
   return (
-    <MainView style={styles.container}>
+    <MainKeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.formContainer}>
         <Input
           placeholder="Email"
@@ -118,7 +118,7 @@ export default function SignInView({ navigation }) {
           <TextLink>New to eBet? Go to REGISTER!!</TextLink>
         </TouchableOpacity>
       </View>
-    </MainView>
+    </MainKeyboardAvoidingView>
   );
 }
 

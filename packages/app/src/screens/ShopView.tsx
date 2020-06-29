@@ -7,7 +7,7 @@ import { ButtonValid } from "../components/styled/Buttons";
 
 // Redux import
 import { useStore } from "../hooks/store";
-import { MainView } from "../components/styled/MainView";
+import { MainView } from "../components/styled/Views";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function ShopView({ navigation }) {
