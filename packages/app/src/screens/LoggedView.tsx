@@ -163,8 +163,8 @@ export default function LoggedView({ navigation }) {
   };
 
   const _renderLoggedView = () => (
-    <MainView>
-      <ScrollView>
+    <MainView style={styles.mainContainer}>
+      <ScrollView style={styles.formContainer}>
         <View style={{ alignSelf: "center" }}>
           <Avatar />
         </View>
@@ -193,22 +193,21 @@ export default function LoggedView({ navigation }) {
             errorMessage={errorBirthdate}
           />
         </TouchableOpacity>
-        {/* </ScrollView> */}
-        <View style={styles.container}>
-          <View style={styles.buttonContainer}>
-            <ButtonEdit title="EDIT" onPress={() => _submitEdit()} />
-          </View>
-          <View style={styles.buttonContainer}>
-            <ButtonCancel
-              title="LOG OUT"
-              onPress={() => {
-                dispatchUserNull(dispatch);
-                removeStorage("token");
-              }}
-            />
-          </View>
-        </View>
       </ScrollView>
+      <View style={styles.buttonsContainer}>
+        <View style={styles.buttonContainer}>
+          <ButtonEdit title="EDIT" onPress={() => _submitEdit()} />
+        </View>
+        <View style={styles.buttonContainer}>
+          <ButtonCancel
+            title="LOG OUT"
+            onPress={() => {
+              dispatchUserNull(dispatch);
+              removeStorage("token");
+            }}
+          />
+        </View>
+      </View>
     </MainView>
   );
 
@@ -220,13 +219,23 @@ export default function LoggedView({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
+    flex: 1,
+  },
+  formContainer: {
+    alignSelf: "stretch",
+  },
+  buttonsContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
   },
   buttonContainer: {
     flex: 1,
+  },
+  bottomContainer: {
+    flexGrow: 1,
+    justifyContent: "flex-end",
   },
 });
