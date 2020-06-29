@@ -1,14 +1,7 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 
 // .env imports
 import { REACT_NATIVE_STRIPE_PK } from "react-native-dotenv";
-
-// Fetch imports
-import queryString from "query-string";
-
-// Redux import
-import { useStore } from "../hooks/store";
 
 // LocalStorage imports
 import { readStorage } from "../Utils/asyncStorage";
@@ -22,6 +15,7 @@ import { CreditCardInput } from "react-native-credit-card-input";
 import { ButtonValid } from "../components/styled/Buttons";
 import { MainView } from "../components/styled/Views";
 import { ScrollView } from "react-native-gesture-handler";
+import { Loader } from "../components/styled/Loader";
 
 // Stripe imports
 var stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
@@ -48,7 +42,8 @@ export default function PayView({ navigation }) {
 
   const _getPaymentToken: () => Promise<string | null> = async () => {
     if (!_checkPaymentInfosCompletion(form)) {
-      return setPaymentError("Incomplete credentials");
+      setPaymentError("Incomplete credentials");
+      return null;
     }
 
     var card = await stripeClient.createToken(_paymentInfos(form));
@@ -114,6 +109,7 @@ export default function PayView({ navigation }) {
             <Icon name="ios-wallet" type="ionicon" size={15} color="#ffffff" />
           }
         />
+        <Loader animating={paymentIsProcessing} />
         <Text
           style={{
             fontSize: 12,

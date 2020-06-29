@@ -129,6 +129,9 @@ export default function LoggedView({ navigation }) {
   };
 
   const _submitEdit = async (): Promise<void> => {
+    // TODO: add loader
+    if (birthdate === null || birthdate === undefined) return;
+
     const payload = {
       uuid: state.user.uuid,
       email: useEmail.value,

@@ -47,6 +47,7 @@ import userService from "../Services/userService";
 // Navigation imports
 import { Screens } from "../Resources/NavigationStacks";
 import { ScrollView } from "react-native-gesture-handler";
+import { Loader } from "../components/styled/Loader";
 
 export default function SignUpView({ navigation }) {
   // Theme
@@ -60,9 +61,10 @@ export default function SignUpView({ navigation }) {
   const useNickname = useInput();
   const useEmail = useInput();
   const usePassword = useInput();
-  const [birthdate, setBirthdate] = useState("");
+  const [birthdate, setBirthdate] = useState(null);
   const date = new Date(Date.now());
   const [show, setShow] = useState(false);
+  const [authIsProcessing, setAuthIsProcessing] = useState<boolean>(false);
 
   // Errors
   const [formError, setFormError] = useState<AuthError>(new AuthError());
@@ -71,7 +73,7 @@ export default function SignUpView({ navigation }) {
   // Ref
   const pwdInputRef = useRef(null);
   const emailInputRef = useRef(null);
-  const toastRef = useRef(null);
+  const toastErrRef = useRef(null);
 
   const onChange = (event, selectedDate) => {
     setShow(Platform.OS === "ios");
@@ -83,6 +85,10 @@ export default function SignUpView({ navigation }) {
   };
 
   const _submitForm = (): void => {
+    if (authIsProcessing) return;
+    if (birthdate === null || birthdate === undefined) return;
+    setAuthIsProcessing(true);
+
     const payload = {
       nickname: useEmail.value,
       email: useEmail.value,
@@ -94,7 +100,7 @@ export default function SignUpView({ navigation }) {
       .signUpAsync(payload)
       .then((result) => {
         if (result === null) {
-          return toastRef.current.show("Network error");
+          return toastErrRef.current.show("Network error");
         } else if (result?.status === 200) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
@@ -119,9 +125,10 @@ export default function SignUpView({ navigation }) {
         } else throw new Error();
       })
       .catch((error) => {
-        toastRef.current.show("Unexpected error");
+        toastErrRef.current.show("Unexpected error");
         console.log("signUpAsync() -- Unexpected error : ", error);
-      });
+      })
+      .finally(() => setAuthIsProcessing(false));
   };
 
   return (
@@ -183,6 +190,7 @@ export default function SignUpView({ navigation }) {
             />
           }
         />
+        <Loader animating={authIsProcessing} />
         <TouchableOpacity onPress={() => navigation.navigate(Screens.signIn)}>
           <TextLink style={{ color: "blue" }}>
             Already have an account? Go to SIGN IN
@@ -190,7 +198,7 @@ export default function SignUpView({ navigation }) {
         </TouchableOpacity>
       </View>
       <Toast
-        ref={toastRef}
+        ref={toastErrRef}
         position="top"
         style={{ borderRadius: 20 }}
         textStyle={{ color: theme.colors.error }}

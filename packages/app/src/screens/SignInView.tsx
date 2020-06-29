@@ -19,6 +19,7 @@ import { ThemeContext } from "react-native-elements";
 import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 import { TextLink } from "../components/styled/TextLink";
 import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
+import { Loader } from "../components/styled/Loader";
 
 // Fetch imports
 import userService from "../Services/userService";
@@ -56,6 +57,7 @@ export default function SignInView({ navigation }) {
   // States
   const useEmail = useInput();
   const usePassword = useInput();
+  const [authIsProcessing, setAuthIsProcessing] = useState<boolean>(false);
 
   // States: Errors
   const [formError, setFormError] = useState<AuthError>(new AuthError());
@@ -65,12 +67,13 @@ export default function SignInView({ navigation }) {
   const toastErrRef = useRef(null);
 
   const _submitForm = () => {
+    if (authIsProcessing) return;
+    setAuthIsProcessing(true);
+
     const payload = {
       email: useEmail.value,
       password: usePassword.value,
     };
-
-    let msgToDisplay = "";
 
     userService
       .signInAsync(payload)
@@ -96,9 +99,10 @@ export default function SignInView({ navigation }) {
         } else throw new Error();
       })
       .catch((error) => {
+        toastErrRef.current.show("Unexpected error");
         console.log("signInAsync() -- Unexpected error : ", error);
-        msgToDisplay = "Unexpected error";
-      });
+      })
+      .finally(() => setAuthIsProcessing(false));
   };
 
   return (
@@ -136,6 +140,7 @@ export default function SignInView({ navigation }) {
             />
           }
         />
+        <Loader animating={authIsProcessing} />
         <TouchableOpacity onPress={() => navigation.navigate(Screens.signUp)}>
           <TextLink>New to eBet? Go to REGISTER!!</TextLink>
         </TouchableOpacity>
