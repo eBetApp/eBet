@@ -44,7 +44,11 @@ import Avatar from "../components/Avatar";
 // Custom hooks imports
 import useInput from "../hooks/useInput";
 import userService from "../Services/userService";
-import { classifyError, errorType } from "../Utils/parseApiError";
+import {
+  classifyAuthError,
+  errorType,
+  AuthError,
+} from "../Utils/parseApiError";
 import { Screens } from "../Resources/Navigation";
 
 export default function LoggedView({ navigation }) {
@@ -54,9 +58,8 @@ export default function LoggedView({ navigation }) {
   const [birthdate, setBirthdate] = useState(
     new Date(state.user?.birthdate).toDateString() ?? ""
   );
-  const [errorNickname, setErrorNickname] = useState("");
-  const [errorEmail, setErrorEmail] = useState("");
-  const [errorBirthdate, setErrorBirthdate] = useState("");
+
+  const [formError, setFormError] = useState<AuthError>(new AuthError());
 
   let stripeAccount = "";
 
@@ -131,29 +134,22 @@ export default function LoggedView({ navigation }) {
     userService
       .updateAsync(payload, token)
       .then((res) => {
-        console.log("###RES");
-        console.log(res);
         if (res.status === 200) {
           delete payload.uuid;
           dispatchUserEdit(dispatch, { ...payload });
           navigation.goBack();
         }
         if (res.error?.status === 400) {
-          switch (classifyError(res.error.message)) {
+          switch (classifyAuthError(res.error.message)) {
             case errorType.nickname:
-              setErrorNickname("Wrong format");
-            // setErrorEmail("");
-            // setErrorBirthdate("");
+              setFormError(new AuthError({ nickname: "Wrong format" }));
+              break;
             case errorType.email:
-              console.log("###");
-              console.log(res.error.message);
-              setErrorEmail("Wrong format");
-            // setErrorBirthdate("");
-            // setErrorNickname("");
+              setFormError(new AuthError({ email: "Wrong format" }));
+              break;
             case errorType.birthdate:
-              setErrorBirthdate("Wrong format");
-            // setErrorEmail("");
-            // setErrorNickname("");
+              setFormError(new AuthError({ birthdate: "Wrong format" }));
+              break;
           }
         }
       })
@@ -168,12 +164,16 @@ export default function LoggedView({ navigation }) {
         <View style={{ alignSelf: "center" }}>
           <Avatar />
         </View>
-        <Input {...useNickname} label="Nickname" errorMessage={errorNickname} />
+        <Input
+          {...useNickname}
+          label="Nickname"
+          errorMessage={formError.nickname}
+        />
         <Input
           {...useEmail}
           label="Email"
           keyboardType="email-address"
-          errorMessage={errorEmail}
+          errorMessage={formError.email}
         />
         {show && (
           <DateTimePicker
@@ -190,7 +190,7 @@ export default function LoggedView({ navigation }) {
             label="Birthdate"
             placeholder="Birthdate"
             value={birthdate}
-            errorMessage={errorBirthdate}
+            errorMessage={formError.birthdate}
           />
         </TouchableOpacity>
       </ScrollView>

@@ -31,7 +31,11 @@ import { dispatchUserNew } from "../hooks/dispatchers";
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 
 // API types imports
-import { classifyError, errorType } from "../Utils/parseApiError";
+import {
+  classifyAuthError,
+  errorType,
+  AuthError,
+} from "../Utils/parseApiError";
 
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
@@ -50,10 +54,7 @@ export default function SignUpView({ navigation }) {
   const useEmail = useInput();
   const usePassword = useInput();
   const [birthdate, setBirthdate] = useState("");
-  const [errorNickname, setErrorNickname] = useState("");
-  const [errorEmail, setErrorEmail] = useState("");
-  const [errorPassword, setErrorPassword] = useState("");
-  const [errorBirthdate, setErrorBirthdate] = useState("");
+  const [formError, setFormError] = useState<AuthError>(new AuthError());
   const date = new Date(Date.now());
   const [show, setShow] = useState(false);
 
@@ -82,18 +83,18 @@ export default function SignUpView({ navigation }) {
           setStorage("token", result.meta.token);
           navigation.navigate(Screens.account);
         } else if (result.error?.status === 400) {
-          switch (classifyError(result.error.message)) {
+          switch (classifyAuthError(result.error.message)) {
             case errorType.nickname:
-              setErrorNickname(result.error?.message);
+              setFormError(new AuthError({ nickname: result.error?.message }));
               break;
             case errorType.email:
-              setErrorEmail(result.error?.message);
+              setFormError(new AuthError({ email: result.error?.message }));
               break;
             case errorType.password:
-              setErrorPassword(result.error?.message);
+              setFormError(new AuthError({ password: result.error?.message }));
               break;
             case errorType.birthdate:
-              setErrorBirthdate(result.error?.message);
+              setFormError(new AuthError({ birthdate: result.error?.message }));
               break;
             default:
               break;
@@ -111,20 +112,20 @@ export default function SignUpView({ navigation }) {
         <Input
           placeholder="Nickname"
           {...useNickname}
-          errorMessage={errorNickname}
+          errorMessage={formError.nickname}
         />
         <Input
           placeholder="Email"
           keyboardType="email-address"
           {...useEmail}
-          errorMessage={errorEmail}
+          errorMessage={formError.email}
         />
         <TouchableOpacity onPress={showDatepicker}>
           <Input
             editable={false}
             placeholder="Birthdate"
             value={birthdate}
-            errorMessage={errorBirthdate}
+            errorMessage={formError.birthdate}
           />
         </TouchableOpacity>
         {show && (
@@ -140,7 +141,7 @@ export default function SignUpView({ navigation }) {
           placeholder="Password"
           secureTextEntry={true}
           {...usePassword}
-          errorMessage={errorPassword}
+          errorMessage={formError.password}
         />
       </ScrollView>
       <View style={styles.bottomContainer}>

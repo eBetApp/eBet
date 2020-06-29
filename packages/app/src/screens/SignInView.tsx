@@ -37,7 +37,11 @@ import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 import userService from "../Services/userService";
 
 // utils imports
-import { classifyError, errorType } from "../Utils/parseApiError";
+import {
+  classifyAuthError,
+  errorType,
+  AuthError,
+} from "../Utils/parseApiError";
 
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
@@ -50,8 +54,8 @@ export default function SignInView({ navigation }) {
   const { state, dispatch } = useStore();
   const useEmail = useInput();
   const usePassword = useInput();
-  const [errorEmail, setErrorEmail] = useState("");
-  const [errorPassword, setErrorPassword] = useState("");
+
+  const [formError, setFormError] = useState<AuthError>(new AuthError());
 
   const _submitForm = () => {
     const payload = {
@@ -62,19 +66,17 @@ export default function SignInView({ navigation }) {
     userService
       .signInAsync(payload)
       .then((result) => {
-        console.log("RESULT");
-        console.log(result);
         if (result.status === 200) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
           navigation.navigate(Screens.loggedHome);
         } else if (result.error?.status === 400) {
-          switch (classifyError(result.error.message)) {
+          switch (classifyAuthError(result.error.message)) {
             case errorType.email:
-              setErrorEmail(result.error?.message);
+              setFormError(new AuthError({ email: result.error.message }));
               break;
             case errorType.password:
-              setErrorPassword(result.error?.message);
+              setFormError(new AuthError({ password: result.error.message }));
               break;
             default:
               break;
@@ -93,13 +95,13 @@ export default function SignInView({ navigation }) {
           placeholder="Email"
           keyboardType="email-address"
           {...useEmail}
-          errorMessage={errorEmail}
+          errorMessage={formError.email}
         />
         <Input
           placeholder="Password"
           secureTextEntry={true}
           {...usePassword}
-          errorMessage={errorPassword}
+          errorMessage={formError.password}
         />
       </ScrollView>
       <View style={styles.bottomContainer}>
