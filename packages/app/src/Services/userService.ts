@@ -7,7 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import queryString from "query-string";
 
 // Repositories imports
-import UserRepository from "../Repositories/userRepository";
+import UserRepository from "../Repositories/ebetRepository";
 
 // Services imports
 import { cameraPermissions } from "./devicePermissionsService";

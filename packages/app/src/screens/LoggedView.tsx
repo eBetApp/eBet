@@ -3,8 +3,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
   TouchableOpacity,
   Platform,
 } from "react-native";
@@ -14,13 +12,9 @@ import { useStore } from "../hooks/store";
 import { dispatchUserNull, dispatchUserEdit } from "../hooks/dispatchers";
 
 // UI imports
-import { Text, Input, ThemeContext } from "react-native-elements";
-import {
-  ButtonValid,
-  ButtonCancel,
-  ButtonEdit,
-} from "../components/styled/Buttons";
-import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
+import { Input, ThemeContext } from "react-native-elements";
+import { ButtonCancel, ButtonEdit } from "../components/styled/Buttons";
+import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Toast from "react-native-easy-toast";
 
