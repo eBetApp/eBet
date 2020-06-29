@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   ScrollView,
@@ -52,16 +52,25 @@ import {
 import { Screens } from "../Resources/Navigation";
 
 export default function LoggedView({ navigation }) {
+  let stripeAccount = "";
+
+  // Redux
   const { dispatch, state } = useStore();
+
+  //#region USESTATES
+  // Inputs
   const useEmail = useInput(state.user?.email ?? "");
   const useNickname = useInput(state.user?.nickname ?? "");
   const [birthdate, setBirthdate] = useState(
     new Date(state.user?.birthdate).toDateString() ?? ""
   );
 
+  // Errors
   const [formError, setFormError] = useState<AuthError>(new AuthError());
+  //#endregion USESTATES
 
-  let stripeAccount = "";
+  // Ref
+  const emailInput = useRef(null);
 
   //#region DATEPICKER
   const date = new Date(state.user?.birthdate);
@@ -167,22 +176,17 @@ export default function LoggedView({ navigation }) {
           {...useNickname}
           label="Nickname"
           errorMessage={formError.nickname}
+          returnKeyType="next"
+          onSubmitEditing={() => emailInput.current.focus()}
+          blurOnSubmit={false}
         />
         <Input
+          ref={emailInput}
           {...useEmail}
           label="Email"
           keyboardType="email-address"
           errorMessage={formError.email}
         />
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-          />
-        )}
         <TouchableOpacity onPress={showDatepicker}>
           <Input
             editable={false}
@@ -192,6 +196,15 @@ export default function LoggedView({ navigation }) {
             errorMessage={formError.birthdate}
           />
         </TouchableOpacity>
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
+          />
+        )}
         <TouchableOpacity onPress={() => navigation.navigate(Screens.password)}>
           <Input editable={false} label="Password" placeholder="••••••••••••" />
         </TouchableOpacity>

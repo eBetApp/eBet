@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -51,7 +51,7 @@ export default function SignInView({ navigation }) {
   const { state, dispatch } = useStore();
   const useEmail = useInput();
   const usePassword = useInput();
-
+  const pwdInput = useRef(null);
   const [formError, setFormError] = useState<AuthError>(new AuthError());
 
   const _submitForm = (): void => {
@@ -93,8 +93,14 @@ export default function SignInView({ navigation }) {
           keyboardType="email-address"
           {...useEmail}
           errorMessage={formError.email}
+          returnKeyType="next"
+          onSubmitEditing={() => {
+            pwdInput.current.focus();
+          }}
+          blurOnSubmit={false}
         />
         <Input
+          ref={pwdInput}
           placeholder="Password"
           textContentType={"password"}
           secureTextEntry={true}

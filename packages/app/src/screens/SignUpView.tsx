@@ -1,5 +1,5 @@
 // React imports
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -48,15 +48,28 @@ import { Screens } from "../Resources/Navigation";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function SignUpView({ navigation }) {
+  // Theme
   const { theme } = useContext(ThemeContext);
+
+  // Redux
   const { dispatch } = useStore();
+
+  //#region USESTATES
+  // Inputs
   const useNickname = useInput();
   const useEmail = useInput();
   const usePassword = useInput();
   const [birthdate, setBirthdate] = useState("");
-  const [formError, setFormError] = useState<AuthError>(new AuthError());
   const date = new Date(Date.now());
   const [show, setShow] = useState(false);
+
+  // Errors
+  const [formError, setFormError] = useState<AuthError>(new AuthError());
+  //#endregion USESTATES
+
+  // Ref
+  const pwdInput = useRef(null);
+  const emailInput = useRef(null);
 
   const onChange = (event, selectedDate) => {
     setShow(Platform.OS === "ios");
@@ -113,12 +126,27 @@ export default function SignUpView({ navigation }) {
           placeholder="Nickname"
           {...useNickname}
           errorMessage={formError.nickname}
+          returnKeyType="next"
+          onSubmitEditing={() => emailInput.current.focus()}
+          blurOnSubmit={false}
         />
         <Input
+          ref={emailInput}
           placeholder="Email"
           keyboardType="email-address"
           {...useEmail}
           errorMessage={formError.email}
+          returnKeyType="next"
+          onSubmitEditing={() => pwdInput.current.focus()}
+          blurOnSubmit={false}
+        />
+        <Input
+          ref={pwdInput}
+          placeholder="Password"
+          textContentType={"password"}
+          secureTextEntry={true}
+          {...usePassword}
+          errorMessage={formError.password}
         />
         <TouchableOpacity onPress={showDatepicker}>
           <Input
@@ -126,7 +154,7 @@ export default function SignUpView({ navigation }) {
             placeholder="Birthdate"
             value={birthdate}
             errorMessage={formError.birthdate}
-          />
+          ></Input>
         </TouchableOpacity>
         {show && (
           <DateTimePicker
@@ -137,13 +165,6 @@ export default function SignUpView({ navigation }) {
             onChange={onChange}
           />
         )}
-        <Input
-          placeholder="Password"
-          textContentType={"password"}
-          secureTextEntry={true}
-          {...usePassword}
-          errorMessage={formError.password}
-        />
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
