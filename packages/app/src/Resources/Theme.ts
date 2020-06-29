@@ -31,6 +31,7 @@ const theme: CustomTheme = {
   colors: {
     primary: Palette.primaryText,
     secondary: Palette.secondaryText,
+    error: Palette.errorText,
   },
   Text: {
     style: {

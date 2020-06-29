@@ -16,6 +16,7 @@ import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 import { ThemeContext } from "react-native-elements";
 import { TextLink } from "../components/styled/TextLink";
 import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
+import Toast from "react-native-easy-toast";
 
 // Fetch imports
 import queryString from "query-string";
@@ -68,8 +69,9 @@ export default function SignUpView({ navigation }) {
   //#endregion USESTATES
 
   // Ref
-  const pwdInput = useRef(null);
-  const emailInput = useRef(null);
+  const pwdInputRef = useRef(null);
+  const emailInputRef = useRef(null);
+  const toastRef = useRef(null);
 
   const onChange = (event, selectedDate) => {
     setShow(Platform.OS === "ios");
@@ -91,11 +93,13 @@ export default function SignUpView({ navigation }) {
     userService
       .signUpAsync(payload)
       .then((result) => {
-        if (result.status === 201) {
+        if (result === null) {
+          return toastRef.current.show("Network error");
+        } else if (result?.status === 200) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
           navigation.navigate(Screens.account);
-        } else if (result.error?.status === 400) {
+        } else if (result?.error?.status === 400) {
           switch (classifyAuthError(result.error.message)) {
             case errorType.nickname:
               setFormError(new AuthError({ nickname: result.error?.message }));
@@ -112,10 +116,11 @@ export default function SignUpView({ navigation }) {
             default:
               break;
           }
-        }
+        } else throw new Error();
       })
       .catch((error) => {
-        console.log("error", error);
+        toastRef.current.show("Unexpected error");
+        console.log("signUpAsync() -- Unexpected error : ", error);
       });
   };
 
@@ -127,21 +132,21 @@ export default function SignUpView({ navigation }) {
           {...useNickname}
           errorMessage={formError.nickname}
           returnKeyType="next"
-          onSubmitEditing={() => emailInput.current.focus()}
+          onSubmitEditing={() => emailInputRef.current.focus()}
           blurOnSubmit={false}
         />
         <Input
-          ref={emailInput}
+          ref={emailInputRef}
           placeholder="Email"
           keyboardType="email-address"
           {...useEmail}
           errorMessage={formError.email}
           returnKeyType="next"
-          onSubmitEditing={() => pwdInput.current.focus()}
+          onSubmitEditing={() => pwdInputRef.current.focus()}
           blurOnSubmit={false}
         />
         <Input
-          ref={pwdInput}
+          ref={pwdInputRef}
           placeholder="Password"
           textContentType={"password"}
           secureTextEntry={true}
@@ -184,6 +189,12 @@ export default function SignUpView({ navigation }) {
           </TextLink>
         </TouchableOpacity>
       </View>
+      <Toast
+        ref={toastRef}
+        position="top"
+        style={{ borderRadius: 20 }}
+        textStyle={{ color: theme.colors.error }}
+      />
     </MainKeyboardAvoidingView>
   );
 }

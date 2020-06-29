@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -30,9 +30,6 @@ import useInput from "../hooks/useInput";
 import { useStore } from "../hooks/store";
 import { dispatchUserNew } from "../hooks/dispatchers";
 
-// .env imports
-import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
-
 // utils imports
 import {
   classifyAuthError,
@@ -46,28 +43,47 @@ import { setStorage } from "../Utils/asyncStorage";
 // Navigation imports
 import { Screens } from "../Resources/Navigation";
 
+// Toast import
+import Toast, { DURATION } from "react-native-easy-toast";
+
 export default function SignInView({ navigation }) {
+  // Theme
   const { theme } = useContext(ThemeContext);
+
+  // Redux
   const { state, dispatch } = useStore();
+
+  // States
   const useEmail = useInput();
   const usePassword = useInput();
-  const pwdInput = useRef(null);
+
+  // States: Errors
   const [formError, setFormError] = useState<AuthError>(new AuthError());
 
-  const _submitForm = (): void => {
+  // Ref
+  const pwdInputRef = useRef(null);
+  const toastErrRef = useRef(null);
+
+  const _submitForm = () => {
+    console.log("SUBMIT");
     const payload = {
       email: useEmail.value,
       password: usePassword.value,
     };
 
+    let msgToDisplay = "";
+
     userService
       .signInAsync(payload)
       .then((result) => {
-        if (result.status === 200) {
+        if (result === null) {
+          toastErrRef.current.show("Network error");
+          return;
+        } else if (result?.status === 200) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
           navigation.navigate(Screens.loggedHome);
-        } else if (result.error?.status === 400) {
+        } else if (result?.error?.status === 400) {
           switch (classifyAuthError(result.error.message)) {
             case errorType.email:
               setFormError(new AuthError({ email: result.error.message }));
@@ -78,10 +94,11 @@ export default function SignInView({ navigation }) {
             default:
               break;
           }
-        }
+        } else throw new Error();
       })
       .catch((error) => {
-        console.log("error", error);
+        console.log("signInAsync() -- Unexpected error : ", error);
+        msgToDisplay = "Unexpected error";
       });
   };
 
@@ -95,12 +112,12 @@ export default function SignInView({ navigation }) {
           errorMessage={formError.email}
           returnKeyType="next"
           onSubmitEditing={() => {
-            pwdInput.current.focus();
+            pwdInputRef.current.focus();
           }}
           blurOnSubmit={false}
         />
         <Input
-          ref={pwdInput}
+          ref={pwdInputRef}
           placeholder="Password"
           textContentType={"password"}
           secureTextEntry={true}
@@ -124,6 +141,12 @@ export default function SignInView({ navigation }) {
           <TextLink>New to eBet? Go to REGISTER!!</TextLink>
         </TouchableOpacity>
       </View>
+      <Toast
+        ref={toastErrRef}
+        position="top"
+        style={{ borderRadius: 20 }}
+        textStyle={{ color: theme.colors.error }}
+      />
     </MainKeyboardAvoidingView>
   );
 }

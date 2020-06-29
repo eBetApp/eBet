@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import {
   View,
   ScrollView,
@@ -14,7 +14,7 @@ import { useStore } from "../hooks/store";
 import { dispatchUserNull, dispatchUserEdit } from "../hooks/dispatchers";
 
 // UI imports
-import { Text, Input } from "react-native-elements";
+import { Text, Input, ThemeContext } from "react-native-elements";
 import {
   ButtonValid,
   ButtonCancel,
@@ -22,9 +22,16 @@ import {
 } from "../components/styled/Buttons";
 import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Toast from "react-native-easy-toast";
 
 // Fetch imports
 import queryString from "query-string";
+import userService from "../Services/userService";
+import {
+  classifyAuthError,
+  errorType,
+  AuthError,
+} from "../Utils/parseApiError";
 
 // .env imports
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
@@ -43,34 +50,32 @@ import Avatar from "../components/Avatar";
 
 // Custom hooks imports
 import useInput from "../hooks/useInput";
-import userService from "../Services/userService";
-import {
-  classifyAuthError,
-  errorType,
-  AuthError,
-} from "../Utils/parseApiError";
+
+// Navigation imports
 import { Screens } from "../Resources/Navigation";
 
 export default function LoggedView({ navigation }) {
   let stripeAccount = "";
 
+  // Theme
+  const { theme } = useContext(ThemeContext);
+
   // Redux
   const { dispatch, state } = useStore();
 
-  //#region USESTATES
-  // Inputs
+  // States
   const useEmail = useInput(state.user?.email ?? "");
   const useNickname = useInput(state.user?.nickname ?? "");
   const [birthdate, setBirthdate] = useState(
     new Date(state.user?.birthdate).toDateString() ?? ""
   );
 
-  // Errors
+  // States: Errors
   const [formError, setFormError] = useState<AuthError>(new AuthError());
-  //#endregion USESTATES
 
   // Ref
-  const emailInput = useRef(null);
+  const emailInputRef = useRef(null);
+  const toastErrRef = useRef(null);
 
   //#region DATEPICKER
   const date = new Date(state.user?.birthdate);
@@ -142,12 +147,14 @@ export default function LoggedView({ navigation }) {
     userService
       .updateAsync(payload, token)
       .then((res) => {
-        if (res.status === 200) {
+        if (res === null) {
+          return toastErrRef.current.show("Network error");
+        } else if (res?.status === 200) {
           delete payload.uuid;
           dispatchUserEdit(dispatch, { ...payload });
           navigation.goBack();
         }
-        if (res.error?.status === 400) {
+        if (res?.error?.status === 400) {
           switch (classifyAuthError(res.error.message)) {
             case errorType.nickname:
               setFormError(new AuthError({ nickname: "Wrong format" }));
@@ -159,10 +166,11 @@ export default function LoggedView({ navigation }) {
               setFormError(new AuthError({ birthdate: "Wrong format" }));
               break;
           }
-        }
+        } else throw new Error();
       })
       .catch((error) => {
-        console.log("error", error);
+        toastErrRef.current.show("Unexpected error");
+        console.log("updateUserAsync() -- Unexpected error : ", error);
       });
   };
 
@@ -177,11 +185,11 @@ export default function LoggedView({ navigation }) {
           label="Nickname"
           errorMessage={formError.nickname}
           returnKeyType="next"
-          onSubmitEditing={() => emailInput.current.focus()}
+          onSubmitEditing={() => emailInputRef.current.focus()}
           blurOnSubmit={false}
         />
         <Input
-          ref={emailInput}
+          ref={emailInputRef}
           {...useEmail}
           label="Email"
           keyboardType="email-address"
@@ -223,6 +231,12 @@ export default function LoggedView({ navigation }) {
           />
         </View>
       </View>
+      <Toast
+        ref={toastErrRef}
+        position="top"
+        style={{ borderRadius: 20 }}
+        textStyle={{ color: theme.colors.error }}
+      />
     </MainKeyboardAvoidingView>
   );
 

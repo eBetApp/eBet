@@ -17,7 +17,10 @@ export function ButtonValid(props) {
   return (
     <ButtonBase
       {...props}
-      buttonStyle={{ backgroundColor: Palette.ternaryBgValid }}
+      buttonStyle={{
+        ...props.buttonStyle,
+        backgroundColor: Palette.ternaryBgValid,
+      }}
     />
   );
 }
@@ -26,7 +29,10 @@ export function ButtonCancel(props) {
   return (
     <ButtonBase
       {...props}
-      buttonStyle={{ backgroundColor: Palette.ternaryBgCancel }}
+      buttonStyle={{
+        ...props.buttonStyle,
+        backgroundColor: Palette.ternaryBgCancel,
+      }}
     />
   );
 }
