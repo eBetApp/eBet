@@ -5,7 +5,10 @@ import React, { useContext } from "react";
 import { StoreProvider, useStore } from "./hooks/store";
 
 // Navigation imports
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  createBottomTabNavigator,
+  BottomTabBarOptions,
+} from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import {
   HomeStackScreen,
@@ -24,9 +27,10 @@ export default function NestedApp() {
 
   // UI
   const { theme } = useContext(ThemeContext);
-  const tabBarOptions = {
+  const tabBarOptions: BottomTabBarOptions = {
     activeTintColor: theme.colors.primary,
     inactiveTintColor: theme.colors.secondary,
+    keyboardHidesTabBar: true,
     style: {
       backgroundColor: theme.customColors.secondaryBg,
     },
