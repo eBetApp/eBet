@@ -18,7 +18,7 @@ import LoggedScreen from "../screens/LoggedView";
 import PasswordScreen from "../screens/PasswordView";
 
 // UI imports
-import theme from "./Theme";
+import theme, { CustomTheme } from "./Theme";
 
 // Redux imports
 import { useStore } from "../hooks/store";
@@ -45,10 +45,10 @@ export enum Screens {
 //#region COMMON NAVIGATION OPTIONS
 const commonNavScreenOptions: StackNavigationOptions = {
   headerStyle: {
-    backgroundColor: theme.customColors.secondaryBg,
+    backgroundColor: (theme as CustomTheme).customColors.secondaryBg,
   },
   headerTintColor: theme.colors.primary,
-  cardStyle: { backgroundColor: theme.customColors.primaryBg },
+  cardStyle: { backgroundColor: (theme as CustomTheme).customColors.primaryBg },
 };
 //#endregion COMMON NAVIGATION OPTIONS
 

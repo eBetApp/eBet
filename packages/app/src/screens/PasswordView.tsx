@@ -73,20 +73,28 @@ export default function PasswordView({ navigation }) {
       .then((res) => {
         if (res === null) {
           return toastErrRef.current.show("Network error");
-        } else if (res?.status === 200) {
+        } else if ((res as IApiResponseSuccess)?.status === 200) {
           delete payload.uuid;
           dispatchUserEdit(dispatch, { ...payload });
           navigation.goBack();
-        } else if (res?.error?.status === 400) {
-          switch (classifyAuthError(res.error.message)) {
+        } else if ((res as IApiResponseError)?.error?.status === 400) {
+          switch (classifyAuthError((res as IApiResponseError).error.message)) {
             case errorType.password:
-              setFormError(new AuthError({ newPassword: res.error.message }));
+              setFormError(
+                new AuthError({
+                  newPassword: (res as IApiResponseError).error.message,
+                })
+              );
               break;
           }
-        } else if (res?.error?.status === 403) {
-          switch (classifyAuthError(res.error.message)) {
+        } else if ((res as IApiResponseError)?.error?.status === 403) {
+          switch (classifyAuthError((res as IApiResponseError).error.message)) {
             case errorType.password:
-              setFormError(new AuthError({ password: res.error.message }));
+              setFormError(
+                new AuthError({
+                  password: (res as IApiResponseError).error.message,
+                })
+              );
               break;
           }
         } else throw new Error();

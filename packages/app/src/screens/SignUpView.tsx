@@ -92,23 +92,40 @@ export default function SignUpView({ navigation }) {
         console.log(result);
         if (result === null) {
           return toastErrRef.current.show("Network error");
-        } else if (result?.status === 201) {
-          dispatchUserNew(dispatch, result.data.user);
-          setStorage("token", result.meta.token);
-          // navigation.navigate(Screens.account);
-        } else if (result?.error?.status === 400) {
-          switch (classifyAuthError(result.error.message)) {
+        } else if ((result as IAuthServiceResponse)?.status === 201) {
+          dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
+          setStorage("token", (result as IAuthServiceResponse).meta.token);
+        } else if ((result as IApiResponseError)?.error?.status === 400) {
+          switch (
+            classifyAuthError((result as IApiResponseError).error.message)
+          ) {
             case errorType.nickname:
-              setFormError(new AuthError({ nickname: result.error?.message }));
+              setFormError(
+                new AuthError({
+                  nickname: (result as IApiResponseError).error?.message,
+                })
+              );
               break;
             case errorType.email:
-              setFormError(new AuthError({ email: result.error?.message }));
+              setFormError(
+                new AuthError({
+                  email: (result as IApiResponseError).error?.message,
+                })
+              );
               break;
             case errorType.password:
-              setFormError(new AuthError({ password: result.error?.message }));
+              setFormError(
+                new AuthError({
+                  password: (result as IApiResponseError).error?.message,
+                })
+              );
               break;
             case errorType.birthdate:
-              setFormError(new AuthError({ birthdate: result.error?.message }));
+              setFormError(
+                new AuthError({
+                  birthdate: (result as IApiResponseError).error?.message,
+                })
+              );
               break;
             default:
               break;
@@ -157,14 +174,13 @@ export default function SignUpView({ navigation }) {
             placeholder="Birthdate"
             value={birthdate}
             errorMessage={formError.birthdate}
-          ></Input>
+          />
         </TouchableOpacity>
         {show && (
           <DateTimePicker
             testID="dateTimePicker"
             value={date}
             mode="date"
-            display="default"
             onChange={onChange}
           />
         )}

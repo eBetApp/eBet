@@ -7,7 +7,7 @@ import {
 const _CRUD = {
   delete: async (endPoint: string, token: string) => {
     try {
-      let response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
+      const response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -22,12 +22,12 @@ const _CRUD = {
   },
   post: async (endPoint: string, body: FormData | string, token?: string) => {
     const headers = {};
-    if (token !== null) headers["Authorization"] = `Bearer ${token}`;
+    if (token !== null) headers.Authorization = `Bearer ${token}`;
     if (typeof body === "string")
       headers["Content-Type"] = "application/x-www-form-urlencoded";
 
     try {
-      let response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
+      const response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
         method: "POST",
         headers,
         body,
@@ -39,12 +39,12 @@ const _CRUD = {
   },
   put: async (endPoint: string, body: FormData | string, token?: string) => {
     const headers = {};
-    if (token !== null) headers["Authorization"] = `Bearer ${token}`;
+    if (token !== null) headers.Authorization = `Bearer ${token}`;
     if (typeof body === "string")
       headers["Content-Type"] = "application/x-www-form-urlencoded";
 
     try {
-      let response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
+      const response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
         method: "PUT",
         headers,
         body,
@@ -57,7 +57,7 @@ const _CRUD = {
   },
   get: async (endPoint: string, body: FormData, token: string) => {
     try {
-      let response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
+      const response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

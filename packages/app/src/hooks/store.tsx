@@ -38,6 +38,7 @@ const _initContext: {
   dispatch: React.Dispatch<IAction>;
 } = {
   state: _initialState,
+  // tslint:disable-next-line:no-empty
   dispatch: () => {},
 };
 const _storeContext = createContext(_initContext);

@@ -20,6 +20,7 @@ import {
 // UI imports
 import { ThemeProvider, ThemeContext } from "react-native-elements";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { CustomTheme } from "./Resources/Theme";
 
 export default function NestedApp() {
   // Redux
@@ -29,10 +30,10 @@ export default function NestedApp() {
   const { theme } = useContext(ThemeContext);
   const tabBarOptions: BottomTabBarOptions = {
     activeTintColor: theme.colors.primary,
-    inactiveTintColor: theme.customColors.primaryBg,
+    inactiveTintColor: (theme as CustomTheme).customColors.primaryBg,
     keyboardHidesTabBar: true,
     style: {
-      backgroundColor: theme.customColors.secondaryBg,
+      backgroundColor: (theme as CustomTheme).customColors.secondaryBg,
     },
   };
 

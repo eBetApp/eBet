@@ -1,9 +1,11 @@
+// import { FullTheme } from "react-native-elements";
+
 // ENTITIES
 interface User {
   uuid: string;
   nickname: string;
   email: string;
-  birthdate: Date;
+  birthdate: string;
   password: string;
   avatar?: string;
   customerId?: string;
@@ -44,7 +46,7 @@ interface IToken {
 interface IAuthServiceResponse extends IApiResponseSuccess {
   status: number;
   data: {
-    user: Omit<IUser, "password">;
+    user: Omit<User, "password">;
   };
   meta: IToken;
 }
@@ -53,6 +55,6 @@ interface IAuthServiceResponse extends IApiResponseSuccess {
 interface IUserServiceResponse extends IApiResponseSuccess {
   status: number;
   data: {
-    user?: Omit<IUser, "password">;
+    user?: Omit<User, "password">;
   };
 }

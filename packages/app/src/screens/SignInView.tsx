@@ -73,17 +73,27 @@ export default function SignInView({ navigation }) {
         if (result === null) {
           toastErrRef.current.show("Network error");
           return;
-        } else if (result?.status === 200) {
-          dispatchUserNew(dispatch, result.data.user);
-          setStorage("token", result.meta.token);
+        } else if ((result as IAuthServiceResponse)?.status === 200) {
+          dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
+          setStorage("token", (result as IAuthServiceResponse).meta.token);
           navigation.navigate(Screens.loggedHome);
-        } else if (result?.error?.status === 400) {
-          switch (classifyAuthError(result.error.message)) {
+        } else if ((result as IApiResponseError)?.error?.status === 400) {
+          switch (
+            classifyAuthError((result as IApiResponseError).error.message)
+          ) {
             case errorType.email:
-              setFormError(new AuthError({ email: result.error.message }));
+              setFormError(
+                new AuthError({
+                  email: (result as IApiResponseError).error.message,
+                })
+              );
               break;
             case errorType.password:
-              setFormError(new AuthError({ password: result.error.message }));
+              setFormError(
+                new AuthError({
+                  password: (result as IApiResponseError).error.message,
+                })
+              );
               break;
             default:
               break;
