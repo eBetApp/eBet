@@ -1,55 +1,68 @@
 // React imports
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import {
   StyleSheet,
   View,
   Image,
   TouchableOpacity,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
-
 // UI imports
 import { Button, Input, Icon, Text } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 import { ThemeContext } from "react-native-elements";
 import { TextLink } from "../components/styled/TextLink";
-
+import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
+import Toast from "react-native-easy-toast";
 // Fetch imports
 import queryString from "query-string";
-
 // Custom hooks imports
 import useInput from "../hooks/useInput";
-
 // Redux import
 import { useStore } from "../hooks/store";
 import { dispatchUserNew } from "../hooks/dispatchers";
-
 // .env imports
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
-
 // API types imports
-import { classifyError, errorType } from "../Utils/parseApiError";
-
+import {
+  classifyAuthError,
+  errorType,
+  AuthError,
+} from "../Utils/parseApiError";
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
-
 // Services import
 import userService from "../Services/userService";
+// Navigation imports
+import { Screens } from "../Resources/NavigationStacks";
+import { ScrollView } from "react-native-gesture-handler";
+import { Loader } from "../components/styled/Loader";
 
 export default function SignUpView({ navigation }) {
+  // Theme
   const { theme } = useContext(ThemeContext);
+
+  // Redux
   const { dispatch } = useStore();
+
+  // States
   const useNickname = useInput();
   const useEmail = useInput();
   const usePassword = useInput();
-  const [birthdate, setBirthdate] = useState("");
-  const [errorNickname, setErrorNickname] = useState("");
-  const [errorEmail, setErrorEmail] = useState("");
-  const [errorPassword, setErrorPassword] = useState("");
-  const [errorBirthdate, setErrorBirthdate] = useState("");
+  const [birthdate, setBirthdate] = useState(null);
   const date = new Date(Date.now());
   const [show, setShow] = useState(false);
+  const [authIsProcessing, setAuthIsProcessing] = useState<boolean>(false);
+
+  // States: Errors
+  const [formError, setFormError] = useState<AuthError>(new AuthError());
+
+  // Ref
+  const pwdInputRef = useRef(null);
+  const emailInputRef = useRef(null);
+  const toastErrRef = useRef(null);
 
   const onChange = (event, selectedDate) => {
     setShow(Platform.OS === "ios");
@@ -60,7 +73,11 @@ export default function SignUpView({ navigation }) {
     setShow(true);
   };
 
-  const _submitForm = () => {
+  const _submitForm = (): void => {
+    if (authIsProcessing) return;
+    if (birthdate === null || birthdate === undefined) return;
+    setAuthIsProcessing(true);
+
     const payload = {
       nickname: useEmail.value,
       email: useEmail.value,
@@ -71,87 +88,123 @@ export default function SignUpView({ navigation }) {
     userService
       .signUpAsync(payload)
       .then((result) => {
-        if (result.status === 201) {
+        if (result === null) {
+          return toastErrRef.current.show("Network error");
+        } else if (result?.status === 200) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
-          navigation.navigate("Home");
-        } else if (result.error?.status === 400) {
-          switch (classifyError(result.error.message)) {
+          navigation.navigate(Screens.account);
+        } else if (result?.error?.status === 400) {
+          switch (classifyAuthError(result.error.message)) {
             case errorType.nickname:
-              setErrorNickname(result.error?.message);
+              setFormError(new AuthError({ nickname: result.error?.message }));
               break;
             case errorType.email:
-              setErrorEmail(result.error?.message);
+              setFormError(new AuthError({ email: result.error?.message }));
               break;
             case errorType.password:
-              setErrorPassword(result.error?.message);
+              setFormError(new AuthError({ password: result.error?.message }));
               break;
             case errorType.birthdate:
-              setErrorBirthdate(result.error?.message);
+              setFormError(new AuthError({ birthdate: result.error?.message }));
               break;
             default:
               break;
           }
-        }
+        } else throw new Error();
       })
       .catch((error) => {
-        console.log("error", error);
-      });
+        toastErrRef.current.show("Unexpected error");
+        console.log("signUpAsync() -- Unexpected error : ", error);
+      })
+      .finally(() => setAuthIsProcessing(false));
   };
 
   return (
-    <View>
-      <Input
-        placeholder="Nickname"
-        {...useNickname}
-        errorMessage={errorNickname}
-      />
-      <Input
-        placeholder="Email"
-        keyboardType="email-address"
-        {...useEmail}
-        errorMessage={errorEmail}
-      />
-      <TouchableOpacity onPress={showDatepicker}>
+    <MainKeyboardAvoidingView style={{ flex: 1 }}>
+      <ScrollView style={styles.formContainer}>
         <Input
-          editable={false}
-          placeholder="Birthdate"
-          value={birthdate}
-          errorMessage={errorBirthdate}
+          placeholder="Nickname"
+          {...useNickname}
+          errorMessage={formError.nickname}
+          returnKeyType="next"
+          onSubmitEditing={() => emailInputRef.current.focus()}
+          blurOnSubmit={false}
         />
-      </TouchableOpacity>
-      {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode="date"
-          display="default"
-          onChange={onChange}
+        <Input
+          ref={emailInputRef}
+          placeholder="Email"
+          keyboardType="email-address"
+          {...useEmail}
+          errorMessage={formError.email}
+          returnKeyType="next"
+          onSubmitEditing={() => pwdInputRef.current.focus()}
+          blurOnSubmit={false}
         />
-      )}
-      <Input
-        placeholder="Password"
-        secureTextEntry={true}
-        {...usePassword}
-        errorMessage={errorPassword}
-      />
-      <ButtonValid
-        title="SIGN UP"
-        onPress={_submitForm}
-        icon={
-          <Icon
-            name="ios-checkmark"
-            type="ionicon"
-            color="#ffffff"
-            style={{ marginRight: 5 }}
+        <Input
+          ref={pwdInputRef}
+          placeholder="Password"
+          textContentType={"password"}
+          secureTextEntry={true}
+          {...usePassword}
+          errorMessage={formError.password}
+        />
+        <TouchableOpacity onPress={showDatepicker}>
+          <Input
+            editable={false}
+            placeholder="Birthdate"
+            value={birthdate}
+            errorMessage={formError.birthdate}
+          ></Input>
+        </TouchableOpacity>
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onChange}
           />
-        }
+        )}
+      </ScrollView>
+      <View style={styles.bottomContainer}>
+        <ButtonValid
+          title="SIGN UP"
+          onPress={_submitForm}
+          icon={
+            <Icon
+              name="ios-checkmark"
+              type="ionicon"
+              style={{ marginRight: 5 }}
+            />
+          }
+        />
+        <Loader animating={authIsProcessing} />
+        <TouchableOpacity onPress={() => navigation.navigate(Screens.signIn)}>
+          <TextLink style={{ color: "blue" }}>
+            Already have an account? Go to SIGN IN
+          </TextLink>
+        </TouchableOpacity>
+      </View>
+      <Toast
+        ref={toastErrRef}
+        position="top"
+        style={{ borderRadius: 20 }}
+        textStyle={{ color: theme.colors.error }}
       />
-      <TouchableOpacity onPress={() => navigation.navigate("signin")}>
-        <TextLink style={{ color: "blue" }}>
-          Already have an account? Go to SIGN IN
-        </TextLink>
-      </TouchableOpacity>
-    </View>
+    </MainKeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  formContainer: {
+    alignSelf: "stretch",
+  },
+  bottomContainer: {
+    flexGrow: 1,
+    justifyContent: "flex-end",
+  },
+});

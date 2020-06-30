@@ -30,9 +30,9 @@ class StripeController {
 		await stripe.charges.create({
 			amount,
 			currency: 'eur',
-			customer: fromCustomerId, // TODO: ajouter customerId à User.ts
+			customer: fromCustomerId,
 			destination: {
-				account: toAccountId, // TODO: ajouter accountId à User.ts
+				account: toAccountId,
 			},
 		});
 	}
@@ -51,7 +51,7 @@ class StripeController {
 				status: 200,
 				data: {
 					message: 'SUCCESS',
-					newBalance: newBalance.available[0].amount, // TODO: voir pour parser résultats car tableau donc il doit y avoir des cas où plusieurs entrées au tableau (une pour chaque monnaie?)
+					newBalance: newBalance.available[0].amount,
 				},
 			});
 		} catch (error) {
@@ -71,7 +71,7 @@ class StripeController {
 				status: 200,
 				data: {
 					message: 'SUCCESS',
-					balance: balance.available[0].amount, // TODO: voir pour parser résultats car tableau donc il doit y avoir des cas où plusieurs entrées au tableau (une pour chaque monnaie?)
+					balance: balance.available[0].amount,
 				},
 			});
 		} catch (error) {
@@ -79,7 +79,6 @@ class StripeController {
 		}
 	}
 
-	// TODO: déporter appel dans un service
 	static getCreateAccountUrl(
 		req: Request,
 		res: Response<ApiResponse>,
@@ -92,8 +91,6 @@ class StripeController {
 		});
 	}
 
-	/* <req.body CODE> is returned by stripe on createAccount page -- cf getCreatAccountUrl()*/
-	// TODO (côté client) Récupérer l'info "code" dans l'url en RESPONSE. Cette response est de la forme : https://connect.stripe.com/connect/default/oauth/test?scope=read_write&code=ac_HTFpocROTP8GX7IDWyEb2rpKVdNe6cYF // ATTENTION: souvent terminé par #
 	static async setAccount(
 		req: Request,
 		res: Response<ApiResponse>,
@@ -116,18 +113,12 @@ class StripeController {
 		}
 	}
 
-	// TODO: charge from customer to ebet service => comment faire pour la soure / numero de cb à passer???
-	// ==> voir https://stripe.com/docs/payments/accept-a-payment#web
-	// ==> voir https://docs.expo.io/versions/latest/sdk/payments/
-	// ==> voir https://github.com/expo/stripe-expo
-	// TODO: restreindre à des paiements en EURO uniquement !!
-	// ==> Se passe probablement au niveau client avec méthodes déjà fournies par strip
 	static async chargeCreditCard(req: Request, res: Response<ApiResponse>) {
 		try {
-			const { amount, currency, source } = req.body; // ATTENTION : La source (= numero cb) ne doit pas etre passé comme ça !!! COMMENT ??
+			const { amount, source } = req.body;
 			const chargeRes = await StripeService.chargeCreditCard(
 				amount,
-				currency,
+				'eur',
 				source,
 			);
 			if (chargeRes)

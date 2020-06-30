@@ -56,15 +56,6 @@ const styles = StyleSheet.create({
     width: 130,
     height: 130,
     borderRadius: 63,
-    borderWidth: 2,
-    borderColor: "white",
-  },
-  touchable: {
-    width: 130,
-    height: 130,
-    marginBottom: 10,
-    alignSelf: "center",
-    position: "absolute",
-    marginTop: 90,
+    borderWidth: 0,
   },
 });

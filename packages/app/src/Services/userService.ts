@@ -7,7 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import queryString from "query-string";
 
 // Repositories imports
-import UserRepository from "../Repositories/userRepository";
+import UserRepository from "../Repositories/ebetRepository";
 
 // Services imports
 import { cameraPermissions } from "./devicePermissionsService";
@@ -103,9 +103,41 @@ const signInAsync = async (
   }
 };
 
+const updateAsync = async (
+  payload: User,
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await UserRepository.put(
+      "user/update",
+      queryString.stringify(payload),
+      token
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
+const updatePwdAsync = async (
+  payload: { uuid: string; currentPwd: string; newPwd: string },
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await UserRepository.put(
+      "user/update-password",
+      queryString.stringify(payload),
+      token
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
 export default {
   chooseImageFromGaleryAsync,
   postImageAsync: putAvatarAsync,
   signUpAsync,
   signInAsync,
+  updateAsync,
+  updatePwdAsync,
 };
