@@ -1,6 +1,6 @@
-import { fetchPastMatch, fetchUpcomingMatch } from "./apiFetchs";
-import BetRepository from "../../database/repositories/BetRepository";
-import Bet from "../../database/models/Bet";
+import { fetchPastMatch, fetchUpcomingMatch } from './apiFetchs';
+import BetRepository from '../../database/repositories/BetRepository';
+import Bet from '../../database/models/Bet';
 
 interface GameEvent {
 	game: string;
@@ -16,7 +16,7 @@ export default class ApiDatas {
 	private upcomingMatch: Match[] = [];
 
 	constructor() {
-		if (!!ApiDatas.instance) {
+		if (ApiDatas.instance) {
 			return ApiDatas.instance;
 		}
 
@@ -101,12 +101,12 @@ export default class ApiDatas {
 				finishedBetList.forEach(bet => {
 					const endedMatch = this.getPastMatchById(bet.idMatch);
 					if (endedMatch !== undefined) {
-						bet.idWinner = endedMatch.winner_id
-						bet.ended = true
+						bet.idWinner = endedMatch.winner_id;
+						bet.ended = true;
 
-						BetRepository.instance.create(bet)
+						BetRepository.instance.create(bet);
 					}
-				})
+				});
 			}
 
 		}

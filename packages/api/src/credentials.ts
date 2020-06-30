@@ -13,6 +13,7 @@ const neededValues = [
 	'STRIPE_KEY',
 	'PORT',
 	'HOST',
+	'PANDA_SCORE_API',
 ];
 
 const missingValues = neededValues.filter(
