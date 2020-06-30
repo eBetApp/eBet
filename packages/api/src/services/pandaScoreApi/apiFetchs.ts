@@ -3,8 +3,6 @@ import { writeFileSync } from 'fs';
 import schedule from 'node-schedule';
 import ApiDatas from './apiDatas';
 
-const apiDatas = new ApiDatas()
-
 export const startSchedule = () => {
 	fetchPastMatch();
 	fetchlivesMatch();
@@ -15,35 +13,29 @@ export const startSchedule = () => {
 	schedule.scheduleJob('0 2 * * *', fetchUpcomingMatch);	// tout les jour a 2H
 }
 
-export const fetchPastMatch = () => {
-	axios.get("https://api.pandascore.co/matches/past", {
+export const fetchPastMatch = async () => {
+	const fetch = await axios.get("https://api.pandascore.co/matches/past", {
 		headers: {
 			"authorization": `Bearer ${process.env.PANDA_SCORE_API}`
 		}
 	})
-		.then(response => {
-			new ApiDatas().chargePastMatch(response.data);
-		})
+	new ApiDatas().chargePastMatch(fetch.data);
 }
 
-export const fetchUpcomingMatch = () => {
-	axios.get("https://api.pandascore.co/matches/upcoming", {
+export const fetchUpcomingMatch = async () => {
+	const fetch = await axios.get("https://api.pandascore.co/matches/upcoming", {
 		headers: {
 			"authorization": `Bearer ${process.env.PANDA_SCORE_API}`
 		}
 	})
-		.then(response => {
-			new ApiDatas().chargeUpcomingMatch(response.data);
-		})
+	new ApiDatas().chargeUpcomingMatch(fetch.data);
 }
 
-export const fetchlivesMatch = () => {
-	axios.get("https://api.pandascore.co/lives", {
+export const fetchlivesMatch = async () => {
+	const fetch = await axios.get("https://api.pandascore.co/lives", {
 		headers: {
 			"authorization": `Bearer ${process.env.PANDA_SCORE_API}`
 		}
 	})
-		.then(response => {
-			new ApiDatas().chargeLiveMatch(response.data);
-		})
+	new ApiDatas().chargeLiveMatch(fetch.data);
 }

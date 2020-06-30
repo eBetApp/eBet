@@ -1,33 +1,15 @@
-interface Match {
-	id: number;
-	name: string;
-	begin_at: string;
-	end_at?: string;
-	games: Game[];
-	opponents: Opponents[]
-}
+import { fetchPastMatch, fetchUpcomingMatch } from "./apiFetchs";
+import BetRepository from "../../database/repositories/BetRepository";
+import Bet from "../../database/models/Bet";
 
-interface Game {
-	status: string;
-	winner: Winner;
-}
-
-interface Opponents {
-	opponent: Opponent;
-}
-
-interface Opponent {
-	id: number;
-	image_url: string;
-	name: string;
-}
-
-interface Winner {
-	id: number;
+interface GameEvent {
+	game: string;
 }
 
 export default class ApiDatas {
 	static instance: ApiDatas;
+
+	private liveMatchIds: number[] = [];
 
 	private pastMatch: Match[] = [];
 	private liveMatch: Match[] = [];
@@ -41,6 +23,7 @@ export default class ApiDatas {
 		this.pastMatch = [];
 		this.liveMatch = [];
 		this.upcomingMatch = [];
+		this.liveMatchIds = [];
 
 		ApiDatas.instance = this;
 
@@ -82,16 +65,52 @@ export default class ApiDatas {
 		});
 
 		this.pastMatch = newPastMatch;
+		// console.log("past charged");
 	}
 
-	chargeLiveMatch(liveMatchFile: any) {
+	async chargeLiveMatch(liveMatchFile: any) {
 		let newLiveMatch: Match[] = [];
 
-		liveMatchFile.forEach((event: any) => {
-			const { match } = event;
-			newLiveMatch.push(match as Match);
+		let newLiveMatchIds: number[] = [];
+
+		liveMatchFile.forEach((itemEvent: { match: Match, event: GameEvent }) => {
+			let { match, event } = itemEvent;
+
+			match.videogame = {
+				name: event.game
+			};
+
+			newLiveMatchIds.push(match.id);
+
+			newLiveMatch.push(match);
 		});
 
+		if (this.liveMatchIds != newLiveMatchIds) {
+			await fetchPastMatch();
+			await fetchUpcomingMatch();
+
+			let finishedBetList: Bet[] | undefined;
+
+			for (const liveMatchId of this.liveMatchIds) {
+				if (newLiveMatchIds.indexOf(liveMatchId) === -1) {
+					finishedBetList = await BetRepository.instance.getByMatchId(liveMatchId);
+				}
+			}
+
+			if (finishedBetList !== undefined) {
+				finishedBetList.forEach(bet => {
+					const endedMatch = this.getPastMatchById(bet.idMatch);
+					if (endedMatch !== undefined) {
+						bet.idWinner = endedMatch.winner_id
+						bet.ended = true
+
+						BetRepository.instance.create(bet)
+					}
+				})
+			}
+
+		}
+		this.liveMatchIds = newLiveMatchIds;
 		this.liveMatch = newLiveMatch;
 	}
 
@@ -103,5 +122,6 @@ export default class ApiDatas {
 		});
 
 		this.upcomingMatch = newUpcomingMatch;
+		// console.log("upcoming charged");
 	}
 }

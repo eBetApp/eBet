@@ -41,11 +41,17 @@ export default class Bet implements IBet {
 	@Column('int')
 	idTeamBet!: number;
 
-	@Column('int')
-	idWinner!: number;
+	@Column('int', { nullable: true })
+	idWinner: number | undefined;
 
 	@Column('text')
-	game!: string;
+	gameName!: string;
+
+	@Column('text')
+	tournamentName!: string;
+
+	@Column('text')
+	matchName!: string;
 
 	@Column('text')
 	team1!: string;
