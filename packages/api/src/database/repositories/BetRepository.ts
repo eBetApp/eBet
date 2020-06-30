@@ -28,6 +28,20 @@ class BetRepository extends BaseRepository<Bet> {
 		});
 	}
 
+	async getByUser(userUuid: string): Promise<Bet[] | undefined> {
+		return await this.repository.find({
+			relations: ['user'],
+			where: { user: userUuid },
+		});
+	}
+
+	async getByMatchId(idMatch: number): Promise<Bet[] | undefined> {
+		return await this.repository.find({
+			relations: ['user'],
+			where: { idMatch },
+		});
+	}
+
 	async update(
 		criteria: Partial<Bet>,
 		partialEntity: Partial<Bet>,
