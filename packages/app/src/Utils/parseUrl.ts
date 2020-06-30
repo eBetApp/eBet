@@ -4,7 +4,7 @@ interface IParseUrlResponse {
 
 export default function parseUrl(url: any): IParseUrlResponse {
   const regex = /[?&]([^=#]+)=([^&#]*)/g;
-  let params = {};
+  const params = {};
   let match;
 
   while ((match = regex.exec(url))) {

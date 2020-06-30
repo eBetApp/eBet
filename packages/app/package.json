@@ -20,7 +20,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest"
+    "test": "jest",
+    "lint": "tslint src/*.ts* src/**/*.ts*"
   },
   "bugs": {
     "url": "https://github.com/eBetApp/eBet/issues"

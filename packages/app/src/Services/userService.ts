@@ -74,7 +74,7 @@ interface ISignUpPayload {
 
 const signUpAsync = async (
   payload: ISignUpPayload
-): Promise<IAuthServiceResponse | null> => {
+): Promise<ApiResponse | null> => {
   try {
     return await UserRepository.post(
       "auth/signup",
@@ -92,7 +92,7 @@ interface ISignInPayload {
 
 const signInAsync = async (
   payload: ISignInPayload
-): Promise<IAuthServiceResponse | null> => {
+): Promise<ApiResponse | null> => {
   try {
     return await UserRepository.post(
       "auth/signin",
@@ -104,7 +104,7 @@ const signInAsync = async (
 };
 
 const updateAsync = async (
-  payload: User,
+  payload: Partial<User>,
   token: string
 ): Promise<ApiResponse | null> => {
   try {

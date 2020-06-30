@@ -2,7 +2,7 @@ import { IAction, ReducerActions } from "./ReducerTypes";
 
 export const dispatchUserNew = (
   dispatch: React.Dispatch<IAction>,
-  user: User
+  user: Omit<User, "password">
 ) => {
   return dispatch({ type: ReducerActions.register, payload: { user } });
 };

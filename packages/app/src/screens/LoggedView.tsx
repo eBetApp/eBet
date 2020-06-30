@@ -86,7 +86,7 @@ export default function LoggedView({ navigation }) {
       }}
       onNavigationStateChange={(navState) => {
         const params = parseUrl(navState.url);
-        if (params?.code !== undefined && params?.code != stripeAccount) {
+        if (params?.code !== undefined && params?.code !== stripeAccount) {
           stripeAccount = params?.code;
           _createStripeAccount(stripeAccount);
         }
@@ -107,7 +107,7 @@ export default function LoggedView({ navigation }) {
       code,
     };
 
-    var requestOptions = {
+    const requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: queryString.stringify(payload),
@@ -140,12 +140,13 @@ export default function LoggedView({ navigation }) {
       .then((res) => {
         if (res === null) {
           return toastErrRef.current.show("Network error");
-        } else if (res?.status === 200) {
+        } else if ((res as IApiResponseSuccess)?.status === 200) {
           delete payload.uuid;
           dispatchUserEdit(dispatch, { ...payload });
           toastSuccessRef.current.show("👍 Update is done");
-        } else if (res?.error?.status === 400) {
-          switch (classifyAuthError(res.error.message)) {
+          setFormError(new AuthError());
+        } else if ((res as IApiResponseError)?.error?.status === 400) {
+          switch (classifyAuthError((res as IApiResponseError).error.message)) {
             case errorType.nickname:
               setFormError(new AuthError({ nickname: "Wrong format" }));
               break;

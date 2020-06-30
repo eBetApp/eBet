@@ -1,11 +1,11 @@
 export interface IState {
-  user?: User | null;
+  user?: Omit<User, "password"> | null;
 }
 
 export interface IAction {
   type: ReducerActions;
   payload?: {
-    user?: User;
+    user?: Omit<User, "password">;
     partialUser?: Partial<User>;
   };
 }

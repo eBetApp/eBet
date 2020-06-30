@@ -13,18 +13,18 @@ import { MainView } from "../components/styled/Views";
 import { ScrollView } from "react-native-gesture-handler";
 import { Loader } from "../components/styled/Loader";
 // Stripe imports
-var stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
+// tslint:disable-next-line:no-var-requires
+const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
+
+interface IForm {
+  valid: boolean;
+  values: any;
+  status: any;
+}
 
 export default function PayView({ navigation }) {
   const { theme } = useContext(ThemeContext);
-  const [form, setForm] = useState({
-    card: {
-      number: "",
-      exp_month: "",
-      exp_year: "",
-      cvc: "",
-    },
-  });
+  const [form, setForm] = useState<IForm>(null);
   const [paymentIsProcessing, setPaymentIsProcessing] = useState<boolean>(
     false
   );
@@ -41,14 +41,14 @@ export default function PayView({ navigation }) {
       return null;
     }
 
-    var card = await stripeClient.createToken(_paymentInfos(form));
-    var token = card.id;
+    const card = await stripeClient.createToken(_paymentInfos(form));
+    const token = card.id;
     return token;
   };
 
-  const _checkPaymentInfosCompletion = (form) => form.valid;
+  const _checkPaymentInfosCompletion = (_form: IForm) => _form.valid;
 
-  const _paymentInfos = (form) => {
+  const _paymentInfos = (_form: IForm) => {
     return {
       card: {
         number: form?.values.number,
@@ -75,7 +75,7 @@ export default function PayView({ navigation }) {
       .postPaymentAsync(payload, userToken)
       .then((res) => {
         if (res === null) setPaymentError("Network error");
-        else if (res?.status === 200) {
+        else if ((res as IApiResponseSuccess)?.status === 200) {
           navigation.goBack();
         } else throw new Error();
       })
