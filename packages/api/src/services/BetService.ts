@@ -70,17 +70,17 @@ class BetServices {
 			);
 			return { status: 201, data: { bet: createdBet } };
 		} catch (error) {
-			throw new UnexpectedError(`Bet could not been created`, error);
+			throw new UnexpectedError('Bet could not been created', error);
 		}
 	}
 
 	static async past(userUuid: string): Promise<IApiResponseSuccess> {
 		try {
 			// WIP
-			return { status: 201, data: "WIP" };
+			return { status: 201, data: 'WIP' };
 		} catch (error) {
 			console.log(error);
-			throw new UnexpectedError(`Bet could not been created`, error);
+			throw new UnexpectedError('Bet could not been created', error);
 		}
 	}
 
@@ -90,7 +90,7 @@ class BetServices {
 			return { status: 201, data: liveMatch };
 		} catch (error) {
 			console.log(error);
-			throw new UnexpectedError(`Bet could not been created`, error);
+			throw new UnexpectedError('Bet could not been created', error);
 		}
 	}
 
@@ -100,7 +100,7 @@ class BetServices {
 			return { status: 201, data: upcomingMatch };
 		} catch (error) {
 			console.log(error);
-			throw new UnexpectedError(`Bet could not been created`, error);
+			throw new UnexpectedError('Bet could not been created', error);
 		}
 	}
 
@@ -116,7 +116,7 @@ class BetServices {
 			return { status: 201, data: bet };
 		} catch (error) {
 			console.log(error);
-			throw new UnexpectedError(`Bet could not been created`, error);
+			throw new UnexpectedError('Bet could not been created', error);
 		}
 	}
 
