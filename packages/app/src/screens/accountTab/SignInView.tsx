@@ -1,43 +1,32 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import React, { useState, useContext, useRef } from "react";
+import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
 // UI imports
-import {
-  Button,
-  Input,
-  Icon,
-  ThemeConsumer,
-  Text,
-} from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import { ThemeContext } from "react-native-elements";
-import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
-import { TextLink } from "../components/styled/TextLink";
-import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
-import { Loader } from "../components/styled/Loader";
+import { ButtonValid } from "../../components/styled/Buttons";
+import { TextLink } from "../../components/styled/TextLink";
+import { MainKeyboardAvoidingView } from "../../components/styled/Views";
+import { Loader } from "../../components/styled/Loader";
 // Fetch imports
-import userService from "../Services/userService";
+import userService from "../../Services/userService";
 // Custom hooks imports
-import useInput from "../hooks/useInput";
+import useInput from "../../hooks/useInput";
 // Redux import
-import { useStore } from "../hooks/store";
-import { dispatchUserNew } from "../hooks/dispatchers";
+import { useStore } from "../../hooks/store";
+import { dispatchUserNew } from "../../hooks/dispatchers";
 // utils imports
 import {
   classifyAuthError,
   errorType,
   AuthError,
-} from "../Utils/parseApiError";
+} from "../../Utils/parseApiError";
 // LocalStorage imports
-import { setStorage } from "../Utils/asyncStorage";
-// Navigation imports
-import { Screens } from "../Resources/NavigationStacks";
+import { setStorage, localStorageItems } from "../../Resources/LocalStorage";
 // Toast import
 import Toast from "react-native-easy-toast";
+// Resources imports
+import * as Strings from "../../Resources/Strings";
+import * as Navigation from "../../Resources/Navigation";
 
 export default function SignInView({ navigation }) {
   // Theme
@@ -75,8 +64,11 @@ export default function SignInView({ navigation }) {
           return;
         } else if ((result as IAuthServiceResponse)?.status === 200) {
           dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
-          setStorage("token", (result as IAuthServiceResponse).meta.token);
-          navigation.navigate(Screens.loggedHome);
+          setStorage(
+            localStorageItems.token,
+            (result as IAuthServiceResponse).meta.token
+          );
+          navigation.navigate(Navigation.Screens.loggedHome);
         } else if ((result as IApiResponseError)?.error?.status === 400) {
           switch (
             classifyAuthError((result as IApiResponseError).error.message)
@@ -111,7 +103,7 @@ export default function SignInView({ navigation }) {
     <MainKeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.formContainer}>
         <Input
-          placeholder="Email"
+          placeholder={Strings.inputs.ph_email}
           keyboardType="email-address"
           {...useEmail}
           errorMessage={formError.email}
@@ -123,7 +115,7 @@ export default function SignInView({ navigation }) {
         />
         <Input
           ref={pwdInputRef}
-          placeholder="Password"
+          placeholder={Strings.inputs.ph_password}
           textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
@@ -132,7 +124,7 @@ export default function SignInView({ navigation }) {
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
-          title="SIGN IN"
+          title={Strings.buttons.signin}
           onPress={_submitForm}
           icon={
             <Icon
@@ -143,8 +135,10 @@ export default function SignInView({ navigation }) {
           }
         />
         <Loader animating={authIsProcessing} />
-        <TouchableOpacity onPress={() => navigation.navigate(Screens.signUp)}>
-          <TextLink>New to eBet? Go to REGISTER!!</TextLink>
+        <TouchableOpacity
+          onPress={() => navigation.navigate(Navigation.Screens.signUp)}
+        >
+          <TextLink>{Strings.textLinks.go_register}</TextLink>
         </TouchableOpacity>
       </View>
       <Toast

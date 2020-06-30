@@ -2,12 +2,8 @@
 import React from "react";
 
 // UI imports
-import { Icon, ThemeProvider, Theme, FullTheme } from "react-native-elements";
-import Palette from "../Resources/Palette";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { State } from "react-native-gesture-handler";
-import { StackHeaderOptions } from "@react-navigation/stack/lib/typescript/src/types";
-import { IState } from "../hooks/ReducerTypes";
+import { FullTheme } from "react-native-elements";
+import Palette from "./Palette";
 
 export interface CustomTheme extends Partial<FullTheme> {
   customColors?: {

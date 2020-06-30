@@ -1,44 +1,34 @@
 // React imports
 import React, { useState, useContext, useRef } from "react";
-import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  Platform,
-  KeyboardAvoidingView,
-} from "react-native";
+import { StyleSheet, View, TouchableOpacity, Platform } from "react-native";
 // UI imports
-import { Button, Input, Icon, Text } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
+import { ButtonValid } from "../../components/styled/Buttons";
 import { ThemeContext } from "react-native-elements";
-import { TextLink } from "../components/styled/TextLink";
-import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
+import { TextLink } from "../../components/styled/TextLink";
+import { MainKeyboardAvoidingView } from "../../components/styled/Views";
 import Toast from "react-native-easy-toast";
-// Fetch imports
-import queryString from "query-string";
+import { ScrollView } from "react-native-gesture-handler";
+import { Loader } from "../../components/styled/Loader";
 // Custom hooks imports
-import useInput from "../hooks/useInput";
+import useInput from "../../hooks/useInput";
 // Redux import
-import { useStore } from "../hooks/store";
-import { dispatchUserNew } from "../hooks/dispatchers";
-// .env imports
-import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
+import { useStore } from "../../hooks/store";
+import { dispatchUserNew } from "../../hooks/dispatchers";
 // API types imports
 import {
   classifyAuthError,
   errorType,
   AuthError,
-} from "../Utils/parseApiError";
+} from "../../Utils/parseApiError";
 // LocalStorage imports
-import { setStorage } from "../Utils/asyncStorage";
+import { setStorage, localStorageItems } from "../../Resources/LocalStorage";
 // Services import
-import userService from "../Services/userService";
-// Navigation imports
-import { Screens } from "../Resources/NavigationStacks";
-import { ScrollView } from "react-native-gesture-handler";
-import { Loader } from "../components/styled/Loader";
+import userService from "../../Services/userService";
+// Resources imports
+import * as Strings from "../../Resources/Strings";
+import * as Navigation from "../../Resources/Navigation";
 
 export default function SignUpView({ navigation }) {
   // Theme
@@ -94,7 +84,10 @@ export default function SignUpView({ navigation }) {
           return toastErrRef.current.show("Network error");
         } else if ((result as IAuthServiceResponse)?.status === 201) {
           dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
-          setStorage("token", (result as IAuthServiceResponse).meta.token);
+          setStorage(
+            localStorageItems.token,
+            (result as IAuthServiceResponse).meta.token
+          );
         } else if ((result as IApiResponseError)?.error?.status === 400) {
           switch (
             classifyAuthError((result as IApiResponseError).error.message)
@@ -143,7 +136,7 @@ export default function SignUpView({ navigation }) {
     <MainKeyboardAvoidingView style={{ flex: 1 }}>
       <ScrollView style={styles.formContainer}>
         <Input
-          placeholder="Nickname"
+          placeholder={Strings.inputs.ph_nickname}
           {...useNickname}
           errorMessage={formError.nickname}
           returnKeyType="next"
@@ -152,7 +145,7 @@ export default function SignUpView({ navigation }) {
         />
         <Input
           ref={emailInputRef}
-          placeholder="Email"
+          placeholder={Strings.inputs.ph_email}
           keyboardType="email-address"
           {...useEmail}
           errorMessage={formError.email}
@@ -162,7 +155,7 @@ export default function SignUpView({ navigation }) {
         />
         <Input
           ref={pwdInputRef}
-          placeholder="Password"
+          placeholder={Strings.inputs.ph_password}
           textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
@@ -171,7 +164,7 @@ export default function SignUpView({ navigation }) {
         <TouchableOpacity onPress={showDatepicker}>
           <Input
             editable={false}
-            placeholder="Birthdate"
+            placeholder={Strings.inputs.ph_birthdate}
             value={birthdate}
             errorMessage={formError.birthdate}
           />
@@ -187,7 +180,7 @@ export default function SignUpView({ navigation }) {
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
-          title="SIGN UP"
+          title={Strings.buttons.signup}
           onPress={_submitForm}
           icon={
             <Icon
@@ -198,9 +191,11 @@ export default function SignUpView({ navigation }) {
           }
         />
         <Loader animating={authIsProcessing} />
-        <TouchableOpacity onPress={() => navigation.navigate(Screens.signIn)}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate(Navigation.Screens.signIn)}
+        >
           <TextLink style={{ color: "blue" }}>
-            Already have an account? Go to SIGN IN
+            {Strings.textLinks.go_sign_in}
           </TextLink>
         </TouchableOpacity>
       </View>

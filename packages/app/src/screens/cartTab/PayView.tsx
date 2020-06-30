@@ -2,16 +2,16 @@ import React, { useState, useContext } from "react";
 // .env imports
 import { REACT_NATIVE_STRIPE_PK } from "react-native-dotenv";
 // LocalStorage imports
-import { readStorage } from "../Utils/asyncStorage";
+import { readStorage, localStorageItems } from "../../Resources/LocalStorage";
 // Services import
-import betService from "../Services/betService";
+import betService from "../../Services/betService";
 // UI import
 import { Icon, Text, ThemeContext } from "react-native-elements";
 import { CreditCardInput } from "react-native-credit-card-input";
-import { ButtonValid } from "../components/styled/Buttons";
-import { MainView } from "../components/styled/Views";
+import { ButtonValid } from "../../components/styled/Buttons";
+import { MainView } from "../../components/styled/Views";
 import { ScrollView } from "react-native-gesture-handler";
-import { Loader } from "../components/styled/Loader";
+import { Loader } from "../../components/styled/Loader";
 // Stripe imports
 // tslint:disable-next-line:no-var-requires
 const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
@@ -69,7 +69,7 @@ export default function PayView({ navigation }) {
       source: stripeToken,
     };
 
-    const userToken = await readStorage("token");
+    const userToken = await readStorage(localStorageItems.token);
 
     betService
       .postPaymentAsync(payload, userToken)

@@ -2,8 +2,7 @@
 import React, { useContext } from "react";
 
 // Redux imports
-import { StoreProvider, useStore } from "./hooks/store";
-
+import { StoreProvider, useStore } from "../hooks/store";
 // Navigation imports
 import {
   createBottomTabNavigator,
@@ -12,15 +11,15 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import {
   StoreStackScreen,
-  ShopStackScreen,
+  CartStackScreen,
   AccountStackScreen,
-  Tabs,
-} from "./Resources/NavigationStacks";
-
+} from "./StacksNavigator";
 // UI imports
-import { ThemeProvider, ThemeContext } from "react-native-elements";
+import { ThemeContext } from "react-native-elements";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { CustomTheme } from "./Resources/Theme";
+import { CustomTheme } from "../Resources/Theme";
+// Resources imports
+import { Tabs } from "../Resources/Navigation";
 
 export default function NestedApp() {
   // Redux
@@ -69,7 +68,7 @@ export default function NestedApp() {
         <Tab.Screen
           name={Tabs.cart}
           options={{ title: "Cart" }}
-          component={ShopStackScreen}
+          component={CartStackScreen}
         />
       </Tab.Navigator>
     </NavigationContainer>
