@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -8,10 +8,19 @@ import {
 } from "react-native";
 // Redux import
 import { useStore } from "../hooks/store";
-import { dispatchUserNull, dispatchUserEdit } from "../hooks/dispatchers";
+import {
+  dispatchUserNull,
+  dispatchUserEdit,
+  dispatchUserAccountBalance,
+  dispatchUserAccountBalanceNull,
+} from "../hooks/dispatchers";
 // UI imports
-import { Input, ThemeContext } from "react-native-elements";
-import { ButtonCancel, ButtonEdit } from "../components/styled/Buttons";
+import { Input, ThemeContext, Text, Icon } from "react-native-elements";
+import {
+  ButtonCancel,
+  ButtonEdit,
+  ButtonValid,
+} from "../components/styled/Buttons";
 import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Toast from "react-native-easy-toast";
@@ -19,6 +28,7 @@ import { Loader } from "../components/styled/Loader";
 // Fetch imports
 import queryString from "query-string";
 import userService from "../Services/userService";
+import betService from "../Services/betService";
 import {
   classifyAuthError,
   errorType,
@@ -64,6 +74,11 @@ export default function LoggedView({ navigation }) {
   const toastErrRef = useRef(null);
   const toastSuccessRef = useRef(null);
 
+  // useEffect
+  useEffect(() => {
+    _fetchBalance();
+  }, []);
+
   //#region DATEPICKER
   const date = new Date(state.user?.birthdate);
   const [show, setShow] = useState(false);
@@ -77,6 +92,25 @@ export default function LoggedView({ navigation }) {
     setShow(true);
   };
   //#endregion DATEPICKER
+
+  const _fetchBalance = (): void => {
+    readStorage("token").then((token) => {
+      console.log("token: ", token);
+      console.log("accountId: ", state.user.accountId);
+      betService
+        .getBalanceAsync({ accountId: state.user.accountId }, token)
+        .then((res) => {
+          if (res === null) return;
+          const _res = res as IApiResponseSuccess;
+          if (_res == null) return;
+          dispatchUserAccountBalance(dispatch, _res.data.balance);
+          // navigation.setOptions({ title: `My account: ${_res.data.balance}` });
+        })
+        .catch((error) => {
+          console.log("getBalance() -- Unexpected error : ", error);
+        });
+    });
+  };
 
   const _renderWebView = () => (
     <WebView
@@ -208,21 +242,53 @@ export default function LoggedView({ navigation }) {
         <TouchableOpacity onPress={() => navigation.navigate(Screens.password)}>
           <Input editable={false} label="Password" placeholder="••••••••••••" />
         </TouchableOpacity>
-      </ScrollView>
-      <View style={styles.bottomContainer}>
-        <View style={styles.buttonContainer}>
-          <ButtonEdit title="EDIT" onPress={() => _submitEdit()} />
+        <View style={styles.bottomContainer}>
+          <View style={styles.buttonContainer}>
+            <ButtonEdit
+              title="Edit"
+              onPress={() => _submitEdit()}
+              icon={
+                <Icon
+                  name="edit"
+                  type="font-awesome"
+                  style={{ marginRight: 5 }}
+                />
+              }
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <ButtonValid
+              title="Claim"
+              onPress={() => navigation.navigate(Screens.claimMoney)}
+              icon={
+                <Icon
+                  name="logo-euro"
+                  type="ionicon"
+                  style={{ marginRight: 5 }}
+                />
+              }
+            />
+          </View>
         </View>
         <View style={styles.buttonContainer}>
           <ButtonCancel
-            title="LOG OUT"
+            title="Exit"
             onPress={() => {
               dispatchUserNull(dispatch);
+              dispatchUserAccountBalanceNull(dispatch);
               removeStorage("token");
             }}
+            icon={
+              <Icon
+                name="sign-out"
+                type="font-awesome"
+                style={{ marginRight: 5 }}
+              />
+            }
           />
         </View>
-      </View>
+      </ScrollView>
+
       <Loader animating={userIsUpdating} />
       <Toast
         ref={toastErrRef}

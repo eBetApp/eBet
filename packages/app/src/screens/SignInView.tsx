@@ -37,14 +37,14 @@ import { setStorage } from "../Utils/asyncStorage";
 // Navigation imports
 import { Screens } from "../Resources/NavigationStacks";
 // Toast import
-import Toast, { DURATION } from "react-native-easy-toast";
+import Toast from "react-native-easy-toast";
 
 export default function SignInView({ navigation }) {
   // Theme
   const { theme } = useContext(ThemeContext);
 
   // Redux
-  const { state, dispatch } = useStore();
+  const { dispatch } = useStore();
 
   // States
   const useEmail = useInput();

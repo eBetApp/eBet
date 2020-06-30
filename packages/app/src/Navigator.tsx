@@ -11,7 +11,7 @@ import {
 } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import {
-  HomeStackScreen,
+  StoreStackScreen,
   ShopStackScreen,
   AccountStackScreen,
   Tabs,
@@ -64,7 +64,7 @@ export default function NestedApp() {
         <Tab.Screen
           name={Tabs.store}
           options={{ title: "Store" }}
-          component={HomeStackScreen}
+          component={StoreStackScreen}
         />
         <Tab.Screen
           name={Tabs.cart}

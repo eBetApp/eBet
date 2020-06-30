@@ -4,6 +4,7 @@ import { IAction, ReducerActions, IState } from "./ReducerTypes";
 
 const _initialState: IState = {
   user: null,
+  balance: null,
 };
 
 // REDUCER
@@ -26,6 +27,16 @@ const _reducer: React.Reducer<IState, IAction> = (
       return {
         ...state,
         user: { ...state.user, ...action.payload.partialUser },
+      };
+    case ReducerActions.changeUserAccountBalance:
+      return {
+        ...state,
+        balance: action.payload.balance,
+      };
+    case ReducerActions.eraseUserAccountBalance:
+      return {
+        ...state,
+        balance: null,
       };
     default:
       return state;

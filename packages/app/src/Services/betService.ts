@@ -2,14 +2,14 @@
 import queryString from "query-string";
 
 // Repositories imports
-import UserRepository from "../Repositories/ebetRepository";
+import Repository from "../Repositories/ebetRepository";
 
 const postPaymentAsync = async (
   payload: { amount: number; source: string },
   token: string
 ): Promise<ApiResponse | null> => {
   try {
-    return await UserRepository.post(
+    return await Repository.post(
       "payments/charge",
       queryString.stringify(payload),
       token
@@ -19,4 +19,21 @@ const postPaymentAsync = async (
   }
 };
 
-export default { postPaymentAsync };
+const getBalanceAsync = async (
+  payload: { accountId: string },
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await Repository.post(
+      "payments/account-balance",
+      queryString.stringify(payload),
+      token
+    );
+  } catch (err) {
+    console.log("ERRRRR");
+    console.log(err);
+    return null;
+  }
+};
+
+export default { postPaymentAsync, getBalanceAsync };
