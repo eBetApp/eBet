@@ -2,7 +2,7 @@ import React, { useState, useRef, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 // UI imports
-import { Input, Icon, Text } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import { ButtonValid } from "../components/styled/Buttons";
 import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import { Loader } from "../components/styled/Loader";
@@ -20,7 +20,7 @@ import {
   errorType,
 } from "../Utils/parseApiError";
 // LocalStorage imports
-import { readStorage } from "../Utils/asyncStorage";
+import { readStorage, localStorageItems } from "../Resources/LocalStorage";
 
 export default function PasswordView({ navigation }) {
   // Theme
@@ -66,7 +66,7 @@ export default function PasswordView({ navigation }) {
       newPwd: useNewPassword.value,
     };
 
-    const token = await readStorage("token");
+    const token = await readStorage(localStorageItems.token);
 
     userService
       .updatePwdAsync(payload, token)

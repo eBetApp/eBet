@@ -1,6 +1,10 @@
 import AsyncStorage from "@react-native-community/async-storage";
 
-const setStorage = async (key, json) => {
+export enum localStorageItems {
+  token = "token",
+}
+
+export const setStorage = async (key, json) => {
   try {
     await AsyncStorage.setItem(key, JSON.stringify(json));
   } catch (e) {
@@ -8,7 +12,7 @@ const setStorage = async (key, json) => {
   }
 };
 
-const readStorage = async (key) => {
+export const readStorage = async (key) => {
   try {
     const value = await AsyncStorage.getItem(key);
     if (value !== null) {
@@ -20,12 +24,10 @@ const readStorage = async (key) => {
   }
 };
 
-const removeStorage = async (key) => {
+export const removeStorage = async (key) => {
   try {
     await AsyncStorage.removeItem(key);
   } catch (e) {
     console.log(`removeStorage() error: ${e.message}`);
   }
 };
-
-export { setStorage, readStorage, removeStorage };

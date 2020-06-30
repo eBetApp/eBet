@@ -1,30 +1,19 @@
 // React imports
 import React, { useState, useContext, useRef } from "react";
-import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  Platform,
-  KeyboardAvoidingView,
-} from "react-native";
+import { StyleSheet, View, TouchableOpacity, Platform } from "react-native";
 // UI imports
-import { Button, Input, Icon, Text } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
+import { ButtonValid } from "../components/styled/Buttons";
 import { ThemeContext } from "react-native-elements";
 import { TextLink } from "../components/styled/TextLink";
-import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
+import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import Toast from "react-native-easy-toast";
-// Fetch imports
-import queryString from "query-string";
 // Custom hooks imports
 import useInput from "../hooks/useInput";
 // Redux import
 import { useStore } from "../hooks/store";
 import { dispatchUserNew } from "../hooks/dispatchers";
-// .env imports
-import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 // API types imports
 import {
   classifyAuthError,
@@ -32,7 +21,7 @@ import {
   AuthError,
 } from "../Utils/parseApiError";
 // LocalStorage imports
-import { setStorage } from "../Utils/asyncStorage";
+import { setStorage, localStorageItems } from "../Resources/LocalStorage";
 // Services import
 import userService from "../Services/userService";
 // Navigation imports
@@ -94,7 +83,10 @@ export default function SignUpView({ navigation }) {
           return toastErrRef.current.show("Network error");
         } else if ((result as IAuthServiceResponse)?.status === 201) {
           dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
-          setStorage("token", (result as IAuthServiceResponse).meta.token);
+          setStorage(
+            localStorageItems.token,
+            (result as IAuthServiceResponse).meta.token
+          );
         } else if ((result as IApiResponseError)?.error?.status === 400) {
           switch (
             classifyAuthError((result as IApiResponseError).error.message)

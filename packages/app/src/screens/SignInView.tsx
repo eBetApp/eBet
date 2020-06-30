@@ -1,23 +1,11 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import React, { useState, useContext, useRef } from "react";
+import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
 // UI imports
-import {
-  Button,
-  Input,
-  Icon,
-  ThemeConsumer,
-  Text,
-} from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import { ThemeContext } from "react-native-elements";
-import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
+import { ButtonValid } from "../components/styled/Buttons";
 import { TextLink } from "../components/styled/TextLink";
-import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
+import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import { Loader } from "../components/styled/Loader";
 // Fetch imports
 import userService from "../Services/userService";
@@ -33,7 +21,7 @@ import {
   AuthError,
 } from "../Utils/parseApiError";
 // LocalStorage imports
-import { setStorage } from "../Utils/asyncStorage";
+import { setStorage, localStorageItems } from "../Resources/LocalStorage";
 // Navigation imports
 import { Screens } from "../Resources/NavigationStacks";
 // Toast import
@@ -75,7 +63,10 @@ export default function SignInView({ navigation }) {
           return;
         } else if ((result as IAuthServiceResponse)?.status === 200) {
           dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
-          setStorage("token", (result as IAuthServiceResponse).meta.token);
+          setStorage(
+            localStorageItems.token,
+            (result as IAuthServiceResponse).meta.token
+          );
           navigation.navigate(Screens.loggedHome);
         } else if ((result as IApiResponseError)?.error?.status === 400) {
           switch (

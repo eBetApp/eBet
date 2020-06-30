@@ -15,7 +15,7 @@ import {
   dispatchUserAccountBalanceNull,
 } from "../hooks/dispatchers";
 // UI imports
-import { Input, ThemeContext, Text, Icon } from "react-native-elements";
+import { Input, ThemeContext, Icon } from "react-native-elements";
 import {
   ButtonCancel,
   ButtonEdit,
@@ -41,7 +41,11 @@ import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../Utils/parseUrl";
 // LocalStorage imports
-import { readStorage, removeStorage } from "../Utils/asyncStorage";
+import {
+  readStorage,
+  removeStorage,
+  localStorageItems,
+} from "../Resources/LocalStorage";
 // Components imports
 import Avatar from "../components/Avatar";
 // Custom hooks imports
@@ -94,9 +98,7 @@ export default function LoggedView({ navigation }) {
   //#endregion DATEPICKER
 
   const _fetchBalance = (): void => {
-    readStorage("token").then((token) => {
-      console.log("token: ", token);
-      console.log("accountId: ", state.user.accountId);
+    readStorage(localStorageItems.token).then((token) => {
       betService
         .getBalanceAsync({ accountId: state.user.accountId }, token)
         .then((res) => {
@@ -129,7 +131,7 @@ export default function LoggedView({ navigation }) {
   );
 
   const _createStripeAccount = async (code: string): Promise<void> => {
-    const token = await readStorage("token");
+    const token = await readStorage(localStorageItems.token);
 
     const myHeaders = new Headers({
       "Content-Type": "application/x-www-form-urlencoded",
@@ -167,7 +169,7 @@ export default function LoggedView({ navigation }) {
       birthdate: new Date(birthdate).toISOString(),
     };
 
-    const token = await readStorage("token");
+    const token = await readStorage(localStorageItems.token);
 
     userService
       .updateAsync(payload, token)
@@ -276,7 +278,7 @@ export default function LoggedView({ navigation }) {
             onPress={() => {
               dispatchUserNull(dispatch);
               dispatchUserAccountBalanceNull(dispatch);
-              removeStorage("token");
+              removeStorage(localStorageItems.token);
             }}
             icon={
               <Icon

@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
 // LocalStorage imports
-import { readStorage } from "../Utils/asyncStorage";
+import { readStorage, localStorageItems } from "../Resources/LocalStorage";
 
 // Redux import
 import { useStore } from "../hooks/store";
@@ -15,7 +15,7 @@ export default function Avatar() {
   const { state, dispatch } = useStore();
 
   const chooseImage = async () => {
-    const token = await readStorage("token");
+    const token = await readStorage(localStorageItems.token);
     try {
       const newImage = await userService.chooseImageFromGaleryAsync();
       if (newImage === null) return;
