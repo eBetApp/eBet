@@ -8,7 +8,6 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
-
 // UI imports
 import { Button, Input, Icon, Text } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -17,33 +16,25 @@ import { ThemeContext } from "react-native-elements";
 import { TextLink } from "../components/styled/TextLink";
 import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
 import Toast from "react-native-easy-toast";
-
 // Fetch imports
 import queryString from "query-string";
-
 // Custom hooks imports
 import useInput from "../hooks/useInput";
-
 // Redux import
 import { useStore } from "../hooks/store";
 import { dispatchUserNew } from "../hooks/dispatchers";
-
 // .env imports
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
-
 // API types imports
 import {
   classifyAuthError,
   errorType,
   AuthError,
 } from "../Utils/parseApiError";
-
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
-
 // Services import
 import userService from "../Services/userService";
-
 // Navigation imports
 import { Screens } from "../Resources/NavigationStacks";
 import { ScrollView } from "react-native-gesture-handler";
@@ -56,8 +47,7 @@ export default function SignUpView({ navigation }) {
   // Redux
   const { dispatch } = useStore();
 
-  //#region USESTATES
-  // Inputs
+  // States
   const useNickname = useInput();
   const useEmail = useInput();
   const usePassword = useInput();
@@ -66,9 +56,8 @@ export default function SignUpView({ navigation }) {
   const [show, setShow] = useState(false);
   const [authIsProcessing, setAuthIsProcessing] = useState<boolean>(false);
 
-  // Errors
+  // States: Errors
   const [formError, setFormError] = useState<AuthError>(new AuthError());
-  //#endregion USESTATES
 
   // Ref
   const pwdInputRef = useRef(null);

@@ -6,18 +6,16 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
-
 // Redux import
 import { useStore } from "../hooks/store";
 import { dispatchUserNull, dispatchUserEdit } from "../hooks/dispatchers";
-
 // UI imports
 import { Input, ThemeContext } from "react-native-elements";
 import { ButtonCancel, ButtonEdit } from "../components/styled/Buttons";
 import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Toast from "react-native-easy-toast";
-
+import { Loader } from "../components/styled/Loader";
 // Fetch imports
 import queryString from "query-string";
 import userService from "../Services/userService";
@@ -26,25 +24,18 @@ import {
   errorType,
   AuthError,
 } from "../Utils/parseApiError";
-
 // .env imports
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
-
 // webView import
 import { WebView } from "react-native-webview";
-
 // utils import
 import parseUrl from "../Utils/parseUrl";
-
 // LocalStorage imports
 import { readStorage, removeStorage } from "../Utils/asyncStorage";
-
 // Components imports
 import Avatar from "../components/Avatar";
-
 // Custom hooks imports
 import useInput from "../hooks/useInput";
-
 // Navigation imports
 import { Screens } from "../Resources/NavigationStacks";
 
@@ -63,6 +54,7 @@ export default function LoggedView({ navigation }) {
   const [birthdate, setBirthdate] = useState(
     new Date(state.user?.birthdate).toDateString() ?? ""
   );
+  const [userIsUpdating, setUserIsUpdating] = useState<boolean>(false);
 
   // States: Errors
   const [formError, setFormError] = useState<AuthError>(new AuthError());
@@ -70,6 +62,7 @@ export default function LoggedView({ navigation }) {
   // Ref
   const emailInputRef = useRef(null);
   const toastErrRef = useRef(null);
+  const toastSuccessRef = useRef(null);
 
   //#region DATEPICKER
   const date = new Date(state.user?.birthdate);
@@ -129,8 +122,9 @@ export default function LoggedView({ navigation }) {
   };
 
   const _submitEdit = async (): Promise<void> => {
-    // TODO: add loader
+    if (userIsUpdating) return;
     if (birthdate === null || birthdate === undefined) return;
+    setUserIsUpdating(true);
 
     const payload = {
       uuid: state.user.uuid,
@@ -149,9 +143,8 @@ export default function LoggedView({ navigation }) {
         } else if (res?.status === 200) {
           delete payload.uuid;
           dispatchUserEdit(dispatch, { ...payload });
-          navigation.goBack();
-        }
-        if (res?.error?.status === 400) {
+          toastSuccessRef.current.show("👍 Update is done");
+        } else if (res?.error?.status === 400) {
           switch (classifyAuthError(res.error.message)) {
             case errorType.nickname:
               setFormError(new AuthError({ nickname: "Wrong format" }));
@@ -168,7 +161,8 @@ export default function LoggedView({ navigation }) {
       .catch((error) => {
         toastErrRef.current.show("Unexpected error");
         console.log("updateUserAsync() -- Unexpected error : ", error);
-      });
+      })
+      .finally(() => setUserIsUpdating(false));
   };
 
   const _renderLoggedView = () => (
@@ -228,11 +222,18 @@ export default function LoggedView({ navigation }) {
           />
         </View>
       </View>
+      <Loader animating={userIsUpdating} />
       <Toast
         ref={toastErrRef}
         position="top"
         style={{ borderRadius: 20 }}
         textStyle={{ color: theme.colors.error }}
+      />
+      <Toast
+        ref={toastSuccessRef}
+        position="center"
+        style={{ borderRadius: 20 }}
+        textStyle={{ color: theme.colors.primary }}
       />
     </MainKeyboardAvoidingView>
   );
