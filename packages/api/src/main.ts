@@ -12,8 +12,8 @@ if (process.env.DB_DEV_URL == null)
 
 createConnection(connection)
 	.then(() => {
-		app.listen(process.env.PORT || 3000, function() {
-			console.log(`App listening on port ${process.env.PORT || 3000}!`);
+		app.listen(process.env.PORT, function() {
+			console.log(`App listening on ${process.env.HOST}!`);
 		});
 	})
 	.catch(error => console.log(error));
