@@ -7,52 +7,52 @@ import {
   Platform,
 } from "react-native";
 // Redux import
-import { useStore } from "../hooks/store";
+import { useStore } from "../../hooks/store";
 import {
   dispatchUserNull,
   dispatchUserEdit,
   dispatchUserAccountBalance,
   dispatchUserAccountBalanceNull,
-} from "../hooks/dispatchers";
+} from "../../hooks/dispatchers";
 // UI imports
 import { Input, ThemeContext, Icon } from "react-native-elements";
 import {
   ButtonCancel,
   ButtonEdit,
   ButtonValid,
-} from "../components/styled/Buttons";
-import { MainKeyboardAvoidingView } from "../components/styled/Views";
+} from "../../components/styled/Buttons";
+import { MainKeyboardAvoidingView } from "../../components/styled/Views";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Toast from "react-native-easy-toast";
-import { Loader } from "../components/styled/Loader";
+import { Loader } from "../../components/styled/Loader";
 // Fetch imports
 import queryString from "query-string";
-import userService from "../Services/userService";
-import betService from "../Services/betService";
+import userService from "../../Services/userService";
+import betService from "../../Services/betService";
 import {
   classifyAuthError,
   errorType,
   AuthError,
-} from "../Utils/parseApiError";
+} from "../../Utils/parseApiError";
 // .env imports
 import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 // webView import
 import { WebView } from "react-native-webview";
 // utils import
-import parseUrl from "../Utils/parseUrl";
+import parseUrl from "../../Utils/parseUrl";
 // LocalStorage imports
 import {
   readStorage,
   removeStorage,
   localStorageItems,
-} from "../Resources/LocalStorage";
+} from "../../Resources/LocalStorage";
 // Components imports
-import Avatar from "../components/Avatar";
+import Avatar from "../../components/Avatar";
 // Custom hooks imports
-import useInput from "../hooks/useInput";
+import useInput from "../../hooks/useInput";
 // Resources imports
-import * as Strings from "../Resources/Strings";
-import * as Navigation from "../Resources/Navigation";
+import * as Strings from "../../Resources/Strings";
+import * as Navigation from "../../Resources/Navigation";
 
 export default function LoggedView({ navigation }) {
   let stripeAccount = "";

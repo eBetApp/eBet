@@ -4,31 +4,31 @@ import { StyleSheet, View, TouchableOpacity, Platform } from "react-native";
 // UI imports
 import { Input, Icon } from "react-native-elements";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { ButtonValid } from "../components/styled/Buttons";
+import { ButtonValid } from "../../components/styled/Buttons";
 import { ThemeContext } from "react-native-elements";
-import { TextLink } from "../components/styled/TextLink";
-import { MainKeyboardAvoidingView } from "../components/styled/Views";
+import { TextLink } from "../../components/styled/TextLink";
+import { MainKeyboardAvoidingView } from "../../components/styled/Views";
 import Toast from "react-native-easy-toast";
 import { ScrollView } from "react-native-gesture-handler";
-import { Loader } from "../components/styled/Loader";
+import { Loader } from "../../components/styled/Loader";
 // Custom hooks imports
-import useInput from "../hooks/useInput";
+import useInput from "../../hooks/useInput";
 // Redux import
-import { useStore } from "../hooks/store";
-import { dispatchUserNew } from "../hooks/dispatchers";
+import { useStore } from "../../hooks/store";
+import { dispatchUserNew } from "../../hooks/dispatchers";
 // API types imports
 import {
   classifyAuthError,
   errorType,
   AuthError,
-} from "../Utils/parseApiError";
+} from "../../Utils/parseApiError";
 // LocalStorage imports
-import { setStorage, localStorageItems } from "../Resources/LocalStorage";
+import { setStorage, localStorageItems } from "../../Resources/LocalStorage";
 // Services import
-import userService from "../Services/userService";
+import userService from "../../Services/userService";
 // Resources imports
-import * as Strings from "../Resources/Strings";
-import * as Navigation from "../Resources/Navigation";
+import * as Strings from "../../Resources/Strings";
+import * as Navigation from "../../Resources/Navigation";
 
 export default function SignUpView({ navigation }) {
   // Theme

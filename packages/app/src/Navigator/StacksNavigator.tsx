@@ -9,14 +9,14 @@ import {
 } from "@react-navigation/stack";
 import * as Navigation from "../Resources/Navigation";
 // Screens imports
-import MainScreen from "../screens/MainView";
-import ShopScreen from "../screens/ShopView";
-import PayScreen from "../screens/PayView";
-import SignInScreen from "../screens/SignInView";
-import SignUpScreen from "../screens/SignUpView";
-import LoggedScreen from "../screens/LoggedView";
-import PasswordScreen from "../screens/PasswordView";
-import RetrieveMoneyScreen from "../screens/ClaimWinningsView";
+import MainScreen from "../screens/storeTab/MainView";
+import CartScreen from "../screens/cartTab/CartView";
+import PayScreen from "../screens/cartTab/PayView";
+import SignInScreen from "../screens/accountTab/SignInView";
+import SignUpScreen from "../screens/accountTab/SignUpView";
+import LoggedScreen from "../screens/accountTab/LoggedView";
+import PasswordScreen from "../screens/accountTab/PasswordView";
+import RetrieveMoneyScreen from "../screens/accountTab/ClaimWinningsView";
 // UI imports
 import theme, { CustomTheme } from "../Resources/Theme";
 // Redux imports
@@ -70,19 +70,19 @@ export function StoreStackScreen({ navigation }) {
   );
 }
 
-const ShopStack = createStackNavigator();
-export function ShopStackScreen({ navigation }) {
+const CartStack = createStackNavigator();
+export function CartStackScreen({ navigation }) {
   const { state } = useStore();
 
   return (
-    <ShopStack.Navigator screenOptions={commonNavScreenOptions}>
-      <ShopStack.Screen
+    <CartStack.Navigator screenOptions={commonNavScreenOptions}>
+      <CartStack.Screen
         name={Navigation.Screens.cart}
-        component={ShopScreen}
+        component={CartScreen}
         options={() => headerRightOption(state)}
       />
-      <ShopStack.Screen name={Navigation.Screens.pay} component={PayScreen} />
-    </ShopStack.Navigator>
+      <CartStack.Screen name={Navigation.Screens.pay} component={PayScreen} />
+    </CartStack.Navigator>
   );
 }
 

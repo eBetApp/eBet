@@ -2,14 +2,14 @@ import React from "react";
 import { View } from "react-native";
 // UI imports
 import { Text } from "react-native-elements";
-import { ButtonValid } from "../components/styled/Buttons";
+import { ButtonValid } from "../../components/styled/Buttons";
 // Redux import
-import { useStore } from "../hooks/store";
+import { useStore } from "../../hooks/store";
 // Resources imports
-import * as Navigation from "../Resources/Navigation";
-import * as Strings from "../Resources/Strings";
+import * as Navigation from "../../Resources/Navigation";
+import * as Strings from "../../Resources/Strings";
 
-export default function ShopView({ navigation }) {
+export default function CartScreen({ navigation }) {
   const { state, dispatch } = useStore();
 
   return (

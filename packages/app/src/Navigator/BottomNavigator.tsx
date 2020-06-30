@@ -11,7 +11,7 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import {
   StoreStackScreen,
-  ShopStackScreen,
+  CartStackScreen,
   AccountStackScreen,
 } from "./StacksNavigator";
 // UI imports
@@ -68,7 +68,7 @@ export default function NestedApp() {
         <Tab.Screen
           name={Tabs.cart}
           options={{ title: "Cart" }}
-          component={ShopStackScreen}
+          component={CartStackScreen}
         />
       </Tab.Navigator>
     </NavigationContainer>

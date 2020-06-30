@@ -1,12 +1,12 @@
 import React from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 
 // UI imports
 import { Text } from "react-native-elements";
-import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
+import { ButtonValid, ButtonCancel } from "../../components/styled/Buttons";
 
 // Redux import
-import { useStore } from "../hooks/store";
+import { useStore } from "../../hooks/store";
 
 export default function MainView({ navigation }) {
   const { state, dispatch } = useStore();

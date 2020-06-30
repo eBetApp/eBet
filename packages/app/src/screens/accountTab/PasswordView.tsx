@@ -3,26 +3,26 @@ import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 // UI imports
 import { Input, Icon } from "react-native-elements";
-import { ButtonValid } from "../components/styled/Buttons";
-import { MainKeyboardAvoidingView } from "../components/styled/Views";
-import { Loader } from "../components/styled/Loader";
+import { ButtonValid } from "../../components/styled/Buttons";
+import { MainKeyboardAvoidingView } from "../../components/styled/Views";
+import { Loader } from "../../components/styled/Loader";
 import { ThemeContext } from "react-native-elements";
 import Toast from "react-native-easy-toast";
 // Redux import
-import { useStore } from "../hooks/store";
-import useInput from "../hooks/useInput";
-import { dispatchUserEdit } from "../hooks/dispatchers";
+import { useStore } from "../../hooks/store";
+import useInput from "../../hooks/useInput";
+import { dispatchUserEdit } from "../../hooks/dispatchers";
 // Fetch imports
-import userService from "../Services/userService";
+import userService from "../../Services/userService";
 import {
   classifyAuthError,
   AuthError,
   errorType,
-} from "../Utils/parseApiError";
+} from "../../Utils/parseApiError";
 // LocalStorage imports
-import { readStorage, localStorageItems } from "../Resources/LocalStorage";
+import { readStorage, localStorageItems } from "../../Resources/LocalStorage";
 // Resources imports
-import * as Strings from "../Resources/Strings";
+import * as Strings from "../../Resources/Strings";
 export default function PasswordView({ navigation }) {
   // Theme
   const { theme } = useContext(ThemeContext);
