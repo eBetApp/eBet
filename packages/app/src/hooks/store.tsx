@@ -3,8 +3,7 @@ import React, { createContext, useReducer, useContext } from "react";
 import { IAction, ReducerActions, IState } from "./ReducerTypes";
 
 const _initialState: IState = {
-  user: "",
-  avatar: "",
+  user: null,
 };
 
 // REDUCER
@@ -12,8 +11,6 @@ const _reducer: React.Reducer<IState, IAction> = (
   state = _initialState,
   action
 ) => {
-  console.log("REDUCER");
-  console.log(action);
   switch (action.type) {
     case ReducerActions.register:
       return {
@@ -23,14 +20,12 @@ const _reducer: React.Reducer<IState, IAction> = (
     case ReducerActions.unregister:
       return {
         ...state,
-        user: "",
+        user: null,
       };
-    case ReducerActions.changeAvatar:
-      console.log("PAYLOAD");
-      console.log(action.payload);
+    case ReducerActions.editUser:
       return {
         ...state,
-        avatar: action.payload.avatar,
+        user: { ...state.user, ...action.payload.partialUser },
       };
     default:
       return state;

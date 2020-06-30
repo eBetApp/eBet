@@ -1,18 +1,17 @@
 export interface IState {
-  user?: string;
-  avatar?: string;
+  user?: User | null;
 }
 
 export interface IAction {
   type: ReducerActions;
-  payload: {
-    user?: string;
-    avatar?: string;
+  payload?: {
+    user?: User;
+    partialUser?: Partial<User>;
   };
 }
 
 export enum ReducerActions {
   register = "register",
   unregister = "unregister",
-  changeAvatar = "changeAVatar",
+  editUser = "editUser",
 }

@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { TextInputChangeEventData, NativeSyntheticEvent } from "react-native";
 
 export default function useInput(initialState = "") {
   const [value, setValue] = useState(initialState);
   return {
     value,
-    onChange(event: React.ChangeEvent<HTMLInputElement>) {
-      setValue(event.target.value);
+    onChangeText(text: string) {
+      setValue(text);
     },
   };
 }

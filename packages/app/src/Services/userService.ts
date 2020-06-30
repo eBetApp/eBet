@@ -3,14 +3,16 @@ import { Platform } from "react-native";
 // Expo imports
 import * as ImagePicker from "expo-image-picker";
 
+// Fetch imports
+import queryString from "query-string";
+
 // Repositories imports
-import UserRepository from "../Repositories/userRepository";
+import UserRepository from "../Repositories/ebetRepository";
 
 // Services imports
 import { cameraPermissions } from "./devicePermissionsService";
 
 // Types imports
-import { User } from "../../../shared/apiTypes/User";
 import { ImageInfo } from "expo-image-picker/build/ImagePicker.types";
 
 const chooseImageFromGaleryAsync = async (): Promise<ImageInfo | null> => {
@@ -25,7 +27,7 @@ const chooseImageFromGaleryAsync = async (): Promise<ImageInfo | null> => {
   return responseImage.cancelled ? null : (responseImage as ImageInfo);
 };
 
-const postImageAsync = async (
+const putAvatarAsync = async (
   user: User,
   token: string,
   image: ImageInfo
@@ -35,13 +37,8 @@ const postImageAsync = async (
       _createFormData(user.uuid, image),
       token
     );
+    user.avatar = responseFetch.data?.user.avatar;
 
-    let oldImageUri = user.avatar;
-    user.avatar = responseFetch.user.avatar;
-
-    if (oldImageUri != null && oldImageUri != "") {
-      UserRepository.deletePicture(oldImageUri, token);
-    }
     return user;
   } catch (err) {
     return null;
@@ -68,4 +65,79 @@ const _createFormData = (uuid: any, photo: any) => {
   return data;
 };
 
-export default { chooseImageFromGaleryAsync, postImageAsync };
+interface ISignUpPayload {
+  nickname: string;
+  email: string;
+  password: string;
+  birthdate: string;
+}
+
+const signUpAsync = async (
+  payload: ISignUpPayload
+): Promise<IAuthServiceResponse | null> => {
+  try {
+    return await UserRepository.post(
+      "auth/signup",
+      queryString.stringify(payload)
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
+interface ISignInPayload {
+  email: string;
+  password: string;
+}
+
+const signInAsync = async (
+  payload: ISignInPayload
+): Promise<IAuthServiceResponse | null> => {
+  try {
+    return await UserRepository.post(
+      "auth/signin",
+      queryString.stringify(payload)
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
+const updateAsync = async (
+  payload: User,
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await UserRepository.put(
+      "user/update",
+      queryString.stringify(payload),
+      token
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
+const updatePwdAsync = async (
+  payload: { uuid: string; currentPwd: string; newPwd: string },
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await UserRepository.put(
+      "user/update-password",
+      queryString.stringify(payload),
+      token
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
+export default {
+  chooseImageFromGaleryAsync,
+  postImageAsync: putAvatarAsync,
+  signUpAsync,
+  signInAsync,
+  updateAsync,
+  updatePwdAsync,
+};

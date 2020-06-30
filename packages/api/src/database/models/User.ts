@@ -43,6 +43,12 @@ export default class User implements IUser {
 	@Column('text', { nullable: true })
 	avatar?: string;
 
+	@Column('text', { nullable: true })
+	customerId?: string;
+
+	@Column('text', { nullable: true })
+	accountId?: string;
+
 	@OneToMany(
 		type => Bet,
 		bet => bet.user,

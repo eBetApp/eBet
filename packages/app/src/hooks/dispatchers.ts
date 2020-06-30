@@ -1,18 +1,19 @@
 import { IAction, ReducerActions } from "./ReducerTypes";
 
-export const dispatchUser = (
+export const dispatchUserNew = (
   dispatch: React.Dispatch<IAction>,
-  user: string
+  user: User
 ) => {
   return dispatch({ type: ReducerActions.register, payload: { user } });
 };
 
-export const dispatchAvatar = (
+export const dispatchUserEdit = (
   dispatch: React.Dispatch<IAction>,
-  avatarUri: string
+  partialUser: Partial<User>
 ) => {
-  dispatch({
-    type: ReducerActions.changeAvatar,
-    payload: { avatar: avatarUri },
-  });
+  return dispatch({ type: ReducerActions.editUser, payload: { partialUser } });
+};
+
+export const dispatchUserNull = (dispatch: React.Dispatch<IAction>) => {
+  return dispatch({ type: ReducerActions.unregister });
 };
