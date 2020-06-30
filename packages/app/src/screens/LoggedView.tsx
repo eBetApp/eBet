@@ -52,6 +52,8 @@ import Avatar from "../components/Avatar";
 import useInput from "../hooks/useInput";
 // Navigation imports
 import { Screens } from "../Resources/NavigationStacks";
+// Resources imports
+import * as Strings from "../Resources/Strings";
 
 export default function LoggedView({ navigation }) {
   let stripeAccount = "";
@@ -210,7 +212,7 @@ export default function LoggedView({ navigation }) {
         </View>
         <Input
           {...useNickname}
-          label="Nickname"
+          label={Strings.inputs.label_nickname}
           errorMessage={formError.nickname}
           returnKeyType="next"
           onSubmitEditing={() => emailInputRef.current.focus()}
@@ -219,14 +221,14 @@ export default function LoggedView({ navigation }) {
         <Input
           ref={emailInputRef}
           {...useEmail}
-          label="Email"
+          label={Strings.inputs.label_email}
           keyboardType="email-address"
           errorMessage={formError.email}
         />
         <TouchableOpacity onPress={showDatepicker}>
           <Input
             editable={false}
-            label="Birthdate"
+            label={Strings.inputs.label_birthdate}
             placeholder="Birthdate"
             value={birthdate}
             errorMessage={formError.birthdate}
@@ -242,12 +244,16 @@ export default function LoggedView({ navigation }) {
           />
         )}
         <TouchableOpacity onPress={() => navigation.navigate(Screens.password)}>
-          <Input editable={false} label="Password" placeholder="••••••••••••" />
+          <Input
+            editable={false}
+            label={Strings.inputs.label_password}
+            placeholder="••••••••••••"
+          />
         </TouchableOpacity>
         <View style={styles.bottomContainer}>
           <View style={styles.buttonContainer}>
             <ButtonEdit
-              title="Edit"
+              title={Strings.buttons.edit}
               onPress={() => _submitEdit()}
               icon={
                 <Icon
@@ -260,7 +266,7 @@ export default function LoggedView({ navigation }) {
           </View>
           <View style={styles.buttonContainer}>
             <ButtonValid
-              title="Claim"
+              title={Strings.buttons.claim}
               onPress={() => navigation.navigate(Screens.claimMoney)}
               icon={
                 <Icon
@@ -274,7 +280,7 @@ export default function LoggedView({ navigation }) {
         </View>
         <View style={styles.buttonContainer}>
           <ButtonCancel
-            title="Exit"
+            title={Strings.buttons.exit}
             onPress={() => {
               dispatchUserNull(dispatch);
               dispatchUserAccountBalanceNull(dispatch);

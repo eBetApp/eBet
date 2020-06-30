@@ -26,6 +26,8 @@ import { setStorage, localStorageItems } from "../Resources/LocalStorage";
 import { Screens } from "../Resources/NavigationStacks";
 // Toast import
 import Toast from "react-native-easy-toast";
+// Resources imports
+import * as Strings from "../Resources/Strings";
 
 export default function SignInView({ navigation }) {
   // Theme
@@ -102,7 +104,7 @@ export default function SignInView({ navigation }) {
     <MainKeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.formContainer}>
         <Input
-          placeholder="Email"
+          placeholder={Strings.inputs.ph_email}
           keyboardType="email-address"
           {...useEmail}
           errorMessage={formError.email}
@@ -114,7 +116,7 @@ export default function SignInView({ navigation }) {
         />
         <Input
           ref={pwdInputRef}
-          placeholder="Password"
+          placeholder={Strings.inputs.ph_password}
           textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
@@ -123,7 +125,7 @@ export default function SignInView({ navigation }) {
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
-          title="SIGN IN"
+          title={Strings.buttons.signin}
           onPress={_submitForm}
           icon={
             <Icon
@@ -135,7 +137,7 @@ export default function SignInView({ navigation }) {
         />
         <Loader animating={authIsProcessing} />
         <TouchableOpacity onPress={() => navigation.navigate(Screens.signUp)}>
-          <TextLink>New to eBet? Go to REGISTER!!</TextLink>
+          <TextLink>{Strings.textLinks.go_register}</TextLink>
         </TouchableOpacity>
       </View>
       <Toast

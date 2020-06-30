@@ -21,7 +21,8 @@ import {
 } from "../Utils/parseApiError";
 // LocalStorage imports
 import { readStorage, localStorageItems } from "../Resources/LocalStorage";
-
+// Resources imports
+import * as Strings from "../Resources/Strings";
 export default function PasswordView({ navigation }) {
   // Theme
   const { theme } = useContext(ThemeContext);
@@ -149,7 +150,7 @@ export default function PasswordView({ navigation }) {
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
-          title="SUBMIT"
+          title={Strings.buttons.submit}
           onPress={_submitForm}
           icon={
             <Icon

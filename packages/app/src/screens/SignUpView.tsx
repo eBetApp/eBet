@@ -28,6 +28,8 @@ import userService from "../Services/userService";
 import { Screens } from "../Resources/NavigationStacks";
 import { ScrollView } from "react-native-gesture-handler";
 import { Loader } from "../components/styled/Loader";
+// Resources imports
+import * as Strings from "../Resources/Strings";
 
 export default function SignUpView({ navigation }) {
   // Theme
@@ -135,7 +137,7 @@ export default function SignUpView({ navigation }) {
     <MainKeyboardAvoidingView style={{ flex: 1 }}>
       <ScrollView style={styles.formContainer}>
         <Input
-          placeholder="Nickname"
+          placeholder={Strings.inputs.ph_nickname}
           {...useNickname}
           errorMessage={formError.nickname}
           returnKeyType="next"
@@ -144,7 +146,7 @@ export default function SignUpView({ navigation }) {
         />
         <Input
           ref={emailInputRef}
-          placeholder="Email"
+          placeholder={Strings.inputs.ph_email}
           keyboardType="email-address"
           {...useEmail}
           errorMessage={formError.email}
@@ -154,7 +156,7 @@ export default function SignUpView({ navigation }) {
         />
         <Input
           ref={pwdInputRef}
-          placeholder="Password"
+          placeholder={Strings.inputs.ph_password}
           textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
@@ -163,7 +165,7 @@ export default function SignUpView({ navigation }) {
         <TouchableOpacity onPress={showDatepicker}>
           <Input
             editable={false}
-            placeholder="Birthdate"
+            placeholder={Strings.inputs.ph_birthdate}
             value={birthdate}
             errorMessage={formError.birthdate}
           />
@@ -179,7 +181,7 @@ export default function SignUpView({ navigation }) {
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
-          title="SIGN UP"
+          title={Strings.buttons.signup}
           onPress={_submitForm}
           icon={
             <Icon
@@ -192,7 +194,7 @@ export default function SignUpView({ navigation }) {
         <Loader animating={authIsProcessing} />
         <TouchableOpacity onPress={() => navigation.navigate(Screens.signIn)}>
           <TextLink style={{ color: "blue" }}>
-            Already have an account? Go to SIGN IN
+            {Strings.textLinks.go_sign_in}
           </TextLink>
         </TouchableOpacity>
       </View>
