@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 require('dotenv').config();
+// Check .env file
+import './credentials';
 // ORM
 import { createConnection } from 'typeorm';
 // INTERNALS
