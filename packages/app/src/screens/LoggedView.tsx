@@ -15,8 +15,12 @@ import {
   dispatchUserAccountBalanceNull,
 } from "../hooks/dispatchers";
 // UI imports
-import { Input, ThemeContext, Text } from "react-native-elements";
-import { ButtonCancel, ButtonEdit } from "../components/styled/Buttons";
+import { Input, ThemeContext, Text, Icon } from "react-native-elements";
+import {
+  ButtonCancel,
+  ButtonEdit,
+  ButtonValid,
+} from "../components/styled/Buttons";
 import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Toast from "react-native-easy-toast";
@@ -238,22 +242,53 @@ export default function LoggedView({ navigation }) {
         <TouchableOpacity onPress={() => navigation.navigate(Screens.password)}>
           <Input editable={false} label="Password" placeholder="••••••••••••" />
         </TouchableOpacity>
-      </ScrollView>
-      <View style={styles.bottomContainer}>
-        <View style={styles.buttonContainer}>
-          <ButtonEdit title="EDIT" onPress={() => _submitEdit()} />
+        <View style={styles.bottomContainer}>
+          <View style={styles.buttonContainer}>
+            <ButtonEdit
+              title="Edit"
+              onPress={() => _submitEdit()}
+              icon={
+                <Icon
+                  name="edit"
+                  type="font-awesome"
+                  style={{ marginRight: 5 }}
+                />
+              }
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <ButtonValid
+              title="Claim"
+              onPress={() => navigation.navigate(Screens.claimMoney)}
+              icon={
+                <Icon
+                  name="logo-euro"
+                  type="ionicon"
+                  style={{ marginRight: 5 }}
+                />
+              }
+            />
+          </View>
         </View>
         <View style={styles.buttonContainer}>
           <ButtonCancel
-            title="LOG OUT"
+            title="Exit"
             onPress={() => {
               dispatchUserNull(dispatch);
               dispatchUserAccountBalanceNull(dispatch);
               removeStorage("token");
             }}
+            icon={
+              <Icon
+                name="sign-out"
+                type="font-awesome"
+                style={{ marginRight: 5 }}
+              />
+            }
           />
         </View>
-      </View>
+      </ScrollView>
+
       <Loader animating={userIsUpdating} />
       <Toast
         ref={toastErrRef}

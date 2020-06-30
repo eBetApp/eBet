@@ -16,6 +16,7 @@ import SignInScreen from "../screens/SignInView";
 import SignUpScreen from "../screens/SignUpView";
 import LoggedScreen from "../screens/LoggedView";
 import PasswordScreen from "../screens/PasswordView";
+import RetrieveMoneyScreen from "../screens/ClaimWinningsView";
 
 // UI imports
 import theme, { CustomTheme } from "./Theme";
@@ -42,6 +43,7 @@ export enum Screens {
   pay = "Pay",
   account = "Account",
   password = "Change my password",
+  claimMoney = "Claim my winnings",
 }
 //#endregion NAVIGATION CONSTANTS
 
@@ -128,6 +130,10 @@ export function AccountStackScreen() {
             name={Screens.password}
             options={() => headerRightOption(state)}
             component={PasswordScreen}
+          />
+          <AccountStack.Screen
+            name={Screens.claimMoney}
+            component={RetrieveMoneyScreen}
           />
         </>
       )}
