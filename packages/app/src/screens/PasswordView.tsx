@@ -123,6 +123,7 @@ export default function PasswordView({ navigation }) {
           secureTextEntry={true}
           {...useCurrentPassword}
           errorMessage={formError.password}
+          returnKeyType="next"
           onSubmitEditing={() => newPwdInputErrRef.current.focus()}
           blurOnSubmit={false}
         />
@@ -133,6 +134,7 @@ export default function PasswordView({ navigation }) {
           secureTextEntry={true}
           {...useNewPassword}
           errorMessage={formError.newPassword}
+          returnKeyType="next"
           onSubmitEditing={() => confirmNewPwdInputRef.current.focus()}
           blurOnSubmit={false}
         />
