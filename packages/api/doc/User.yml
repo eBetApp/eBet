@@ -369,7 +369,6 @@ paths:
           required: true
         - $ref: "#/components/parameters/Bearer_Token"
       responses:
-        # TODO
         "200":
           description: Image correctly deleted
           content:

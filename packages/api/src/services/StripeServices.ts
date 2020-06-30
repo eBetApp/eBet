@@ -7,12 +7,6 @@ const stripe = new Stripe(String(process.env.STRIPE_KEY), {
 import UserRepository from '../database/repositories/userRepository';
 
 class AuthService {
-	// TODO: voir si utile ici aussi
-	// static setToken(user: User): string {
-	// 	const { uuid, nickname, email } = user;
-	// 	return jwt.sign({ uuid, nickname, email }, String(process.env.SECRET));
-	// }
-
 	static getCreateAccountUrl = (): string =>
 		'https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_HLOVRxlYXifqJlpAxypmnbp3OPhd8dXU&scope=read_write';
 
@@ -23,7 +17,6 @@ class AuthService {
 		const params: Stripe.CustomerCreateParams = {
 			name,
 			email,
-			source: 'tok_amex', // TODO: A ajouter via une route user ou demander à chaque fois? (peut etre plus simple pour une v1 / MVP)
 		};
 
 		return await stripe.customers.create(params);
@@ -38,12 +31,11 @@ class AuthService {
 	): Promise<void> {
 		await stripe.transfers.create({
 			amount,
-			currency: 'eur', // TODO: n'accepter que les paiements en euro (pas trouvé comment gérer plusieurs monnaies pour un même compte)
+			currency: 'eur',
 			destination: toAccountId,
 		});
 	}
 
-	// TODO: move into service
 	static async setNewAccountId(
 		userUuid: string,
 		code: string,
@@ -58,8 +50,8 @@ class AuthService {
 			const userToUpdate = await UserRepository.instance.get({
 				uuid: userUuid,
 			});
-			// if (userToUpdate === undefined || userToUpdate.accountId !== null)
-			// 	return false; // user does not exist OR its account already exists
+			if (userToUpdate === undefined || userToUpdate.accountId !== null)
+				return null; // user does not exist OR its account already exists
 
 			await UserRepository.instance.update(
 				{ uuid: userUuid },

@@ -5,7 +5,7 @@ import queryString from "query-string";
 import UserRepository from "../Repositories/ebetRepository";
 
 const postPaymentAsync = async (
-  payload: { amount: number; currency: string; source: string },
+  payload: { amount: number; source: string },
   token: string
 ): Promise<ApiResponse | null> => {
   try {

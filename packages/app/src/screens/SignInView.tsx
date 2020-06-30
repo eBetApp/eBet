@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-
 // UI imports
 import {
   Button,
@@ -20,30 +19,23 @@ import { ButtonValid, ButtonCancel } from "../components/styled/Buttons";
 import { TextLink } from "../components/styled/TextLink";
 import { MainView, MainKeyboardAvoidingView } from "../components/styled/Views";
 import { Loader } from "../components/styled/Loader";
-
 // Fetch imports
 import userService from "../Services/userService";
-
 // Custom hooks imports
 import useInput from "../hooks/useInput";
-
 // Redux import
 import { useStore } from "../hooks/store";
 import { dispatchUserNew } from "../hooks/dispatchers";
-
 // utils imports
 import {
   classifyAuthError,
   errorType,
   AuthError,
 } from "../Utils/parseApiError";
-
 // LocalStorage imports
 import { setStorage } from "../Utils/asyncStorage";
-
 // Navigation imports
 import { Screens } from "../Resources/NavigationStacks";
-
 // Toast import
 import Toast, { DURATION } from "react-native-easy-toast";
 
