@@ -1,5 +1,6 @@
 export interface IState {
   user?: Omit<User, "password"> | null;
+  balance?: number;
 }
 
 export interface IAction {
@@ -7,6 +8,7 @@ export interface IAction {
   payload?: {
     user?: Omit<User, "password">;
     partialUser?: Partial<User>;
+    balance?: number;
   };
 }
 
@@ -14,4 +16,6 @@ export enum ReducerActions {
   register = "register",
   unregister = "unregister",
   editUser = "editUser",
+  changeUserAccountBalance = "changeUserAccountBalance",
+  eraseUserAccountBalance = "eraseUserAccountBalance",
 }

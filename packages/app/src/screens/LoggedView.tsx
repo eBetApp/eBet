@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -8,9 +8,14 @@ import {
 } from "react-native";
 // Redux import
 import { useStore } from "../hooks/store";
-import { dispatchUserNull, dispatchUserEdit } from "../hooks/dispatchers";
+import {
+  dispatchUserNull,
+  dispatchUserEdit,
+  dispatchUserAccountBalance,
+  dispatchUserAccountBalanceNull,
+} from "../hooks/dispatchers";
 // UI imports
-import { Input, ThemeContext } from "react-native-elements";
+import { Input, ThemeContext, Text } from "react-native-elements";
 import { ButtonCancel, ButtonEdit } from "../components/styled/Buttons";
 import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -19,6 +24,7 @@ import { Loader } from "../components/styled/Loader";
 // Fetch imports
 import queryString from "query-string";
 import userService from "../Services/userService";
+import betService from "../Services/betService";
 import {
   classifyAuthError,
   errorType,
@@ -64,6 +70,11 @@ export default function LoggedView({ navigation }) {
   const toastErrRef = useRef(null);
   const toastSuccessRef = useRef(null);
 
+  // useEffect
+  useEffect(() => {
+    _fetchBalance();
+  }, []);
+
   //#region DATEPICKER
   const date = new Date(state.user?.birthdate);
   const [show, setShow] = useState(false);
@@ -77,6 +88,25 @@ export default function LoggedView({ navigation }) {
     setShow(true);
   };
   //#endregion DATEPICKER
+
+  const _fetchBalance = (): void => {
+    readStorage("token").then((token) => {
+      console.log("token: ", token);
+      console.log("accountId: ", state.user.accountId);
+      betService
+        .getBalanceAsync({ accountId: state.user.accountId }, token)
+        .then((res) => {
+          if (res === null) return;
+          const _res = res as IApiResponseSuccess;
+          if (_res == null) return;
+          dispatchUserAccountBalance(dispatch, _res.data.balance);
+          // navigation.setOptions({ title: `My account: ${_res.data.balance}` });
+        })
+        .catch((error) => {
+          console.log("getBalance() -- Unexpected error : ", error);
+        });
+    });
+  };
 
   const _renderWebView = () => (
     <WebView
@@ -218,6 +248,7 @@ export default function LoggedView({ navigation }) {
             title="LOG OUT"
             onPress={() => {
               dispatchUserNull(dispatch);
+              dispatchUserAccountBalanceNull(dispatch);
               removeStorage("token");
             }}
           />

@@ -55,7 +55,12 @@ const _CRUD = {
       throw err;
     }
   },
-  get: async (endPoint: string, body: FormData, token: string) => {
+  get: async (endPoint: string, body: FormData | string, token?: string) => {
+    const headers = {};
+    if (token !== null) headers.Authorization = `Bearer ${token}`;
+    if (typeof body === "string")
+      headers["Content-Type"] = "application/x-www-form-urlencoded";
+
     try {
       const response = await fetch(`${REACT_NATIVE_BACK_URL}/api/${endPoint}`, {
         method: "GET",
@@ -84,6 +89,7 @@ const deletePicture = (urlS3: string, token: string) => {
 export default {
   postPicture: putPicture,
   deletePicture,
+  get: _CRUD.get,
   post: _CRUD.post,
   put: _CRUD.put,
 };

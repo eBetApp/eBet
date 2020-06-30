@@ -23,7 +23,7 @@ interface IErrorBase {
 // SERVER RESPONSES
 interface IApiResponseSuccess {
   status: number;
-  data: {};
+  data: { [key: string]: any };
 }
 
 interface IApiResponseError {

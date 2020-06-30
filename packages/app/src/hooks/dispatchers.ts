@@ -1,4 +1,4 @@
-import { IAction, ReducerActions } from "./ReducerTypes";
+import { IAction, ReducerActions, IState } from "./ReducerTypes";
 
 export const dispatchUserNew = (
   dispatch: React.Dispatch<IAction>,
@@ -16,4 +16,20 @@ export const dispatchUserEdit = (
 
 export const dispatchUserNull = (dispatch: React.Dispatch<IAction>) => {
   return dispatch({ type: ReducerActions.unregister });
+};
+
+export const dispatchUserAccountBalance = (
+  dispatch: React.Dispatch<IAction>,
+  balance: number
+) => {
+  return dispatch({
+    type: ReducerActions.changeUserAccountBalance,
+    payload: { balance },
+  });
+};
+
+export const dispatchUserAccountBalanceNull = (
+  dispatch: React.Dispatch<IAction>
+) => {
+  return dispatch({ type: ReducerActions.eraseUserAccountBalance });
 };
