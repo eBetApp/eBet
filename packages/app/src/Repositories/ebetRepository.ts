@@ -92,4 +92,5 @@ export default {
   get: _CRUD.get,
   post: _CRUD.post,
   put: _CRUD.put,
+  get: _CRUD.get,
 };
