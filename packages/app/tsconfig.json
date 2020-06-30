@@ -12,6 +12,7 @@
     "resolveJsonModule": true
   },
   "include": [
+    "src",
     "types.d.ts",
   ],
   "exclude": [

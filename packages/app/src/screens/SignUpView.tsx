@@ -79,7 +79,7 @@ export default function SignUpView({ navigation }) {
     setAuthIsProcessing(true);
 
     const payload = {
-      nickname: useEmail.value,
+      nickname: useNickname.value,
       email: useEmail.value,
       password: usePassword.value,
       birthdate: new Date(birthdate).toISOString(),
@@ -88,12 +88,14 @@ export default function SignUpView({ navigation }) {
     userService
       .signUpAsync(payload)
       .then((result) => {
+        console.log("RESPONSE");
+        console.log(result);
         if (result === null) {
           return toastErrRef.current.show("Network error");
-        } else if (result?.status === 200) {
+        } else if (result?.status === 201) {
           dispatchUserNew(dispatch, result.data.user);
           setStorage("token", result.meta.token);
-          navigation.navigate(Screens.account);
+          // navigation.navigate(Screens.account);
         } else if (result?.error?.status === 400) {
           switch (classifyAuthError(result.error.message)) {
             case errorType.nickname:
