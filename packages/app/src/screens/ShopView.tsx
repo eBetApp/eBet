@@ -1,14 +1,13 @@
 import React from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
-
+import { View } from "react-native";
 // UI imports
-import { Input, Icon, Text } from "react-native-elements";
+import { Text } from "react-native-elements";
 import { ButtonValid } from "../components/styled/Buttons";
-
 // Redux import
 import { useStore } from "../hooks/store";
-import { MainView } from "../components/styled/Views";
-import { ScrollView } from "react-native-gesture-handler";
+// Resources imports
+import * as Navigation from "../Resources/Navigation";
+import * as Strings from "../Resources/Strings";
 
 export default function ShopView({ navigation }) {
   const { state, dispatch } = useStore();
@@ -17,7 +16,10 @@ export default function ShopView({ navigation }) {
     <>
       {state.user != null ? (
         <View>
-          <ButtonValid title="PAY" onPress={() => navigation.navigate("Pay")} />
+          <ButtonValid
+            title={Strings.buttons.valid_payment}
+            onPress={() => navigation.navigate(Navigation.Screens.pay)}
+          />
         </View>
       ) : (
         <View>

@@ -22,12 +22,11 @@ import {
 } from "../Utils/parseApiError";
 // LocalStorage imports
 import { setStorage, localStorageItems } from "../Resources/LocalStorage";
-// Navigation imports
-import { Screens } from "../Resources/NavigationStacks";
 // Toast import
 import Toast from "react-native-easy-toast";
 // Resources imports
 import * as Strings from "../Resources/Strings";
+import * as Navigation from "../Resources/Navigation";
 
 export default function SignInView({ navigation }) {
   // Theme
@@ -69,7 +68,7 @@ export default function SignInView({ navigation }) {
             localStorageItems.token,
             (result as IAuthServiceResponse).meta.token
           );
-          navigation.navigate(Screens.loggedHome);
+          navigation.navigate(Navigation.Screens.loggedHome);
         } else if ((result as IApiResponseError)?.error?.status === 400) {
           switch (
             classifyAuthError((result as IApiResponseError).error.message)
@@ -136,7 +135,9 @@ export default function SignInView({ navigation }) {
           }
         />
         <Loader animating={authIsProcessing} />
-        <TouchableOpacity onPress={() => navigation.navigate(Screens.signUp)}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate(Navigation.Screens.signUp)}
+        >
           <TextLink>{Strings.textLinks.go_register}</TextLink>
         </TouchableOpacity>
       </View>

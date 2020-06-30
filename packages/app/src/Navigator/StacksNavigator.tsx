@@ -7,7 +7,7 @@ import {
   createStackNavigator,
   StackNavigationOptions,
 } from "@react-navigation/stack";
-
+import * as Navigation from "../Resources/Navigation";
 // Screens imports
 import MainScreen from "../screens/MainView";
 import ShopScreen from "../screens/ShopView";
@@ -17,35 +17,13 @@ import SignUpScreen from "../screens/SignUpView";
 import LoggedScreen from "../screens/LoggedView";
 import PasswordScreen from "../screens/PasswordView";
 import RetrieveMoneyScreen from "../screens/ClaimWinningsView";
-
 // UI imports
-import theme, { CustomTheme } from "./Theme";
-
+import theme, { CustomTheme } from "../Resources/Theme";
 // Redux imports
 import { useStore } from "../hooks/store";
 import { Badge } from "react-native-elements";
 import { IState } from "../hooks/ReducerTypes";
 import { StackHeaderOptions } from "@react-navigation/stack/lib/typescript/src/types";
-
-//#region NAVIGATION CONSTANTS
-export enum Tabs {
-  store = "StoreTab",
-  cart = "CartTab",
-  account = "AccountTab",
-}
-
-export enum Screens {
-  store = "Store",
-  cart = "Cart",
-  signIn = "Sign in",
-  signUp = "Sign up",
-  loggedHome = "My account",
-  pay = "Pay",
-  account = "Account",
-  password = "Change my password",
-  claimMoney = "Claim my winnings",
-}
-//#endregion NAVIGATION CONSTANTS
 
 //#region COMMON NAVIGATION OPTIONS
 const commonNavScreenOptions: StackNavigationOptions = {
@@ -84,7 +62,7 @@ export function StoreStackScreen({ navigation }) {
   return (
     <StoreStack.Navigator screenOptions={commonNavScreenOptions}>
       <StoreStack.Screen
-        name={Screens.store}
+        name={Navigation.Screens.store}
         options={() => headerRightOption(state)}
         component={MainScreen}
       />
@@ -99,11 +77,11 @@ export function ShopStackScreen({ navigation }) {
   return (
     <ShopStack.Navigator screenOptions={commonNavScreenOptions}>
       <ShopStack.Screen
-        name={Screens.cart}
+        name={Navigation.Screens.cart}
         component={ShopScreen}
         options={() => headerRightOption(state)}
       />
-      <ShopStack.Screen name={Screens.pay} component={PayScreen} />
+      <ShopStack.Screen name={Navigation.Screens.pay} component={PayScreen} />
     </ShopStack.Navigator>
   );
 }
@@ -116,23 +94,29 @@ export function AccountStackScreen() {
     <AccountStack.Navigator screenOptions={commonNavScreenOptions}>
       {state.user == null ? (
         <>
-          <AccountStack.Screen name={Screens.signIn} component={SignInScreen} />
-          <AccountStack.Screen name={Screens.signUp} component={SignUpScreen} />
+          <AccountStack.Screen
+            name={Navigation.Screens.signIn}
+            component={SignInScreen}
+          />
+          <AccountStack.Screen
+            name={Navigation.Screens.signUp}
+            component={SignUpScreen}
+          />
         </>
       ) : (
         <>
           <AccountStack.Screen
-            name={Screens.loggedHome}
+            name={Navigation.Screens.loggedHome}
             options={() => headerRightOption(state)}
             component={LoggedScreen}
           />
           <AccountStack.Screen
-            name={Screens.password}
+            name={Navigation.Screens.password}
             options={() => headerRightOption(state)}
             component={PasswordScreen}
           />
           <AccountStack.Screen
-            name={Screens.claimMoney}
+            name={Navigation.Screens.claimMoney}
             component={RetrieveMoneyScreen}
           />
         </>

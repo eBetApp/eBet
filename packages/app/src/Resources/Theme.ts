@@ -3,7 +3,7 @@ import React from "react";
 
 // UI imports
 import { FullTheme } from "react-native-elements";
-import Palette from "../Resources/Palette";
+import Palette from "./Palette";
 
 export interface CustomTheme extends Partial<FullTheme> {
   customColors?: {

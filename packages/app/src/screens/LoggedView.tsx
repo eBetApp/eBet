@@ -50,10 +50,9 @@ import {
 import Avatar from "../components/Avatar";
 // Custom hooks imports
 import useInput from "../hooks/useInput";
-// Navigation imports
-import { Screens } from "../Resources/NavigationStacks";
 // Resources imports
 import * as Strings from "../Resources/Strings";
+import * as Navigation from "../Resources/Navigation";
 
 export default function LoggedView({ navigation }) {
   let stripeAccount = "";
@@ -243,7 +242,9 @@ export default function LoggedView({ navigation }) {
             onChange={onDateChange}
           />
         )}
-        <TouchableOpacity onPress={() => navigation.navigate(Screens.password)}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate(Navigation.Screens.password)}
+        >
           <Input
             editable={false}
             label={Strings.inputs.label_password}
@@ -267,7 +268,7 @@ export default function LoggedView({ navigation }) {
           <View style={styles.buttonContainer}>
             <ButtonValid
               title={Strings.buttons.claim}
-              onPress={() => navigation.navigate(Screens.claimMoney)}
+              onPress={() => navigation.navigate(Navigation.Screens.claimMoney)}
               icon={
                 <Icon
                   name="logo-euro"

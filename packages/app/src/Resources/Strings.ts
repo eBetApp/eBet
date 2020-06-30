@@ -5,6 +5,7 @@ export enum buttons {
   edit = "Edit",
   signin = "Sign In",
   signup = "Sign Up",
+  valid_payment = "Pay",
 }
 
 export enum inputs {

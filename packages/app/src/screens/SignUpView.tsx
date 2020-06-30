@@ -9,6 +9,8 @@ import { ThemeContext } from "react-native-elements";
 import { TextLink } from "../components/styled/TextLink";
 import { MainKeyboardAvoidingView } from "../components/styled/Views";
 import Toast from "react-native-easy-toast";
+import { ScrollView } from "react-native-gesture-handler";
+import { Loader } from "../components/styled/Loader";
 // Custom hooks imports
 import useInput from "../hooks/useInput";
 // Redux import
@@ -24,12 +26,9 @@ import {
 import { setStorage, localStorageItems } from "../Resources/LocalStorage";
 // Services import
 import userService from "../Services/userService";
-// Navigation imports
-import { Screens } from "../Resources/NavigationStacks";
-import { ScrollView } from "react-native-gesture-handler";
-import { Loader } from "../components/styled/Loader";
 // Resources imports
 import * as Strings from "../Resources/Strings";
+import * as Navigation from "../Resources/Navigation";
 
 export default function SignUpView({ navigation }) {
   // Theme
@@ -192,7 +191,9 @@ export default function SignUpView({ navigation }) {
           }
         />
         <Loader animating={authIsProcessing} />
-        <TouchableOpacity onPress={() => navigation.navigate(Screens.signIn)}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate(Navigation.Screens.signIn)}
+        >
           <TextLink style={{ color: "blue" }}>
             {Strings.textLinks.go_sign_in}
           </TextLink>
