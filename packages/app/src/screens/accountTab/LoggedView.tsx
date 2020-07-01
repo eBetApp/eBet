@@ -71,7 +71,7 @@ export default function LoggedView({ navigation }) {
   // useEffect
   useEffect(() => {
     fetchBalance();
-  }, []);
+  }, [state.user]);
 
   const fetchBalance = (): void => {
     readStorage(localStorageItems.token).then((token) => {
