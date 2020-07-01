@@ -30,10 +30,23 @@ const getBalanceAsync = async (
       token
     );
   } catch (err) {
-    console.log("ERRRRR");
-    console.log(err);
     return null;
   }
 };
 
-export default { postPaymentAsync, getBalanceAsync };
+const postNewAccountAsync = async (
+  payload: { uuid: string; code: string },
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await Repository.post(
+      "payments/set-account",
+      queryString.stringify(payload),
+      token
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
+export default { postPaymentAsync, getBalanceAsync, postNewAccountAsync };

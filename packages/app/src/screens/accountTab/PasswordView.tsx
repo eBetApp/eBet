@@ -2,27 +2,27 @@ import React, { useState, useRef, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 // UI imports
-import { Input, Icon } from "react-native-elements";
-import { ButtonValid } from "../../components/styled/Buttons";
-import { MainKeyboardAvoidingView } from "../../components/styled/Views";
-import { Loader } from "../../components/styled/Loader";
-import { ThemeContext } from "react-native-elements";
+import { Input, Icon, ThemeContext } from "react-native-elements";
+import {
+  ButtonValid,
+  MainKeyboardAvoidingView,
+  Loader,
+} from "../../components/styled";
 import Toast from "react-native-easy-toast";
 // Redux import
 import { useStore } from "../../hooks/store";
 import useInput from "../../hooks/useInput";
 import { dispatchUserEdit } from "../../hooks/dispatchers";
 // Fetch imports
-import userService from "../../Services/userService";
+import { userService } from "../../Services";
 import {
   classifyAuthError,
   AuthError,
   errorType,
 } from "../../Utils/parseApiError";
-// LocalStorage imports
-import { readStorage, localStorageItems } from "../../Resources/LocalStorage";
 // Resources imports
-import * as Strings from "../../Resources/Strings";
+import { Strings, readStorage, localStorageItems } from "../../Resources";
+
 export default function PasswordView({ navigation }) {
   // Theme
   const { theme } = useContext(ThemeContext);

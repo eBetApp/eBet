@@ -1,11 +1,5 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 // Redux import
 import { useStore } from "../../hooks/store";
 import {
@@ -17,42 +11,37 @@ import {
 // UI imports
 import { Input, ThemeContext, Icon } from "react-native-elements";
 import {
+  MainKeyboardAvoidingView,
   ButtonCancel,
   ButtonEdit,
   ButtonValid,
-} from "../../components/styled/Buttons";
-import { MainKeyboardAvoidingView } from "../../components/styled/Views";
-import DateTimePicker from "@react-native-community/datetimepicker";
+  Loader,
+} from "../../components/styled";
+import { BirthdatePicker } from "../../components";
 import Toast from "react-native-easy-toast";
-import { Loader } from "../../components/styled/Loader";
 // Fetch imports
-import queryString from "query-string";
-import userService from "../../Services/userService";
-import betService from "../../Services/betService";
+import { userService, stripeService } from "../../Services";
 import {
   classifyAuthError,
   errorType,
   AuthError,
 } from "../../Utils/parseApiError";
-// .env imports
-import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 // webView import
 import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
-// LocalStorage imports
-import {
-  readStorage,
-  removeStorage,
-  localStorageItems,
-} from "../../Resources/LocalStorage";
 // Components imports
 import Avatar from "../../components/Avatar";
 // Custom hooks imports
 import useInput from "../../hooks/useInput";
 // Resources imports
-import * as Strings from "../../Resources/Strings";
-import * as Navigation from "../../Resources/Navigation";
+import {
+  Strings,
+  Navigation,
+  readStorage,
+  removeStorage,
+  localStorageItems,
+} from "../../Resources";
 
 export default function LoggedView({ navigation }) {
   let stripeAccount = "";
@@ -81,33 +70,18 @@ export default function LoggedView({ navigation }) {
 
   // useEffect
   useEffect(() => {
-    _fetchBalance();
-  }, []);
+    fetchBalance();
+  }, [state.user]);
 
-  //#region DATEPICKER
-  const date = new Date(state.user?.birthdate);
-  const [show, setShow] = useState(false);
-
-  const onDateChange = (event, selectedDate) => {
-    setShow(Platform.OS === "ios");
-    setBirthdate(selectedDate.toDateString());
-  };
-
-  const showDatepicker = () => {
-    setShow(true);
-  };
-  //#endregion DATEPICKER
-
-  const _fetchBalance = (): void => {
+  const fetchBalance = (): void => {
     readStorage(localStorageItems.token).then((token) => {
-      betService
+      stripeService
         .getBalanceAsync({ accountId: state.user.accountId }, token)
         .then((res) => {
           if (res === null) return;
           const _res = res as IApiResponseSuccess;
           if (_res == null) return;
           dispatchUserAccountBalance(dispatch, _res.data.balance);
-          // navigation.setOptions({ title: `My account: ${_res.data.balance}` });
         })
         .catch((error) => {
           console.log("getBalance() -- Unexpected error : ", error);
@@ -125,40 +99,31 @@ export default function LoggedView({ navigation }) {
         const params = parseUrl(navState.url);
         if (params?.code !== undefined && params?.code !== stripeAccount) {
           stripeAccount = params?.code;
-          _createStripeAccount(stripeAccount);
+          fetchCreateStripeAccount(stripeAccount);
         }
       }}
     />
   );
 
-  const _createStripeAccount = async (code: string): Promise<void> => {
+  const fetchCreateStripeAccount = async (code: string): Promise<void> => {
     const token = await readStorage(localStorageItems.token);
-
-    const myHeaders = new Headers({
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Bearer ${token}`,
-    });
 
     const payload = {
       uuid: state.user.uuid,
       code,
     };
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: queryString.stringify(payload),
-    };
-
-    fetch(`${REACT_NATIVE_BACK_URL}/api/payments/set-account`, requestOptions)
-      .then((response) => response.json())
+    stripeService
+      .postNewAccountAsync(payload, token)
       .then((result) => {
-        dispatchUserEdit(dispatch, { accountId: result?.data?.accountId });
+        dispatchUserEdit(dispatch, {
+          accountId: (result as IApiResponseSuccess)?.data?.accountId,
+        });
       })
       .catch((error) => console.log("error", error));
   };
 
-  const _submitEdit = async (): Promise<void> => {
+  const fetchEditAccount = async (): Promise<void> => {
     if (userIsUpdating) return;
     if (birthdate === null || birthdate === undefined) return;
     setUserIsUpdating(true);
@@ -224,24 +189,12 @@ export default function LoggedView({ navigation }) {
           keyboardType="email-address"
           errorMessage={formError.email}
         />
-        <TouchableOpacity onPress={showDatepicker}>
-          <Input
-            editable={false}
-            label={Strings.inputs.label_birthdate}
-            placeholder="Birthdate"
-            value={birthdate}
-            errorMessage={formError.birthdate}
-          />
-        </TouchableOpacity>
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-          />
-        )}
+        <BirthdatePicker
+          initValue={birthdate}
+          handleNewValue={(value) => setBirthdate(value)}
+          placeholder={Strings.inputs.ph_birthdate}
+          errorMessage={formError.birthdate}
+        />
         <TouchableOpacity
           onPress={() => navigation.navigate(Navigation.Screens.password)}
         >
@@ -255,7 +208,7 @@ export default function LoggedView({ navigation }) {
           <View style={styles.buttonContainer}>
             <ButtonEdit
               title={Strings.buttons.edit}
-              onPress={() => _submitEdit()}
+              onPress={() => fetchEditAccount()}
               icon={
                 <Icon
                   name="edit"
