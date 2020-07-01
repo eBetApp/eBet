@@ -20,15 +20,12 @@ import {
 import { BirthdatePicker } from "../../components";
 import Toast from "react-native-easy-toast";
 // Fetch imports
-import queryString from "query-string";
-import { userService, betService } from "../../Services";
+import { userService, stripeService } from "../../Services";
 import {
   classifyAuthError,
   errorType,
   AuthError,
 } from "../../Utils/parseApiError";
-// .env imports
-import { REACT_NATIVE_BACK_URL } from "react-native-dotenv";
 // webView import
 import { WebView } from "react-native-webview";
 // utils import
@@ -73,12 +70,12 @@ export default function LoggedView({ navigation }) {
 
   // useEffect
   useEffect(() => {
-    _fetchBalance();
+    fetchBalance();
   }, []);
 
-  const _fetchBalance = (): void => {
+  const fetchBalance = (): void => {
     readStorage(localStorageItems.token).then((token) => {
-      betService
+      stripeService
         .getBalanceAsync({ accountId: state.user.accountId }, token)
         .then((res) => {
           if (res === null) return;
@@ -102,40 +99,31 @@ export default function LoggedView({ navigation }) {
         const params = parseUrl(navState.url);
         if (params?.code !== undefined && params?.code !== stripeAccount) {
           stripeAccount = params?.code;
-          _createStripeAccount(stripeAccount);
+          fetchCreateStripeAccount(stripeAccount);
         }
       }}
     />
   );
 
-  const _createStripeAccount = async (code: string): Promise<void> => {
+  const fetchCreateStripeAccount = async (code: string): Promise<void> => {
     const token = await readStorage(localStorageItems.token);
-
-    const myHeaders = new Headers({
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Bearer ${token}`,
-    });
 
     const payload = {
       uuid: state.user.uuid,
       code,
     };
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: queryString.stringify(payload),
-    };
-
-    fetch(`${REACT_NATIVE_BACK_URL}/api/payments/set-account`, requestOptions)
-      .then((response) => response.json())
+    stripeService
+      .postNewAccountAsync(payload, token)
       .then((result) => {
-        dispatchUserEdit(dispatch, { accountId: result?.data?.accountId });
+        dispatchUserEdit(dispatch, {
+          accountId: (result as IApiResponseSuccess)?.data?.accountId,
+        });
       })
       .catch((error) => console.log("error", error));
   };
 
-  const _submitEdit = async (): Promise<void> => {
+  const fetchEditAccount = async (): Promise<void> => {
     if (userIsUpdating) return;
     if (birthdate === null || birthdate === undefined) return;
     setUserIsUpdating(true);
@@ -220,7 +208,7 @@ export default function LoggedView({ navigation }) {
           <View style={styles.buttonContainer}>
             <ButtonEdit
               title={Strings.buttons.edit}
-              onPress={() => _submitEdit()}
+              onPress={() => fetchEditAccount()}
               icon={
                 <Icon
                   name="edit"

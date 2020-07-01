@@ -4,7 +4,7 @@ import { REACT_NATIVE_STRIPE_PK } from "react-native-dotenv";
 // Resources imports
 import { readStorage, localStorageItems } from "../../Resources";
 // Services import
-import { betService } from "../../Services";
+import { stripeService } from "../../Services";
 // UI import
 import { Icon, Text, ThemeContext } from "react-native-elements";
 import { CreditCardInput } from "react-native-credit-card-input";
@@ -30,7 +30,7 @@ export default function PayView({ navigation }) {
 
   const handlePayment = async () => {
     const stripeToken = await _getPaymentToken();
-    if (stripeToken !== null) await _submitPayment(stripeToken);
+    if (stripeToken !== null) await fetchPayment(stripeToken);
   };
 
   const _getPaymentToken: () => Promise<string | null> = async () => {
@@ -57,7 +57,7 @@ export default function PayView({ navigation }) {
     };
   };
 
-  const _submitPayment = async (stripeToken) => {
+  const fetchPayment = async (stripeToken) => {
     if (paymentIsProcessing) return;
 
     setPaymentIsProcessing(true);
@@ -69,7 +69,7 @@ export default function PayView({ navigation }) {
 
     const userToken = await readStorage(localStorageItems.token);
 
-    betService
+    stripeService
       .postPaymentAsync(payload, userToken)
       .then((res) => {
         if (res === null) setPaymentError("Network error");
