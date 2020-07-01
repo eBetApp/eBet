@@ -71,6 +71,7 @@ export default function SignInView({ navigation }) {
             localStorageItems.token,
             (result as IAuthServiceResponse).meta.token
           );
+          setFormError(new AuthError());
           navigation.navigate(Navigation.Screens.loggedHome);
         } else if ((result as IApiResponseError)?.error?.status === 400) {
           switch (

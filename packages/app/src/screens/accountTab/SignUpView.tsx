@@ -78,6 +78,7 @@ export default function SignUpView({ navigation }) {
             localStorageItems.token,
             (result as IAuthServiceResponse).meta.token
           );
+          setFormError(new AuthError());
         } else if ((result as IApiResponseError)?.error?.status === 400) {
           switch (
             classifyAuthError((result as IApiResponseError).error.message)
