@@ -1,14 +1,15 @@
 import React, { useState, useContext, useRef } from "react";
 import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
 // UI imports
-import { Input, Icon } from "react-native-elements";
-import { ThemeContext } from "react-native-elements";
-import { ButtonValid } from "../../components/styled/Buttons";
-import { TextLink } from "../../components/styled/TextLink";
-import { MainKeyboardAvoidingView } from "../../components/styled/Views";
-import { Loader } from "../../components/styled/Loader";
+import { Input, Icon, ThemeContext } from "react-native-elements";
+import {
+  ButtonValid,
+  TextLink,
+  MainKeyboardAvoidingView,
+  Loader,
+} from "../../components/styled";
 // Fetch imports
-import userService from "../../Services/userService";
+import { userService } from "../../Services";
 // Custom hooks imports
 import useInput from "../../hooks/useInput";
 // Redux import
@@ -20,13 +21,15 @@ import {
   errorType,
   AuthError,
 } from "../../Utils/parseApiError";
-// LocalStorage imports
-import { setStorage, localStorageItems } from "../../Resources/LocalStorage";
 // Toast import
 import Toast from "react-native-easy-toast";
 // Resources imports
-import * as Strings from "../../Resources/Strings";
-import * as Navigation from "../../Resources/Navigation";
+import {
+  Strings,
+  Navigation,
+  setStorage,
+  localStorageItems,
+} from "../../Resources";
 
 export default function SignInView({ navigation }) {
   // Theme

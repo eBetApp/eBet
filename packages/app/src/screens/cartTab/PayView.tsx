@@ -1,17 +1,15 @@
 import React, { useState, useContext } from "react";
 // .env imports
 import { REACT_NATIVE_STRIPE_PK } from "react-native-dotenv";
-// LocalStorage imports
-import { readStorage, localStorageItems } from "../../Resources/LocalStorage";
+// Resources imports
+import { readStorage, localStorageItems } from "../../Resources";
 // Services import
-import betService from "../../Services/betService";
+import { betService } from "../../Services";
 // UI import
 import { Icon, Text, ThemeContext } from "react-native-elements";
 import { CreditCardInput } from "react-native-credit-card-input";
-import { ButtonValid } from "../../components/styled/Buttons";
-import { MainView } from "../../components/styled/Views";
+import { ButtonValid, MainView, Loader } from "../../components/styled";
 import { ScrollView } from "react-native-gesture-handler";
-import { Loader } from "../../components/styled/Loader";
 // Stripe imports
 // tslint:disable-next-line:no-var-requires
 const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);

@@ -1,16 +1,17 @@
 // React imports
 import React, { useState, useContext, useRef } from "react";
-import { StyleSheet, View, TouchableOpacity, Platform } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 // UI imports
-import { Input, Icon } from "react-native-elements";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { ButtonValid } from "../../components/styled/Buttons";
-import { ThemeContext } from "react-native-elements";
-import { TextLink } from "../../components/styled/TextLink";
-import { MainKeyboardAvoidingView } from "../../components/styled/Views";
+import { Input, Icon, ThemeContext } from "react-native-elements";
+import {
+  MainKeyboardAvoidingView,
+  TextLink,
+  ButtonValid,
+  Loader,
+} from "../../components/styled";
+import { BirthdatePicker } from "../../components";
 import Toast from "react-native-easy-toast";
 import { ScrollView } from "react-native-gesture-handler";
-import { Loader } from "../../components/styled/Loader";
 // Custom hooks imports
 import useInput from "../../hooks/useInput";
 // Redux import
@@ -22,13 +23,15 @@ import {
   errorType,
   AuthError,
 } from "../../Utils/parseApiError";
-// LocalStorage imports
-import { setStorage, localStorageItems } from "../../Resources/LocalStorage";
 // Services import
-import userService from "../../Services/userService";
+import { userService } from "../../Services";
 // Resources imports
-import * as Strings from "../../Resources/Strings";
-import * as Navigation from "../../Resources/Navigation";
+import {
+  Strings,
+  Navigation,
+  setStorage,
+  localStorageItems,
+} from "../../Resources";
 
 export default function SignUpView({ navigation }) {
   // Theme
@@ -42,8 +45,6 @@ export default function SignUpView({ navigation }) {
   const useEmail = useInput();
   const usePassword = useInput();
   const [birthdate, setBirthdate] = useState(null);
-  const date = new Date(Date.now());
-  const [show, setShow] = useState(false);
   const [authIsProcessing, setAuthIsProcessing] = useState<boolean>(false);
 
   // States: Errors
@@ -53,15 +54,6 @@ export default function SignUpView({ navigation }) {
   const pwdInputRef = useRef(null);
   const emailInputRef = useRef(null);
   const toastErrRef = useRef(null);
-
-  const onChange = (event, selectedDate) => {
-    setShow(Platform.OS === "ios");
-    setBirthdate(selectedDate.toDateString());
-  };
-
-  const showDatepicker = () => {
-    setShow(true);
-  };
 
   const _submitForm = (): void => {
     if (authIsProcessing) return;
@@ -78,8 +70,6 @@ export default function SignUpView({ navigation }) {
     userService
       .signUpAsync(payload)
       .then((result) => {
-        console.log("RESPONSE");
-        console.log(result);
         if (result === null) {
           return toastErrRef.current.show("Network error");
         } else if ((result as IAuthServiceResponse)?.status === 201) {
@@ -161,22 +151,11 @@ export default function SignUpView({ navigation }) {
           {...usePassword}
           errorMessage={formError.password}
         />
-        <TouchableOpacity onPress={showDatepicker}>
-          <Input
-            editable={false}
-            placeholder={Strings.inputs.ph_birthdate}
-            value={birthdate}
-            errorMessage={formError.birthdate}
-          />
-        </TouchableOpacity>
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode="date"
-            onChange={onChange}
-          />
-        )}
+        <BirthdatePicker
+          handleNewValue={(value) => setBirthdate(value)}
+          errorMessage={formError.birthdate}
+          placeholder={Strings.inputs.ph_birthdate}
+        />
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
