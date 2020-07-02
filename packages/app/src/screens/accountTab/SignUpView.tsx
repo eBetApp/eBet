@@ -1,6 +1,6 @@
 // React imports
 import React, { useState, useRef } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View } from "react-native";
 // UI imports
 import { Input, Icon } from "react-native-elements";
 import {
@@ -42,7 +42,9 @@ export default function SignUpView({ navigation }) {
   const useEmail = useInput();
   const usePassword = useInput();
   const [birthdate, setBirthdate] = useState(null);
-  const [authIsProcessing, setAuthIsProcessing] = useState<boolean>(false);
+  const [fetchAuthIsProcessing, setFetchAuthIsProcessing] = useState<boolean>(
+    false
+  );
 
   // States: Errors
   const [formError, setFormError] = useState<AuthError>(new AuthError());
@@ -52,12 +54,17 @@ export default function SignUpView({ navigation }) {
   const emailInputRef = useRef(null);
   const toastErrRef = useRef(null);
 
-  const _submitForm = (): void => {
-    if (authIsProcessing) return;
+  //#region FETCH TO SIGN UP
+  const submitForm = (): void => {
     if (birthdate === null || birthdate === undefined) return;
-    setAuthIsProcessing(true);
+    _fetch();
+  };
 
-    const payload = {
+  const _fetch = async () => {
+    if (fetchAuthIsProcessing) return;
+    setFetchAuthIsProcessing(true);
+
+    const payload: ISignUpPayload = {
       nickname: useNickname.value,
       email: useEmail.value,
       password: usePassword.value,
@@ -66,60 +73,65 @@ export default function SignUpView({ navigation }) {
 
     userService
       .signUpAsync(payload)
-      .then((result) => {
-        if (result === null) {
-          return toastErrRef.current.show("Network error");
-        } else if ((result as IAuthServiceResponse)?.status === 201) {
-          dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
-          setStorage(
-            localStorageItems.token,
-            (result as IAuthServiceResponse).meta.token
-          );
-          setFormError(new AuthError());
-        } else if ((result as IApiResponseError)?.error?.status === 400) {
-          switch (
-            classifyAuthError((result as IApiResponseError).error.message)
-          ) {
-            case errorType.nickname:
-              setFormError(
-                new AuthError({
-                  nickname: (result as IApiResponseError).error?.message,
-                })
-              );
-              break;
-            case errorType.email:
-              setFormError(
-                new AuthError({
-                  email: (result as IApiResponseError).error?.message,
-                })
-              );
-              break;
-            case errorType.password:
-              setFormError(
-                new AuthError({
-                  password: (result as IApiResponseError).error?.message,
-                })
-              );
-              break;
-            case errorType.birthdate:
-              setFormError(
-                new AuthError({
-                  birthdate: (result as IApiResponseError).error?.message,
-                })
-              );
-              break;
-            default:
-              break;
-          }
-        } else throw new Error();
-      })
-      .catch((error) => {
-        toastErrRef.current.show("Unexpected error");
-        console.log("signUpAsync() -- Unexpected error : ", error);
-      })
-      .finally(() => setAuthIsProcessing(false));
+      .then((result) => _handleFetchRes(result))
+      .catch((error) => _handleFetchErr(error))
+      .finally(() => setFetchAuthIsProcessing(false));
   };
 
+  const _handleFetchRes = (result: ApiResponse) => {
+    if (result === null) {
+      setFormError(new AuthError());
+      return toastErrRef.current.show("Network error");
+    } else if ((result as IAuthServiceResponse)?.status === 201) {
+      dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
+      setStorage(
+        localStorageItems.token,
+        (result as IAuthServiceResponse).meta.token
+      );
+      setFormError(new AuthError());
+    } else if ((result as IApiResponseError)?.error?.status === 400) {
+      switch (classifyAuthError((result as IApiResponseError).error.message)) {
+        case errorType.nickname:
+          setFormError(
+            new AuthError({
+              nickname: (result as IApiResponseError).error?.message,
+            })
+          );
+          break;
+        case errorType.email:
+          setFormError(
+            new AuthError({
+              email: (result as IApiResponseError).error?.message,
+            })
+          );
+          break;
+        case errorType.password:
+          setFormError(
+            new AuthError({
+              password: (result as IApiResponseError).error?.message,
+            })
+          );
+          break;
+        case errorType.birthdate:
+          setFormError(
+            new AuthError({
+              birthdate: (result as IApiResponseError).error?.message,
+            })
+          );
+          break;
+        default:
+          break;
+      }
+    } else throw new Error();
+  };
+
+  const _handleFetchErr = (error: any) => {
+    toastErrRef.current.show("Unexpected error");
+    console.log("signUpAsync() -- Unexpected error : ", error);
+  };
+  //#endregion FETCH TO SIGN UP
+
+  //#region VIEW
   return (
     <MainKeyboardAvoidingView style={{ flex: 1 }}>
       <ScrollView style={styles.formContainer}>
@@ -158,7 +170,7 @@ export default function SignUpView({ navigation }) {
       <View style={styles.bottomContainer}>
         <ButtonValid
           title={Strings.buttons.signup}
-          onPress={_submitForm}
+          onPress={submitForm}
           icon={
             <Icon
               name="ios-checkmark"
@@ -167,7 +179,7 @@ export default function SignUpView({ navigation }) {
             />
           }
         />
-        <Loader animating={authIsProcessing} />
+        <Loader animating={fetchAuthIsProcessing} />
         <TextLink
           text={Strings.textLinks.go_sign_in}
           onPress={() => navigation.navigate(Navigation.Screens.signIn)}
@@ -176,6 +188,7 @@ export default function SignUpView({ navigation }) {
       <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
+  //#endregion VIEW
 }
 
 const styles = StyleSheet.create({

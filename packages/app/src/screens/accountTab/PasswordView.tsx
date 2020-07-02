@@ -41,9 +41,10 @@ export default function PasswordView({ navigation }) {
   const newPwdInputErrRef = useRef(null);
   const confirmNewPwdInputRef = useRef(null);
 
-  const _submitForm = async (): Promise<void> => {
+  //#region FETCH TO UPDATE PWD
+  const submitForm = (): void => {
     if (
-      !_checkPasswordConfirmation(
+      !_passwordConfirmationMatch(
         useNewPassword.value,
         useNewPasswordConfirmation.value
       )
@@ -55,10 +56,21 @@ export default function PasswordView({ navigation }) {
         })
       );
 
+    _fetch();
+  };
+
+  const _passwordConfirmationMatch = (
+    password: string,
+    passwordConfirmation: string
+  ): boolean => {
+    return password === passwordConfirmation;
+  };
+
+  const _fetch = async () => {
     if (fetchUpdateIsProcessing) return;
     setFetchUpdateIsProcessing(true);
 
-    const payload = {
+    const payload: IPwdUpdatePayload = {
       uuid: state.user.uuid,
       currentPwd: useCurrentPassword.value,
       newPwd: useNewPassword.value,
@@ -68,50 +80,49 @@ export default function PasswordView({ navigation }) {
 
     userService
       .updatePwdAsync(payload, token)
-      .then((res) => {
-        if (res === null) {
-          return toastErrRef.current.show("Network error");
-        } else if ((res as IApiResponseSuccess)?.status === 200) {
-          delete payload.uuid;
-          dispatchUserEdit(dispatch, { ...payload });
-          navigation.goBack();
-        } else if ((res as IApiResponseError)?.error?.status === 400) {
-          switch (classifyAuthError((res as IApiResponseError).error.message)) {
-            case errorType.password:
-              setFormError(
-                new AuthError({
-                  newPassword: (res as IApiResponseError).error.message,
-                })
-              );
-              break;
-          }
-        } else if ((res as IApiResponseError)?.error?.status === 403) {
-          switch (classifyAuthError((res as IApiResponseError).error.message)) {
-            case errorType.password:
-              setFormError(
-                new AuthError({
-                  password: (res as IApiResponseError).error.message,
-                })
-              );
-              break;
-          }
-        } else throw new Error();
-      })
-      .catch((error) => {
-        toastErrRef.current.show("Unexpected error");
-        console.log("update password -- Unexpected error : ", error);
-      })
+      .then((res) => _handleFetchRes(res, payload))
+      .catch((error) => _handleFetchErr(error))
       .finally(() => setFetchUpdateIsProcessing(false));
   };
 
-  /** Returns false when password and passwordConfirmation are different */
-  const _checkPasswordConfirmation = (
-    password: string,
-    passwordConfirmation: string
-  ): boolean => {
-    return password === passwordConfirmation;
+  const _handleFetchRes = (res: ApiResponse, payload: IPwdUpdatePayload) => {
+    if (res === null) {
+      setFormError(new AuthError());
+      return toastErrRef.current.show("Network error");
+    } else if ((res as IApiResponseSuccess)?.status === 200) {
+      delete payload.uuid;
+      dispatchUserEdit(dispatch, { ...payload });
+      navigation.goBack();
+    } else if ((res as IApiResponseError)?.error?.status === 400) {
+      switch (classifyAuthError((res as IApiResponseError).error.message)) {
+        case errorType.password:
+          setFormError(
+            new AuthError({
+              newPassword: (res as IApiResponseError).error.message,
+            })
+          );
+          break;
+      }
+    } else if ((res as IApiResponseError)?.error?.status === 403) {
+      switch (classifyAuthError((res as IApiResponseError).error.message)) {
+        case errorType.password:
+          setFormError(
+            new AuthError({
+              password: (res as IApiResponseError).error.message,
+            })
+          );
+          break;
+      }
+    } else throw new Error();
   };
 
+  const _handleFetchErr = (error: any) => {
+    toastErrRef.current.show("Unexpected error");
+    console.log("update password -- Unexpected error : ", error);
+  };
+  //#endregion FETCH TO UPDATE PWD
+
+  //#region VIEW
   return (
     <MainKeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.formContainer}>
@@ -148,7 +159,7 @@ export default function PasswordView({ navigation }) {
       <View style={styles.bottomContainer}>
         <ButtonValid
           title={Strings.buttons.submit}
-          onPress={_submitForm}
+          onPress={submitForm}
           icon={
             <Icon
               name="ios-checkmark"
@@ -162,6 +173,7 @@ export default function PasswordView({ navigation }) {
       <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
+  //#endregion VIEW
 }
 
 const styles = StyleSheet.create({
