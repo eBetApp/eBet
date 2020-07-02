@@ -1,8 +1,8 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 // UI imports
-import { Input, Icon, ThemeContext } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import {
   ButtonValid,
   MainKeyboardAvoidingView,
@@ -24,9 +24,6 @@ import {
 import { Strings, readStorage, localStorageItems } from "../../Resources";
 
 export default function PasswordView({ navigation }) {
-  // Theme
-  const { theme } = useContext(ThemeContext);
-
   // States
   const { state, dispatch } = useStore();
   const useCurrentPassword = useInput();

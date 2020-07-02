@@ -3,18 +3,27 @@ import React, { useContext } from "react";
 import { Text } from "react-native-elements";
 import { ThemeContext } from "react-native-elements";
 import { CustomTheme } from "../Resources/Theme";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { GestureResponderEvent } from "react-native";
 
-export function TextLink(props) {
+interface IProps {
+  onPress: (event: GestureResponderEvent) => void;
+  text: string;
+}
+
+export function TextLink(props: IProps) {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <Text
-      {...props}
-      style={{
-        ...props.style,
-        color: (theme as CustomTheme).customColors.ternaryBgValid,
-        textAlign: "center",
-      }}
-    />
+    <TouchableOpacity onPress={props.onPress}>
+      <Text
+        style={{
+          color: (theme as CustomTheme).customColors.ternaryBgValid,
+          textAlign: "center",
+        }}
+      >
+        {props.text}
+      </Text>
+    </TouchableOpacity>
   );
 }

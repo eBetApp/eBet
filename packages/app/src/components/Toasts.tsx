@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useContext, Props } from "react";
+import React, { MutableRefObject, useContext } from "react";
 import Toast from "react-native-easy-toast";
 // UI imports
 import { ThemeContext } from "react-native-elements";

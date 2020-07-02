@@ -138,11 +138,10 @@ export default function SignInView({ navigation }) {
           }
         />
         <Loader animating={authIsProcessing} />
-        <TouchableOpacity
+        <TextLink
+          text={Strings.textLinks.go_register}
           onPress={() => navigation.navigate(Navigation.Screens.signUp)}
-        >
-          <TextLink>{Strings.textLinks.go_register}</TextLink>
-        </TouchableOpacity>
+        />
       </View>
       <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>

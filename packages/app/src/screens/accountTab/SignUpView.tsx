@@ -1,8 +1,8 @@
 // React imports
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 // UI imports
-import { Input, Icon, ThemeContext } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import {
   MainKeyboardAvoidingView,
   TextLink,
@@ -34,9 +34,6 @@ import {
 } from "../../Resources";
 
 export default function SignUpView({ navigation }) {
-  // Theme
-  const { theme } = useContext(ThemeContext);
-
   // Redux
   const { dispatch } = useStore();
 
@@ -171,13 +168,10 @@ export default function SignUpView({ navigation }) {
           }
         />
         <Loader animating={authIsProcessing} />
-        <TouchableOpacity
+        <TextLink
+          text={Strings.textLinks.go_sign_in}
           onPress={() => navigation.navigate(Navigation.Screens.signIn)}
-        >
-          <TextLink style={{ color: "blue" }}>
-            {Strings.textLinks.go_sign_in}
-          </TextLink>
-        </TouchableOpacity>
+        />
       </View>
       <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
