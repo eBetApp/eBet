@@ -7,7 +7,7 @@ import {
   ButtonValid,
   MainKeyboardAvoidingView,
   Loader,
-} from "../../components/styled";
+} from "../../components";
 import Toast from "react-native-easy-toast";
 // Redux import
 import { useStore } from "../../hooks/store";

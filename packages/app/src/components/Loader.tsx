@@ -1,6 +1,6 @@
-import React, { useState, useContext } from "react";
+import React from "react";
 import { ActivityIndicator } from "react-native";
-import theme from "../../Resources/Theme";
+import theme from "../Resources/Theme";
 
 export function Loader(props) {
   return (

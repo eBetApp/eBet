@@ -8,8 +8,8 @@ import {
   TextLink,
   ButtonValid,
   Loader,
-} from "../../components/styled";
-import { BirthdatePicker } from "../../components";
+  BirthdatePicker,
+} from "../../components";
 import Toast from "react-native-easy-toast";
 import { ScrollView } from "react-native-gesture-handler";
 // Custom hooks imports

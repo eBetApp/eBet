@@ -16,8 +16,9 @@ import {
   ButtonEdit,
   ButtonValid,
   Loader,
-} from "../../components/styled";
-import { BirthdatePicker } from "../../components";
+  BirthdatePicker,
+  Avatar,
+} from "../../components";
 import Toast from "react-native-easy-toast";
 // Fetch imports
 import { userService, stripeService } from "../../Services";
@@ -30,8 +31,6 @@ import {
 import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
-// Components imports
-import Avatar from "../../components/Avatar";
 // Custom hooks imports
 import useInput from "../../hooks/useInput";
 // Resources imports

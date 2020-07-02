@@ -7,7 +7,7 @@ import {
   TextLink,
   MainKeyboardAvoidingView,
   Loader,
-} from "../../components/styled";
+} from "../../components";
 // Fetch imports
 import { userService } from "../../Services";
 // Custom hooks imports

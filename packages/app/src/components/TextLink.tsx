@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 // UI imports
 import { Text } from "react-native-elements";
 import { ThemeContext } from "react-native-elements";
-import { CustomTheme } from "../../Resources/Theme";
+import { CustomTheme } from "../Resources/Theme";
 
 export function TextLink(props) {
   const { theme } = useContext(ThemeContext);

@@ -8,7 +8,7 @@ import { stripeService } from "../../Services";
 // UI import
 import { Icon, Text, ThemeContext } from "react-native-elements";
 import { CreditCardInput } from "react-native-credit-card-input";
-import { ButtonValid, MainView, Loader } from "../../components/styled";
+import { ButtonValid, MainView, Loader } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
 // Stripe imports
 // tslint:disable-next-line:no-var-requires
