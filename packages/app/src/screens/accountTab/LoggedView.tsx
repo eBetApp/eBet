@@ -9,7 +9,7 @@ import {
   dispatchUserAccountBalanceNull,
 } from "../../Redux/dispatchers";
 // UI imports
-import { Input, ThemeContext, Icon } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import {
   MainKeyboardAvoidingView,
   ButtonCancel,
@@ -33,7 +33,7 @@ import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
 // Custom hooks imports
-import useInput from "../../Hooks/useInput";
+import { useInput } from "../../Hooks";
 // Resources imports
 import {
   Strings,
@@ -45,9 +45,6 @@ import {
 
 export default function LoggedView({ navigation }) {
   let stripeAccount = "";
-
-  // Theme
-  const { theme } = useContext(ThemeContext);
 
   // Redux
   const { dispatch, state } = useStore();
@@ -71,7 +68,7 @@ export default function LoggedView({ navigation }) {
   // useEffect
   useEffect(() => {
     fetchBalance();
-  }, [state.user]);
+  }, [state.user?.accountId]);
 
   const fetchBalance = (): void => {
     readStorage(localStorageItems.token).then((token) => {

@@ -13,7 +13,7 @@ import {
 } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
 // Custom hooks imports
-import useInput from "../../Hooks/useInput";
+import { useInput, useFetchAuth } from "../../Hooks";
 // Redux import
 import { useStore } from "../../Redux/store";
 import { dispatchUserNew } from "../../Redux/dispatchers";
@@ -42,12 +42,6 @@ export default function SignUpView({ navigation }) {
   const useEmail = useInput();
   const usePassword = useInput();
   const [birthdate, setBirthdate] = useState(null);
-  const [fetchAuthIsProcessing, setFetchAuthIsProcessing] = useState<boolean>(
-    false
-  );
-
-  // States: Errors
-  const [formError, setFormError] = useState<AuthError>(new AuthError());
 
   // Ref
   const pwdInputRef = useRef(null);
@@ -55,32 +49,32 @@ export default function SignUpView({ navigation }) {
   const toastErrRef = useRef(null);
 
   //#region FETCH TO SIGN UP
-  const submitForm = (): void => {
-    if (birthdate === null || birthdate === undefined) return;
-    _fetch();
+  const payload: ISignUpPayload = {
+    nickname: useNickname.value,
+    email: useEmail.value,
+    password: usePassword.value,
+    birthdate: birthdate != null ? new Date(birthdate).toISOString() : null,
   };
 
-  const _fetch = async () => {
-    if (fetchAuthIsProcessing) return;
-    setFetchAuthIsProcessing(true);
+  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+    new AuthError(),
+    (setErr) => _preFetchRequest(setErr),
+    async (setErr) => _fetchRequest(setErr),
+    (res, err) => _handleFetchRes(res, err),
+    (err) => _handleFetchErr(err)
+  );
 
-    const payload: ISignUpPayload = {
-      nickname: useNickname.value,
-      email: useEmail.value,
-      password: usePassword.value,
-      birthdate: new Date(birthdate).toISOString(),
-    };
+  const _preFetchRequest = (setErr) =>
+    !(birthdate === null || birthdate === undefined);
 
-    userService
-      .signUpAsync(payload)
-      .then((result) => _handleFetchRes(result))
-      .catch((error) => _handleFetchErr(error))
-      .finally(() => setFetchAuthIsProcessing(false));
+  const _fetchRequest = async (setError) => {
+    console.log("PAYLOAD: ", payload);
+    return userService.signUpAsync(payload);
   };
 
-  const _handleFetchRes = (result: ApiResponse) => {
+  const _handleFetchRes = (result: ApiResponse, setError) => {
     if (result === null) {
-      setFormError(new AuthError());
+      setError(new AuthError());
       return toastErrRef.current.show("Network error");
     } else if ((result as IAuthServiceResponse)?.status === 201) {
       dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
@@ -88,32 +82,32 @@ export default function SignUpView({ navigation }) {
         localStorageItems.token,
         (result as IAuthServiceResponse).meta.token
       );
-      setFormError(new AuthError());
+      setError(new AuthError());
     } else if ((result as IApiResponseError)?.error?.status === 400) {
       switch (classifyAuthError((result as IApiResponseError).error.message)) {
         case errorType.nickname:
-          setFormError(
+          setError(
             new AuthError({
               nickname: (result as IApiResponseError).error?.message,
             })
           );
           break;
         case errorType.email:
-          setFormError(
+          setError(
             new AuthError({
               email: (result as IApiResponseError).error?.message,
             })
           );
           break;
         case errorType.password:
-          setFormError(
+          setError(
             new AuthError({
               password: (result as IApiResponseError).error?.message,
             })
           );
           break;
         case errorType.birthdate:
-          setFormError(
+          setError(
             new AuthError({
               birthdate: (result as IApiResponseError).error?.message,
             })
@@ -125,9 +119,9 @@ export default function SignUpView({ navigation }) {
     } else throw new Error();
   };
 
-  const _handleFetchErr = (error: any) => {
+  const _handleFetchErr = (err: any) => {
     toastErrRef.current.show("Unexpected error");
-    console.log("signUpAsync() -- Unexpected error : ", error);
+    console.log("signUpAsync() -- Unexpected error : ", err);
   };
   //#endregion FETCH TO SIGN UP
 
@@ -138,7 +132,7 @@ export default function SignUpView({ navigation }) {
         <Input
           placeholder={Strings.inputs.ph_nickname}
           {...useNickname}
-          errorMessage={formError.nickname}
+          errorMessage={error.nickname}
           returnKeyType="next"
           onSubmitEditing={() => emailInputRef.current.focus()}
           blurOnSubmit={false}
@@ -148,7 +142,7 @@ export default function SignUpView({ navigation }) {
           placeholder={Strings.inputs.ph_email}
           keyboardType="email-address"
           {...useEmail}
-          errorMessage={formError.email}
+          errorMessage={error.email}
           returnKeyType="next"
           onSubmitEditing={() => pwdInputRef.current.focus()}
           blurOnSubmit={false}
@@ -159,18 +153,18 @@ export default function SignUpView({ navigation }) {
           textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
-          errorMessage={formError.password}
+          errorMessage={error.password}
         />
         <BirthdatePicker
           handleNewValue={(value) => setBirthdate(value)}
-          errorMessage={formError.birthdate}
+          errorMessage={error.birthdate}
           placeholder={Strings.inputs.ph_birthdate}
         />
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
           title={Strings.buttons.signup}
-          onPress={submitForm}
+          onPress={fetch}
           icon={
             <Icon
               name="ios-checkmark"
@@ -179,7 +173,7 @@ export default function SignUpView({ navigation }) {
             />
           }
         />
-        <Loader animating={fetchAuthIsProcessing} />
+        <Loader animating={fetchIsProcessing} />
         <TextLink
           text={Strings.textLinks.go_sign_in}
           onPress={() => navigation.navigate(Navigation.Screens.signIn)}

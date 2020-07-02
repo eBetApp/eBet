@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
 // UI imports
 import { Input, Icon, ThemeContext } from "react-native-elements";
@@ -12,7 +12,7 @@ import {
 // Fetch imports
 import { userService } from "../../Services";
 // Custom hooks imports
-import useInput from "../../Hooks/useInput";
+import { useInput, useFetchAuth } from "../../Hooks";
 // Redux import
 import { useStore } from "../../Redux/store";
 import { dispatchUserNew } from "../../Redux/dispatchers";
@@ -37,39 +37,30 @@ export default function SignInView({ navigation }) {
   // States
   const useEmail = useInput();
   const usePassword = useInput();
-  const [authIsProcessing, setAuthIsProcessing] = useState<boolean>(false);
-
-  // States: Errors
-  const [formError, setFormError] = useState<AuthError>(new AuthError());
 
   // Ref
   const pwdInputRef = useRef(null);
   const toastErrRef = useRef(null);
 
   //#region FETCH TO SIGN IN
-  const submitForm = () => {
-    _fetch();
+  const payload: ISignInPayload = {
+    email: useEmail.value,
+    password: usePassword.value,
   };
 
-  const _fetch = () => {
-    if (authIsProcessing) return;
-    setAuthIsProcessing(true);
+  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+    new AuthError(),
+    (setErr) => true,
+    async (setErr) => _fetchRequest(setErr),
+    (res, err) => _handleFetchRes(res, err),
+    (err) => _handleFetchErr(err)
+  );
 
-    const payload: ISignInPayload = {
-      email: useEmail.value,
-      password: usePassword.value,
-    };
+  const _fetchRequest = (setErr) => userService.signInAsync(payload);
 
-    userService
-      .signInAsync(payload)
-      .then((result) => _handleFetchRes(result))
-      .catch((error) => _handleFetchErr(error))
-      .finally(() => setAuthIsProcessing(false));
-  };
-
-  const _handleFetchRes = (result: ApiResponse) => {
+  const _handleFetchRes = (result: ApiResponse, setError) => {
     if (result === null) {
-      setFormError(new AuthError());
+      setError(new AuthError());
       toastErrRef.current.show("Network error");
       return;
     } else if ((result as IAuthServiceResponse)?.status === 200) {
@@ -78,19 +69,19 @@ export default function SignInView({ navigation }) {
         localStorageItems.token,
         (result as IAuthServiceResponse).meta.token
       );
-      setFormError(new AuthError());
+      setError(new AuthError());
       navigation.navigate(Navigation.Screens.loggedHome);
     } else if ((result as IApiResponseError)?.error?.status === 400) {
       switch (classifyAuthError((result as IApiResponseError).error.message)) {
         case errorType.email:
-          setFormError(
+          setError(
             new AuthError({
               email: (result as IApiResponseError).error.message,
             })
           );
           break;
         case errorType.password:
-          setFormError(
+          setError(
             new AuthError({
               password: (result as IApiResponseError).error.message,
             })
@@ -102,9 +93,9 @@ export default function SignInView({ navigation }) {
     } else throw new Error();
   };
 
-  const _handleFetchErr = (error: any) => {
+  const _handleFetchErr = (err: any) => {
     toastErrRef.current.show("Unexpected error");
-    console.log("signInAsync() -- Unexpected error : ", error);
+    console.log("signInAsync() -- Unexpected error : ", err);
   };
   //#endregion FETCH TO SIGN IN
 
@@ -116,7 +107,7 @@ export default function SignInView({ navigation }) {
           placeholder={Strings.inputs.ph_email}
           keyboardType="email-address"
           {...useEmail}
-          errorMessage={formError.email}
+          errorMessage={error.email}
           returnKeyType="next"
           onSubmitEditing={() => {
             pwdInputRef.current.focus();
@@ -129,13 +120,13 @@ export default function SignInView({ navigation }) {
           textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
-          errorMessage={formError.password}
+          errorMessage={error.password}
         />
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
           title={Strings.buttons.signin}
-          onPress={submitForm}
+          onPress={fetch}
           icon={
             <Icon
               name="ios-checkmark"
@@ -144,7 +135,7 @@ export default function SignInView({ navigation }) {
             />
           }
         />
-        <Loader animating={authIsProcessing} />
+        <Loader animating={fetchIsProcessing} />
         <TextLink
           text={Strings.textLinks.go_register}
           onPress={() => navigation.navigate(Navigation.Screens.signUp)}
