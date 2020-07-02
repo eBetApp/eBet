@@ -1,13 +1,13 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 // Redux import
-import { useStore } from "../../hooks/store";
+import { useStore } from "../../Redux/store";
 import {
   dispatchUserNull,
   dispatchUserEdit,
   dispatchUserAccountBalance,
   dispatchUserAccountBalanceNull,
-} from "../../hooks/dispatchers";
+} from "../../Redux/dispatchers";
 // UI imports
 import { Input, ThemeContext, Icon } from "react-native-elements";
 import {
@@ -32,7 +32,7 @@ import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
 // Custom hooks imports
-import useInput from "../../hooks/useInput";
+import useInput from "../../Hooks/useInput";
 // Resources imports
 import {
   Strings,

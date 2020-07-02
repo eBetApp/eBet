@@ -11,10 +11,10 @@ import {
 // Fetch imports
 import { userService } from "../../Services";
 // Custom hooks imports
-import useInput from "../../hooks/useInput";
+import useInput from "../../Hooks/useInput";
 // Redux import
-import { useStore } from "../../hooks/store";
-import { dispatchUserNew } from "../../hooks/dispatchers";
+import { useStore } from "../../Redux/store";
+import { dispatchUserNew } from "../../Redux/dispatchers";
 // utils imports
 import {
   classifyAuthError,

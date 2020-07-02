@@ -1,7 +1,5 @@
 // React imports
 import React from "react";
-import { TouchableOpacity, Text } from "react-native";
-
 // Navigation imports
 import {
   createStackNavigator,
@@ -20,9 +18,9 @@ import RetrieveMoneyScreen from "../screens/accountTab/ClaimWinningsView";
 // UI imports
 import theme, { CustomTheme } from "../Resources/Theme";
 // Redux imports
-import { useStore } from "../hooks/store";
+import { useStore } from "../Redux/store";
 import { Badge } from "react-native-elements";
-import { IState } from "../hooks/ReducerTypes";
+import { IState } from "../Redux/ReducerTypes";
 import { StackHeaderOptions } from "@react-navigation/stack/lib/typescript/src/types";
 
 //#region COMMON NAVIGATION OPTIONS

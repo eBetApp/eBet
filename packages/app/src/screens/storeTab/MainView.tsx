@@ -4,11 +4,9 @@ import { View } from "react-native";
 import { Text } from "react-native-elements";
 import { ButtonValid, ButtonCancel } from "../../components";
 // Redux import
-import { useStore } from "../../hooks/store";
+import { useStore } from "../../Redux/store";
 
-export default function MainView({ navigation }) {
-  const { state, dispatch } = useStore();
-
+export default function MainView() {
   return (
     <View>
       <Text>TEST DES DIFFERENTS BOUTONS</Text>

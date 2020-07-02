@@ -10,9 +10,9 @@ import {
 } from "../../components";
 import Toast from "react-native-easy-toast";
 // Redux import
-import { useStore } from "../../hooks/store";
-import useInput from "../../hooks/useInput";
-import { dispatchUserEdit } from "../../hooks/dispatchers";
+import { useStore } from "../../Redux/store";
+import useInput from "../../Hooks/useInput";
+import { dispatchUserEdit } from "../../Redux/dispatchers";
 // Fetch imports
 import { userService } from "../../Services";
 import {
