@@ -9,8 +9,8 @@ import {
   ButtonValid,
   Loader,
   BirthdatePicker,
+  ToastErr,
 } from "../../components";
-import Toast from "react-native-easy-toast";
 import { ScrollView } from "react-native-gesture-handler";
 // Custom hooks imports
 import useInput from "../../Hooks/useInput";
@@ -179,12 +179,7 @@ export default function SignUpView({ navigation }) {
           </TextLink>
         </TouchableOpacity>
       </View>
-      <Toast
-        ref={toastErrRef}
-        position="top"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.error }}
-      />
+      <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
 }

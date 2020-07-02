@@ -7,8 +7,8 @@ import {
   ButtonValid,
   MainKeyboardAvoidingView,
   Loader,
+  ToastErr,
 } from "../../components";
-import Toast from "react-native-easy-toast";
 // Redux import
 import { useStore } from "../../Redux/store";
 import useInput from "../../Hooks/useInput";
@@ -162,12 +162,7 @@ export default function PasswordView({ navigation }) {
         />
         <Loader animating={fetchUpdateIsProcessing} />
       </View>
-      <Toast
-        ref={toastErrRef}
-        position="top"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.error }}
-      />
+      <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
 }

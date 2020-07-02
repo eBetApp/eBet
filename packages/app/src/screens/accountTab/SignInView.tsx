@@ -7,6 +7,7 @@ import {
   TextLink,
   MainKeyboardAvoidingView,
   Loader,
+  ToastErr,
 } from "../../components";
 // Fetch imports
 import { userService } from "../../Services";
@@ -21,8 +22,6 @@ import {
   errorType,
   AuthError,
 } from "../../Utils/parseApiError";
-// Toast import
-import Toast from "react-native-easy-toast";
 // Resources imports
 import {
   Strings,
@@ -145,12 +144,7 @@ export default function SignInView({ navigation }) {
           <TextLink>{Strings.textLinks.go_register}</TextLink>
         </TouchableOpacity>
       </View>
-      <Toast
-        ref={toastErrRef}
-        position="top"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.error }}
-      />
+      <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
 }

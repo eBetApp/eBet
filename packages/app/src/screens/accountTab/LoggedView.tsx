@@ -18,8 +18,9 @@ import {
   Loader,
   BirthdatePicker,
   Avatar,
+  ToastErr,
+  ToastSuccess,
 } from "../../components";
-import Toast from "react-native-easy-toast";
 // Fetch imports
 import { userService, stripeService } from "../../Services";
 import {
@@ -251,18 +252,8 @@ export default function LoggedView({ navigation }) {
       </ScrollView>
 
       <Loader animating={userIsUpdating} />
-      <Toast
-        ref={toastErrRef}
-        position="top"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.error }}
-      />
-      <Toast
-        ref={toastSuccessRef}
-        position="center"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.primary }}
-      />
+      <ToastErr setRef={toastErrRef} position="top" />
+      <ToastSuccess setRef={toastSuccessRef} position="center" />
     </MainKeyboardAvoidingView>
   );
 
