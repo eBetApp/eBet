@@ -1,24 +1,26 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 // Redux import
-import { useStore } from "../../hooks/store";
+import { useStore } from "../../Redux/store";
 import {
   dispatchUserNull,
   dispatchUserEdit,
   dispatchUserAccountBalance,
   dispatchUserAccountBalanceNull,
-} from "../../hooks/dispatchers";
+} from "../../Redux/dispatchers";
 // UI imports
-import { Input, ThemeContext, Icon } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import {
   MainKeyboardAvoidingView,
   ButtonCancel,
   ButtonEdit,
   ButtonValid,
   Loader,
-} from "../../components/styled";
-import { BirthdatePicker } from "../../components";
-import Toast from "react-native-easy-toast";
+  BirthdatePicker,
+  Avatar,
+  ToastErr,
+  ToastSuccess,
+} from "../../components";
 // Fetch imports
 import { userService, stripeService } from "../../Services";
 import {
@@ -30,10 +32,8 @@ import {
 import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
-// Components imports
-import Avatar from "../../components/Avatar";
 // Custom hooks imports
-import useInput from "../../hooks/useInput";
+import { useInput } from "../../Hooks";
 // Resources imports
 import {
   Strings,
@@ -45,9 +45,6 @@ import {
 
 export default function LoggedView({ navigation }) {
   let stripeAccount = "";
-
-  // Theme
-  const { theme } = useContext(ThemeContext);
 
   // Redux
   const { dispatch, state } = useStore();
@@ -71,7 +68,7 @@ export default function LoggedView({ navigation }) {
   // useEffect
   useEffect(() => {
     fetchBalance();
-  }, [state.user]);
+  }, [state.user?.accountId]);
 
   const fetchBalance = (): void => {
     readStorage(localStorageItems.token).then((token) => {
@@ -252,18 +249,8 @@ export default function LoggedView({ navigation }) {
       </ScrollView>
 
       <Loader animating={userIsUpdating} />
-      <Toast
-        ref={toastErrRef}
-        position="top"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.error }}
-      />
-      <Toast
-        ref={toastSuccessRef}
-        position="center"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.primary }}
-      />
+      <ToastErr setRef={toastErrRef} position="top" />
+      <ToastSuccess setRef={toastSuccessRef} position="center" />
     </MainKeyboardAvoidingView>
   );
 

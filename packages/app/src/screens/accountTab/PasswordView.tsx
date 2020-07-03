@@ -1,18 +1,18 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 // UI imports
-import { Input, Icon, ThemeContext } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import {
   ButtonValid,
   MainKeyboardAvoidingView,
   Loader,
-} from "../../components/styled";
-import Toast from "react-native-easy-toast";
+  ToastErr,
+} from "../../components";
 // Redux import
-import { useStore } from "../../hooks/store";
-import useInput from "../../hooks/useInput";
-import { dispatchUserEdit } from "../../hooks/dispatchers";
+import { useStore } from "../../Redux/store";
+import { useInput, useFetchAuth } from "../../Hooks";
+import { dispatchUserEdit } from "../../Redux/dispatchers";
 // Fetch imports
 import { userService } from "../../Services";
 import {
@@ -24,97 +24,89 @@ import {
 import { Strings, readStorage, localStorageItems } from "../../Resources";
 
 export default function PasswordView({ navigation }) {
-  // Theme
-  const { theme } = useContext(ThemeContext);
-
   // States
   const { state, dispatch } = useStore();
   const useCurrentPassword = useInput();
   const useNewPassword = useInput();
   const useNewPasswordConfirmation = useInput();
-  const [fetchUpdateIsProcessing, setFetchUpdateIsProcessing] = useState<
-    boolean
-  >(false);
-
-  // States : errors
-  const [formError, setFormError] = useState<AuthError>(new AuthError());
 
   // Refs
   const toastErrRef = useRef(null);
   const newPwdInputErrRef = useRef(null);
   const confirmNewPwdInputRef = useRef(null);
 
-  const _submitForm = async (): Promise<void> => {
-    if (
-      !_checkPasswordConfirmation(
-        useNewPassword.value,
-        useNewPasswordConfirmation.value
-      )
-    )
-      return setFormError(
+  //#region FETCH TO UPDATE PWD
+  const payload: IPwdUpdatePayload = {
+    uuid: state.user.uuid,
+    currentPwd: useCurrentPassword.value,
+    newPwd: useNewPassword.value,
+  };
+
+  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+    new AuthError(),
+    (setErr) => _preFetchRequest(setErr),
+    async (setErr) => _fetchRequest(setErr),
+    (res, err) => _handleFetchRes(res, err),
+    (err) => _handleFetchErr(err)
+  );
+
+  const _preFetchRequest = (setError) => {
+    if (useNewPassword.value !== useNewPasswordConfirmation.value) {
+      console.log("DIFFERENT");
+      setError(
         new AuthError({
           newPassword: "Doesn't match",
           newPasswordConfirmation: "Doesn't match",
         })
       );
+      return false;
+    }
+    return true;
+  };
 
-    if (fetchUpdateIsProcessing) return;
-    setFetchUpdateIsProcessing(true);
-
-    const payload = {
-      uuid: state.user.uuid,
-      currentPwd: useCurrentPassword.value,
-      newPwd: useNewPassword.value,
-    };
-
+  const _fetchRequest = async (setError) => {
     const token = await readStorage(localStorageItems.token);
-
-    userService
-      .updatePwdAsync(payload, token)
-      .then((res) => {
-        if (res === null) {
-          return toastErrRef.current.show("Network error");
-        } else if ((res as IApiResponseSuccess)?.status === 200) {
-          delete payload.uuid;
-          dispatchUserEdit(dispatch, { ...payload });
-          navigation.goBack();
-        } else if ((res as IApiResponseError)?.error?.status === 400) {
-          switch (classifyAuthError((res as IApiResponseError).error.message)) {
-            case errorType.password:
-              setFormError(
-                new AuthError({
-                  newPassword: (res as IApiResponseError).error.message,
-                })
-              );
-              break;
-          }
-        } else if ((res as IApiResponseError)?.error?.status === 403) {
-          switch (classifyAuthError((res as IApiResponseError).error.message)) {
-            case errorType.password:
-              setFormError(
-                new AuthError({
-                  password: (res as IApiResponseError).error.message,
-                })
-              );
-              break;
-          }
-        } else throw new Error();
-      })
-      .catch((error) => {
-        toastErrRef.current.show("Unexpected error");
-        console.log("update password -- Unexpected error : ", error);
-      })
-      .finally(() => setFetchUpdateIsProcessing(false));
+    return userService.updatePwdAsync(payload, token);
   };
 
-  /** Returns false when password and passwordConfirmation are different */
-  const _checkPasswordConfirmation = (
-    password: string,
-    passwordConfirmation: string
-  ): boolean => {
-    return password === passwordConfirmation;
+  const _handleFetchRes = (res, setError) => {
+    if (res === null) {
+      setError(new AuthError());
+      return toastErrRef.current.show("Network error");
+    } else if ((res as IApiResponseSuccess)?.status === 200) {
+      delete payload.uuid;
+      dispatchUserEdit(dispatch, { ...payload });
+      navigation.goBack();
+    } else if ((res as IApiResponseError)?.error?.status === 400) {
+      switch (classifyAuthError((res as IApiResponseError).error.message)) {
+        case errorType.password:
+          setError(
+            new AuthError({
+              newPassword: (res as IApiResponseError).error.message,
+            })
+          );
+          break;
+      }
+    } else if ((res as IApiResponseError)?.error?.status === 403) {
+      switch (classifyAuthError((res as IApiResponseError).error.message)) {
+        case errorType.password:
+          setError(
+            new AuthError({
+              password: (res as IApiResponseError).error.message,
+            })
+          );
+          break;
+      }
+    } else throw new Error();
   };
 
+  const _handleFetchErr = (err: any) => {
+    toastErrRef.current.show("Unexpected error");
+    console.log("update password -- Unexpected error : ", err);
+  };
+  //#endregion FETCH TO UPDATE PWD
+
+  //#region VIEW
   return (
     <MainKeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.formContainer}>
@@ -123,7 +115,7 @@ export default function PasswordView({ navigation }) {
           textContentType={"password"}
           secureTextEntry={true}
           {...useCurrentPassword}
-          errorMessage={formError.password}
+          errorMessage={error.password}
           returnKeyType="next"
           onSubmitEditing={() => newPwdInputErrRef.current.focus()}
           blurOnSubmit={false}
@@ -134,7 +126,7 @@ export default function PasswordView({ navigation }) {
           textContentType={"password"}
           secureTextEntry={true}
           {...useNewPassword}
-          errorMessage={formError.newPassword}
+          errorMessage={error.newPassword}
           returnKeyType="next"
           onSubmitEditing={() => confirmNewPwdInputRef.current.focus()}
           blurOnSubmit={false}
@@ -145,13 +137,13 @@ export default function PasswordView({ navigation }) {
           textContentType={"password"}
           secureTextEntry={true}
           {...useNewPasswordConfirmation}
-          errorMessage={formError.newPasswordConfirmation}
+          errorMessage={error.newPasswordConfirmation}
         />
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
           title={Strings.buttons.submit}
-          onPress={_submitForm}
+          onPress={fetch}
           icon={
             <Icon
               name="ios-checkmark"
@@ -160,16 +152,12 @@ export default function PasswordView({ navigation }) {
             />
           }
         />
-        <Loader animating={fetchUpdateIsProcessing} />
+        <Loader animating={fetchIsProcessing} />
       </View>
-      <Toast
-        ref={toastErrRef}
-        position="top"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.error }}
-      />
+      <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
+  //#endregion VIEW
 }
 
 const styles = StyleSheet.create({

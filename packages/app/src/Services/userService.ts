@@ -65,13 +65,6 @@ const _createFormData = (uuid: any, photo: any) => {
   return data;
 };
 
-interface ISignUpPayload {
-  nickname: string;
-  email: string;
-  password: string;
-  birthdate: string;
-}
-
 const signUpAsync = async (
   payload: ISignUpPayload
 ): Promise<ApiResponse | null> => {
@@ -84,11 +77,6 @@ const signUpAsync = async (
     return null;
   }
 };
-
-interface ISignInPayload {
-  email: string;
-  password: string;
-}
 
 const signInAsync = async (
   payload: ISignInPayload
@@ -119,7 +107,7 @@ const updateAsync = async (
 };
 
 const updatePwdAsync = async (
-  payload: { uuid: string; currentPwd: string; newPwd: string },
+  payload: IPwdUpdatePayload,
   token: string
 ): Promise<ApiResponse | null> => {
   try {

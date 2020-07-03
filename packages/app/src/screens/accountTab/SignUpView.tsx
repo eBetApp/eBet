@@ -1,22 +1,22 @@
 // React imports
-import React, { useState, useContext, useRef } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import React, { useState, useRef } from "react";
+import { StyleSheet, View } from "react-native";
 // UI imports
-import { Input, Icon, ThemeContext } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import {
   MainKeyboardAvoidingView,
   TextLink,
   ButtonValid,
   Loader,
-} from "../../components/styled";
-import { BirthdatePicker } from "../../components";
-import Toast from "react-native-easy-toast";
+  BirthdatePicker,
+  ToastErr,
+} from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
 // Custom hooks imports
-import useInput from "../../hooks/useInput";
+import { useInput, useFetchAuth } from "../../Hooks";
 // Redux import
-import { useStore } from "../../hooks/store";
-import { dispatchUserNew } from "../../hooks/dispatchers";
+import { useStore } from "../../Redux/store";
+import { dispatchUserNew } from "../../Redux/dispatchers";
 // API types imports
 import {
   classifyAuthError,
@@ -34,9 +34,6 @@ import {
 } from "../../Resources";
 
 export default function SignUpView({ navigation }) {
-  // Theme
-  const { theme } = useContext(ThemeContext);
-
   // Redux
   const { dispatch } = useStore();
 
@@ -45,91 +42,97 @@ export default function SignUpView({ navigation }) {
   const useEmail = useInput();
   const usePassword = useInput();
   const [birthdate, setBirthdate] = useState(null);
-  const [authIsProcessing, setAuthIsProcessing] = useState<boolean>(false);
-
-  // States: Errors
-  const [formError, setFormError] = useState<AuthError>(new AuthError());
 
   // Ref
   const pwdInputRef = useRef(null);
   const emailInputRef = useRef(null);
   const toastErrRef = useRef(null);
 
-  const _submitForm = (): void => {
-    if (authIsProcessing) return;
-    if (birthdate === null || birthdate === undefined) return;
-    setAuthIsProcessing(true);
-
-    const payload = {
-      nickname: useNickname.value,
-      email: useEmail.value,
-      password: usePassword.value,
-      birthdate: new Date(birthdate).toISOString(),
-    };
-
-    userService
-      .signUpAsync(payload)
-      .then((result) => {
-        if (result === null) {
-          return toastErrRef.current.show("Network error");
-        } else if ((result as IAuthServiceResponse)?.status === 201) {
-          dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
-          setStorage(
-            localStorageItems.token,
-            (result as IAuthServiceResponse).meta.token
-          );
-          setFormError(new AuthError());
-        } else if ((result as IApiResponseError)?.error?.status === 400) {
-          switch (
-            classifyAuthError((result as IApiResponseError).error.message)
-          ) {
-            case errorType.nickname:
-              setFormError(
-                new AuthError({
-                  nickname: (result as IApiResponseError).error?.message,
-                })
-              );
-              break;
-            case errorType.email:
-              setFormError(
-                new AuthError({
-                  email: (result as IApiResponseError).error?.message,
-                })
-              );
-              break;
-            case errorType.password:
-              setFormError(
-                new AuthError({
-                  password: (result as IApiResponseError).error?.message,
-                })
-              );
-              break;
-            case errorType.birthdate:
-              setFormError(
-                new AuthError({
-                  birthdate: (result as IApiResponseError).error?.message,
-                })
-              );
-              break;
-            default:
-              break;
-          }
-        } else throw new Error();
-      })
-      .catch((error) => {
-        toastErrRef.current.show("Unexpected error");
-        console.log("signUpAsync() -- Unexpected error : ", error);
-      })
-      .finally(() => setAuthIsProcessing(false));
+  //#region FETCH TO SIGN UP
+  const payload: ISignUpPayload = {
+    nickname: useNickname.value,
+    email: useEmail.value,
+    password: usePassword.value,
+    birthdate: birthdate != null ? new Date(birthdate).toISOString() : null,
   };
 
+  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+    new AuthError(),
+    (setErr) => _preFetchRequest(setErr),
+    async (setErr) => _fetchRequest(setErr),
+    (res, err) => _handleFetchRes(res, err),
+    (err) => _handleFetchErr(err)
+  );
+
+  const _preFetchRequest = (setErr) =>
+    !(birthdate === null || birthdate === undefined);
+
+  const _fetchRequest = async (setError) => {
+    console.log("PAYLOAD: ", payload);
+    return userService.signUpAsync(payload);
+  };
+
+  const _handleFetchRes = (result: ApiResponse, setError) => {
+    if (result === null) {
+      setError(new AuthError());
+      return toastErrRef.current.show("Network error");
+    } else if ((result as IAuthServiceResponse)?.status === 201) {
+      dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
+      setStorage(
+        localStorageItems.token,
+        (result as IAuthServiceResponse).meta.token
+      );
+      setError(new AuthError());
+    } else if ((result as IApiResponseError)?.error?.status === 400) {
+      switch (classifyAuthError((result as IApiResponseError).error.message)) {
+        case errorType.nickname:
+          setError(
+            new AuthError({
+              nickname: (result as IApiResponseError).error?.message,
+            })
+          );
+          break;
+        case errorType.email:
+          setError(
+            new AuthError({
+              email: (result as IApiResponseError).error?.message,
+            })
+          );
+          break;
+        case errorType.password:
+          setError(
+            new AuthError({
+              password: (result as IApiResponseError).error?.message,
+            })
+          );
+          break;
+        case errorType.birthdate:
+          setError(
+            new AuthError({
+              birthdate: (result as IApiResponseError).error?.message,
+            })
+          );
+          break;
+        default:
+          break;
+      }
+    } else throw new Error();
+  };
+
+  const _handleFetchErr = (err: any) => {
+    toastErrRef.current.show("Unexpected error");
+    console.log("signUpAsync() -- Unexpected error : ", err);
+  };
+  //#endregion FETCH TO SIGN UP
+
+  //#region VIEW
   return (
     <MainKeyboardAvoidingView style={{ flex: 1 }}>
       <ScrollView style={styles.formContainer}>
         <Input
           placeholder={Strings.inputs.ph_nickname}
           {...useNickname}
-          errorMessage={formError.nickname}
+          errorMessage={error.nickname}
           returnKeyType="next"
           onSubmitEditing={() => emailInputRef.current.focus()}
           blurOnSubmit={false}
@@ -139,7 +142,7 @@ export default function SignUpView({ navigation }) {
           placeholder={Strings.inputs.ph_email}
           keyboardType="email-address"
           {...useEmail}
-          errorMessage={formError.email}
+          errorMessage={error.email}
           returnKeyType="next"
           onSubmitEditing={() => pwdInputRef.current.focus()}
           blurOnSubmit={false}
@@ -150,18 +153,18 @@ export default function SignUpView({ navigation }) {
           textContentType={"password"}
           secureTextEntry={true}
           {...usePassword}
-          errorMessage={formError.password}
+          errorMessage={error.password}
         />
         <BirthdatePicker
           handleNewValue={(value) => setBirthdate(value)}
-          errorMessage={formError.birthdate}
+          errorMessage={error.birthdate}
           placeholder={Strings.inputs.ph_birthdate}
         />
       </ScrollView>
       <View style={styles.bottomContainer}>
         <ButtonValid
           title={Strings.buttons.signup}
-          onPress={_submitForm}
+          onPress={fetch}
           icon={
             <Icon
               name="ios-checkmark"
@@ -170,23 +173,16 @@ export default function SignUpView({ navigation }) {
             />
           }
         />
-        <Loader animating={authIsProcessing} />
-        <TouchableOpacity
+        <Loader animating={fetchIsProcessing} />
+        <TextLink
+          text={Strings.textLinks.go_sign_in}
           onPress={() => navigation.navigate(Navigation.Screens.signIn)}
-        >
-          <TextLink style={{ color: "blue" }}>
-            {Strings.textLinks.go_sign_in}
-          </TextLink>
-        </TouchableOpacity>
+        />
       </View>
-      <Toast
-        ref={toastErrRef}
-        position="top"
-        style={{ borderRadius: 20 }}
-        textStyle={{ color: theme.colors.error }}
-      />
+      <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
+  //#endregion VIEW
 }
 
 const styles = StyleSheet.create({

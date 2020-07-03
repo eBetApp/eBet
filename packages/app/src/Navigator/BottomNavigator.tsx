@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 
 // Redux imports
-import { StoreProvider, useStore } from "../hooks/store";
+import { useStore } from "../Redux/store";
 // Navigation imports
 import {
   createBottomTabNavigator,

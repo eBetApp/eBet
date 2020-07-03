@@ -1,10 +1,10 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 // LocalStorage imports
 import { readStorage, localStorageItems } from "../Resources/LocalStorage";
 // Redux import
-import { useStore } from "../hooks/store";
-import { dispatchUserEdit } from "../hooks/dispatchers";
+import { useStore } from "../Redux/store";
+import { dispatchUserEdit } from "../Redux/dispatchers";
 // Services import
 import userService from "../Services/userService";
 
