@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
 // UI imports
 import { Input, Icon, ThemeContext } from "react-native-elements";
@@ -28,6 +28,7 @@ import {
   Navigation,
   setStorage,
   localStorageItems,
+  readStorage,
 } from "../../Resources";
 
 export default function SignInView({ navigation }) {
@@ -41,6 +42,45 @@ export default function SignInView({ navigation }) {
   // Ref
   const pwdInputRef = useRef(null);
   const toastErrRef = useRef(null);
+
+  //#region INIT FETCH FROM LOCAL STORAGE
+  const {
+    fetch: initFetchFromLocalStorage,
+    fetchIsProcessing: initLoading,
+  } = useFetchAuth(
+    null,
+    (setErr) => true,
+    async (setErr) => _initFetchFromLocalStorageRequest(setErr),
+    (res, err) => _handleinitFetchFromLocalStorageRes(res, err),
+    (err) => {} // tslint:disable-line
+  );
+
+  useEffect(() => {
+    (async function initFetch() {
+      const token = await readStorage(localStorageItems.token);
+      const uuid = await readStorage(localStorageItems.userUuid);
+      if (
+        token === null ||
+        token === undefined ||
+        uuid === null ||
+        uuid === undefined
+      )
+        return;
+      initFetchFromLocalStorage();
+    })();
+  }, []);
+
+  const _initFetchFromLocalStorageRequest = async (setErr) => {
+    const token = await readStorage(localStorageItems.token);
+    const uuid = await readStorage(localStorageItems.userUuid);
+    return userService.getUserAsync(uuid, token);
+  };
+
+  const _handleinitFetchFromLocalStorageRes = (res, setError) => {
+    if (res !== null && (res as IApiResponseSuccess)?.status === 200)
+      dispatchUserNew(dispatch, (res as IApiResponseSuccess)?.data.user);
+  };
+  //#endregion INIT FETCH FROM LOCAL STORAGE
 
   //#region FETCH TO SIGN IN
   const payload: ISignInPayload = {
@@ -68,6 +108,10 @@ export default function SignInView({ navigation }) {
       setStorage(
         localStorageItems.token,
         (result as IAuthServiceResponse).meta.token
+      );
+      setStorage(
+        localStorageItems.userUuid,
+        (result as IAuthServiceResponse).data.user.uuid
       );
       setError(new AuthError());
       navigation.navigate(Navigation.Screens.loggedHome);
@@ -101,48 +145,54 @@ export default function SignInView({ navigation }) {
 
   //#region VIEW
   return (
-    <MainKeyboardAvoidingView style={styles.container}>
-      <ScrollView style={styles.formContainer}>
-        <Input
-          placeholder={Strings.inputs.ph_email}
-          keyboardType="email-address"
-          {...useEmail}
-          errorMessage={error.email}
-          returnKeyType="next"
-          onSubmitEditing={() => {
-            pwdInputRef.current.focus();
-          }}
-          blurOnSubmit={false}
-        />
-        <Input
-          ref={pwdInputRef}
-          placeholder={Strings.inputs.ph_password}
-          textContentType={"password"}
-          secureTextEntry={true}
-          {...usePassword}
-          errorMessage={error.password}
-        />
-      </ScrollView>
-      <View style={styles.bottomContainer}>
-        <ButtonValid
-          title={Strings.buttons.signin}
-          onPress={fetch}
-          icon={
-            <Icon
-              name="ios-checkmark"
-              type="ionicon"
-              style={{ marginRight: 5 }}
+    <>
+      {initLoading ? (
+        <Loader style={{ flex: 1 }} />
+      ) : (
+        <MainKeyboardAvoidingView style={styles.container}>
+          <ScrollView style={styles.formContainer}>
+            <Input
+              placeholder={Strings.inputs.ph_email}
+              keyboardType="email-address"
+              {...useEmail}
+              errorMessage={error.email}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                pwdInputRef.current.focus();
+              }}
+              blurOnSubmit={false}
             />
-          }
-        />
-        <Loader animating={fetchIsProcessing} />
-        <TextLink
-          text={Strings.textLinks.go_register}
-          onPress={() => navigation.navigate(Navigation.Screens.signUp)}
-        />
-      </View>
-      <ToastErr setRef={toastErrRef} position="top" />
-    </MainKeyboardAvoidingView>
+            <Input
+              ref={pwdInputRef}
+              placeholder={Strings.inputs.ph_password}
+              textContentType={"password"}
+              secureTextEntry={true}
+              {...usePassword}
+              errorMessage={error.password}
+            />
+          </ScrollView>
+          <View style={styles.bottomContainer}>
+            <ButtonValid
+              title={Strings.buttons.signin}
+              onPress={fetch}
+              icon={
+                <Icon
+                  name="ios-checkmark"
+                  type="ionicon"
+                  style={{ marginRight: 5 }}
+                />
+              }
+            />
+            <Loader animating={fetchIsProcessing} />
+            <TextLink
+              text={Strings.textLinks.go_register}
+              onPress={() => navigation.navigate(Navigation.Screens.signUp)}
+            />
+          </View>
+          <ToastErr setRef={toastErrRef} position="top" />
+        </MainKeyboardAvoidingView>
+      )}
+    </>
   );
   //#endregion VIEW
 }

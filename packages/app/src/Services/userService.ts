@@ -121,6 +121,21 @@ const updatePwdAsync = async (
   }
 };
 
+const getUserAsync = async (
+  uuid: string,
+  token: string
+): Promise<ApiResponse | null> => {
+  try {
+    return await UserRepository.get(
+      `user/get/${uuid}`,
+      queryString.stringify({}),
+      token
+    );
+  } catch (err) {
+    return null;
+  }
+};
+
 export default {
   chooseImageFromGaleryAsync,
   postImageAsync: putAvatarAsync,
@@ -128,4 +143,5 @@ export default {
   signInAsync,
   updateAsync,
   updatePwdAsync,
+  getUserAsync,
 };

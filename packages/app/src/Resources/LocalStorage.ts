@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 export enum localStorageItems {
   token = "token",
+  userUuid = "uuid",
 }
 
 export const setStorage = async (key, json) => {

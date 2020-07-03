@@ -67,10 +67,7 @@ export default function SignUpView({ navigation }) {
   const _preFetchRequest = (setErr) =>
     !(birthdate === null || birthdate === undefined);
 
-  const _fetchRequest = async (setError) => {
-    console.log("PAYLOAD: ", payload);
-    return userService.signUpAsync(payload);
-  };
+  const _fetchRequest = async (setError) => userService.signUpAsync(payload);
 
   const _handleFetchRes = (result: ApiResponse, setError) => {
     if (result === null) {

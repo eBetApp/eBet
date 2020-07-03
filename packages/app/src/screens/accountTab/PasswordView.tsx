@@ -52,7 +52,6 @@ export default function PasswordView({ navigation }) {
 
   const _preFetchRequest = (setError) => {
     if (useNewPassword.value !== useNewPasswordConfirmation.value) {
-      console.log("DIFFERENT");
       setError(
         new AuthError({
           newPassword: "Doesn't match",
