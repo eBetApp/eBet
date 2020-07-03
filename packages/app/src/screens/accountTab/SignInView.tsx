@@ -28,7 +28,8 @@ import {
   Navigation,
   setStorage,
   localStorageItems,
-  readStorage,
+  readStorageKey,
+  readFullStorage,
 } from "../../Resources";
 
 export default function SignInView({ navigation }) {
@@ -57,8 +58,8 @@ export default function SignInView({ navigation }) {
 
   useEffect(() => {
     (async function initFetch() {
-      const token = await readStorage(localStorageItems.token);
-      const uuid = await readStorage(localStorageItems.userUuid);
+      const token = await readStorageKey(localStorageItems.token);
+      const uuid = await readStorageKey(localStorageItems.userUuid);
       if (
         token === null ||
         token === undefined ||
@@ -71,8 +72,8 @@ export default function SignInView({ navigation }) {
   }, []);
 
   const _initFetchFromLocalStorageRequest = async (setErr) => {
-    const token = await readStorage(localStorageItems.token);
-    const uuid = await readStorage(localStorageItems.userUuid);
+    const token = await readStorageKey(localStorageItems.token);
+    const uuid = await readStorageKey(localStorageItems.userUuid);
     return userService.getUserAsync(uuid, token);
   };
 

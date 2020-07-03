@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 // .env imports
 import { REACT_NATIVE_STRIPE_PK } from "react-native-dotenv";
 // Resources imports
-import { readStorage, localStorageItems } from "../../Resources";
+import { readStorageKey, localStorageItems } from "../../Resources";
 // Services import
 import { stripeService } from "../../Services";
 // UI import
@@ -67,7 +67,7 @@ export default function PayView({ navigation }) {
       source: stripeToken,
     };
 
-    const userToken = await readStorage(localStorageItems.token);
+    const userToken = await readStorageKey(localStorageItems.token);
 
     stripeService
       .postPaymentAsync(payload, userToken)

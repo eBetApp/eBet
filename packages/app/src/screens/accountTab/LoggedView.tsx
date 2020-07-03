@@ -38,9 +38,10 @@ import { useInput } from "../../Hooks";
 import {
   Strings,
   Navigation,
-  readStorage,
-  removeStorage,
+  readStorageKey,
+  removeStorageKey,
   localStorageItems,
+  removeFullStorage,
 } from "../../Resources";
 
 export default function LoggedView({ navigation }) {
@@ -71,7 +72,7 @@ export default function LoggedView({ navigation }) {
   }, [state.user?.accountId]);
 
   const fetchBalance = (): void => {
-    readStorage(localStorageItems.token).then((token) => {
+    readStorageKey(localStorageItems.token).then((token) => {
       stripeService
         .getBalanceAsync({ accountId: state.user.accountId }, token)
         .then((res) => {
@@ -103,7 +104,7 @@ export default function LoggedView({ navigation }) {
   );
 
   const fetchCreateStripeAccount = async (code: string): Promise<void> => {
-    const token = await readStorage(localStorageItems.token);
+    const token = await readStorageKey(localStorageItems.token);
 
     const payload = {
       uuid: state.user.uuid,
@@ -132,7 +133,7 @@ export default function LoggedView({ navigation }) {
       birthdate: new Date(birthdate).toISOString(),
     };
 
-    const token = await readStorage(localStorageItems.token);
+    const token = await readStorageKey(localStorageItems.token);
 
     userService
       .updateAsync(payload, token)
@@ -235,7 +236,7 @@ export default function LoggedView({ navigation }) {
             onPress={() => {
               dispatchUserNull(dispatch);
               dispatchUserAccountBalanceNull(dispatch);
-              removeStorage(localStorageItems.token);
+              removeFullStorage();
             }}
             icon={
               <Icon

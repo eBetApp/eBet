@@ -21,7 +21,7 @@ import {
   errorType,
 } from "../../Utils/parseApiError";
 // Resources imports
-import { Strings, readStorage, localStorageItems } from "../../Resources";
+import { Strings, readStorageKey, localStorageItems } from "../../Resources";
 
 export default function PasswordView({ navigation }) {
   // States
@@ -64,7 +64,7 @@ export default function PasswordView({ navigation }) {
   };
 
   const _fetchRequest = async (setError) => {
-    const token = await readStorage(localStorageItems.token);
+    const token = await readStorageKey(localStorageItems.token);
     return userService.updatePwdAsync(payload, token);
   };
 
