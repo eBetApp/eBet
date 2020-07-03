@@ -56,10 +56,13 @@ export default function SignInView({ navigation }) {
     (err) => {} // tslint:disable-line
   );
 
+  let token: string;
+  let uuid: string;
+
   useEffect(() => {
     (async function initFetch() {
-      const token = await readStorageKey(localStorageItems.token);
-      const uuid = await readStorageKey(localStorageItems.userUuid);
+      token = await readStorageKey(localStorageItems.token);
+      uuid = await readStorageKey(localStorageItems.userUuid);
       if (
         token === null ||
         token === undefined ||
@@ -71,11 +74,8 @@ export default function SignInView({ navigation }) {
     })();
   }, []);
 
-  const _initFetchFromLocalStorageRequest = async (setErr) => {
-    const token = await readStorageKey(localStorageItems.token);
-    const uuid = await readStorageKey(localStorageItems.userUuid);
-    return userService.getUserAsync(uuid, token);
-  };
+  const _initFetchFromLocalStorageRequest = async (setErr) =>
+    userService.getUserAsync(uuid, token);
 
   const _handleinitFetchFromLocalStorageRes = (res, setError) => {
     if (res !== null && (res as IApiResponseSuccess)?.status === 200)
