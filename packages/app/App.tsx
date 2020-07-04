@@ -11,6 +11,8 @@ import { ThemeProvider } from "react-native-elements";
 import theme from "./src/Resources/Theme";
 
 export default function App() {
+  console.disableYellowBox = true;
+
   return (
     <StoreProvider>
       <ThemeProvider theme={theme}>
