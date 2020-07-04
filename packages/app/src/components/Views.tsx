@@ -3,9 +3,7 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export function MainView(props) {
-  return (
-    <SafeAreaView {...props} style={{ ...props.style, flex: 1, margin: 5 }} />
-  );
+  return <SafeAreaView {...props} style={{ ...props.style, flex: 1 }} />;
 }
 
 export function MainKeyboardAvoidingView(props) {
@@ -15,7 +13,7 @@ export function MainKeyboardAvoidingView(props) {
         {...props}
         behavior="padding"
         keyboardVerticalOffset={Platform.OS === "android" ? -700 : 0}
-        style={{ ...props.style, margin: 5 }}
+        style={{ ...props.style, flex: 1 }}
       />
     </SafeAreaView>
   );

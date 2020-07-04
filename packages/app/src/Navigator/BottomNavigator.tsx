@@ -20,6 +20,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { CustomTheme } from "../Resources/Theme";
 // Resources imports
 import { Tabs } from "../Resources/Navigation";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function NestedApp() {
   // Redux
@@ -38,39 +39,41 @@ export default function NestedApp() {
 
   const Tab = createBottomTabNavigator();
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        tabBarOptions={tabBarOptions}
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-            if (route.name === Tabs.store) {
-              iconName = "gamepad";
-            } else if (route.name === Tabs.cart) {
-              iconName = "shopping-cart";
-            } else if (route.name === Tabs.account) {
-              iconName = state.user != null ? "user" : "user-times";
-            }
-            return <FontAwesome name={iconName} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen
-          name={Tabs.account}
-          options={{ title: "Account" }}
-          component={AccountStackScreen}
-        />
-        <Tab.Screen
-          name={Tabs.store}
-          options={{ title: "Store" }}
-          component={StoreStackScreen}
-        />
-        <Tab.Screen
-          name={Tabs.cart}
-          options={{ title: "Cart" }}
-          component={CartStackScreen}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          tabBarOptions={tabBarOptions}
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName;
+              if (route.name === Tabs.store) {
+                iconName = "gamepad";
+              } else if (route.name === Tabs.cart) {
+                iconName = "shopping-cart";
+              } else if (route.name === Tabs.account) {
+                iconName = state.user != null ? "user" : "user-times";
+              }
+              return <FontAwesome name={iconName} size={size} color={color} />;
+            },
+          })}
+        >
+          <Tab.Screen
+            name={Tabs.account}
+            options={{ title: "Account" }}
+            component={AccountStackScreen}
+          />
+          <Tab.Screen
+            name={Tabs.store}
+            options={{ title: "Store" }}
+            component={StoreStackScreen}
+          />
+          <Tab.Screen
+            name={Tabs.cart}
+            options={{ title: "Cart" }}
+            component={CartStackScreen}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
