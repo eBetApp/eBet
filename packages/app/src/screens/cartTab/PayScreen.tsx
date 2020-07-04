@@ -1,3 +1,4 @@
+// tslint:disable:no-var-requires
 import React, { useContext } from "react";
 // .env imports
 import { REACT_NATIVE_STRIPE_PK } from "react-native-dotenv";
@@ -14,7 +15,6 @@ import { useFormInput, IForm } from "../../Hooks/useFormInput";
 import { useFetchAuth } from "../../Hooks";
 import { PayScreenProps } from "../../Navigator/Stacks";
 // Stripe imports
-// tslint:disable-next-line:no-var-requires
 const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
 
 export default function PayScreen({ navigation, route }: PayScreenProps) {

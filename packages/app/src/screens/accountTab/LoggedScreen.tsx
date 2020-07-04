@@ -33,7 +33,7 @@ import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
 // Custom hooks imports
-import { useTextInput } from "../../Hooks";
+import { useTextInput, useFetchAuth } from "../../Hooks";
 // Resources imports
 import {
   Strings,
@@ -56,10 +56,6 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
   const [birthdate, setBirthdate] = useState(
     new Date(state.user?.birthdate).toDateString() ?? ""
   );
-  const [userIsUpdating, setUserIsUpdating] = useState<boolean>(false);
-
-  // States: Errors
-  const [formError, setFormError] = useState<AuthError>(new AuthError());
 
   // Ref
   const emailInputRef = useRef(null);
@@ -81,8 +77,8 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
           if (_res == null) return;
           dispatchUserAccountBalance(dispatch, _res.data.balance);
         })
-        .catch((error) => {
-          console.log("getBalance() -- Unexpected error : ", error);
+        .catch((err) => {
+          console.log("getBalance() -- Unexpected error : ", err);
         });
     });
   };
@@ -106,65 +102,77 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
   const fetchCreateStripeAccount = async (code: string): Promise<void> => {
     const token = await readStorageKey(localStorageItems.token);
 
-    const payload = {
+    const stripePayload = {
       uuid: state.user.uuid,
       code,
     };
 
     stripeService
-      .postNewAccountAsync(payload, token)
+      .postNewAccountAsync(stripePayload, token)
       .then((result) => {
         dispatchUserEdit(dispatch, {
           accountId: (result as IApiResponseSuccess)?.data?.accountId,
         });
       })
-      .catch((error) => console.log("error", error));
+      .catch((err) => console.log("error", err));
   };
 
-  const fetchEditAccount = async (): Promise<void> => {
-    if (userIsUpdating) return;
-    if (birthdate === null || birthdate === undefined) return;
-    setUserIsUpdating(true);
+  //#region FETCH EDIT ACCOUNT
+  const payload = {
+    uuid: state.user?.uuid,
+    email: useEmail.value,
+    nickname: useNickname.value,
+    birthdate: new Date(birthdate).toISOString(),
+  };
 
-    const payload = {
-      uuid: state.user.uuid,
-      email: useEmail.value,
-      nickname: useNickname.value,
-      birthdate: new Date(birthdate).toISOString(),
-    };
+  const {
+    fetch: fetchEditAccount,
+    fetchIsProcessing: fetchEditIsProcessing,
+    error,
+  } = useFetchAuth(
+    new AuthError(),
+    (setErr) => _preFetchRequest(setErr),
+    async (setErr) => _fetchRequest(setErr),
+    (res, err) => _handleFetchRes(res, err),
+    (err) => _handleFetchErr(err)
+  );
 
+  const _preFetchRequest = (setError) =>
+    birthdate !== null && birthdate !== undefined;
+
+  const _fetchRequest = async (setError) => {
     const token = await readStorageKey(localStorageItems.token);
-
-    userService
-      .updateAsync(payload, token)
-      .then((res) => {
-        if (res === null) {
-          return toastErrRef.current.show("Network error");
-        } else if ((res as IApiResponseSuccess)?.status === 200) {
-          delete payload.uuid;
-          dispatchUserEdit(dispatch, { ...payload });
-          toastSuccessRef.current.show("👍 Update is done");
-          setFormError(new AuthError());
-        } else if ((res as IApiResponseError)?.error?.status === 400) {
-          switch (classifyAuthError((res as IApiResponseError).error.message)) {
-            case errorType.nickname:
-              setFormError(new AuthError({ nickname: "Wrong format" }));
-              break;
-            case errorType.email:
-              setFormError(new AuthError({ email: "Wrong format" }));
-              break;
-            case errorType.birthdate:
-              setFormError(new AuthError({ birthdate: "Wrong format" }));
-              break;
-          }
-        } else throw new Error();
-      })
-      .catch((error) => {
-        toastErrRef.current.show("Unexpected error");
-        console.log("updateUserAsync() -- Unexpected error : ", error);
-      })
-      .finally(() => setUserIsUpdating(false));
+    return userService.updateAsync(payload, token);
   };
+
+  const _handleFetchRes = (res, setError) => {
+    if (res === null) {
+      return toastErrRef.current.show("Network error");
+    } else if ((res as IApiResponseSuccess)?.status === 200) {
+      delete payload.uuid;
+      dispatchUserEdit(dispatch, { ...payload });
+      toastSuccessRef.current.show("👍 Update is done");
+      setError(new AuthError());
+    } else if ((res as IApiResponseError)?.error?.status === 400) {
+      switch (classifyAuthError((res as IApiResponseError).error.message)) {
+        case errorType.nickname:
+          setError(new AuthError({ nickname: "Wrong format" }));
+          break;
+        case errorType.email:
+          setError(new AuthError({ email: "Wrong format" }));
+          break;
+        case errorType.birthdate:
+          setError(new AuthError({ birthdate: "Wrong format" }));
+          break;
+      }
+    } else throw new Error();
+  };
+
+  const _handleFetchErr = (err: any) => {
+    toastErrRef.current.show("Unexpected error");
+    console.log("updateUserAsync() -- Unexpected error : ", error);
+  };
+  // #enregion FETCH EDIT ACCOUNT
 
   const _renderLoggedView = () => (
     <MainKeyboardAvoidingView style={styles.mainContainer}>
@@ -175,7 +183,7 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
         <Input
           {...useNickname}
           label={Strings.inputs.label_nickname}
-          errorMessage={formError.nickname}
+          errorMessage={error.nickname}
           returnKeyType="next"
           onSubmitEditing={() => emailInputRef.current.focus()}
           blurOnSubmit={false}
@@ -185,13 +193,13 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
           {...useEmail}
           label={Strings.inputs.label_email}
           keyboardType="email-address"
-          errorMessage={formError.email}
+          errorMessage={error.email}
         />
         <BirthdatePicker
           initValue={birthdate}
           handleNewValue={(value) => setBirthdate(value)}
           placeholder={Strings.inputs.ph_birthdate}
-          errorMessage={formError.birthdate}
+          errorMessage={error.birthdate}
         />
         <TouchableOpacity
           onPress={() => navigation.navigate(Navigation.Screens.password)}
@@ -249,7 +257,7 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
         </View>
       </ScrollView>
 
-      <Loader animating={userIsUpdating} />
+      <Loader animating={fetchEditIsProcessing} />
       <ToastErr setRef={toastErrRef} position="top" />
       <ToastSuccess setRef={toastSuccessRef} position="center" />
     </MainKeyboardAvoidingView>
