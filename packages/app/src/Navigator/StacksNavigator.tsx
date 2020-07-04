@@ -21,7 +21,11 @@ import theme, { CustomTheme } from "../Resources/Theme";
 import { useStore } from "../Redux/store";
 import { Badge } from "react-native-elements";
 import { IState } from "../Redux/ReducerTypes";
-import { StackHeaderOptions } from "@react-navigation/stack/lib/typescript/src/types";
+import {
+  StackHeaderOptions,
+  StackNavigationProp,
+} from "@react-navigation/stack/lib/typescript/src/types";
+import { RouteProp } from "@react-navigation/native";
 
 //#region COMMON NAVIGATION OPTIONS
 const commonNavScreenOptions: StackNavigationOptions = {
@@ -68,7 +72,26 @@ export function StoreStackScreen({ navigation }) {
   );
 }
 
-const CartStack = createStackNavigator();
+type CartStackParamList = {
+  Cart: undefined;
+  Pay: { amount: number };
+};
+
+type PayScreenNavigationProp = StackNavigationProp<CartStackParamList, "Pay">;
+type PayScreenRouteProp = RouteProp<CartStackParamList, "Pay">;
+export type PayScreenProps = {
+  navigation: PayScreenNavigationProp;
+  route: PayScreenRouteProp;
+};
+
+type CartScreenNavigationProp = StackNavigationProp<CartStackParamList, "Cart">;
+type CartScreenRouteProp = RouteProp<CartStackParamList, "Cart">;
+
+export type CartScreenProps = {
+  navigation: CartScreenNavigationProp;
+  route: CartScreenRouteProp;
+};
+const CartStack = createStackNavigator<CartStackParamList>();
 export function CartStackScreen({ navigation }) {
   const { state } = useStore();
 

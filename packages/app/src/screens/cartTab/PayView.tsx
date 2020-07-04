@@ -12,11 +12,12 @@ import { ButtonValid, MainView, Loader } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
 import { useFormInput, IForm } from "../../Hooks/useFormInput";
 import { useFetchAuth } from "../../Hooks";
+import { PayScreenProps } from "../../Navigator/StacksNavigator";
 // Stripe imports
 // tslint:disable-next-line:no-var-requires
 const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
 
-export default function PayView({ navigation, route }) {
+export default function PayView({ navigation, route }: PayScreenProps) {
   const { theme } = useContext(ThemeContext);
   const form = useFormInput(null);
   const { amount } = route.params;
@@ -35,7 +36,7 @@ export default function PayView({ navigation, route }) {
   );
 
   const preFetchRequest = (setPaymentError) => {
-    console.log("AMOUT: ", amount);
+    if (amount === null || amount === undefined) return false;
     if (!form?.data?.valid) {
       setPaymentError("Incomplete credentials");
       return false;
