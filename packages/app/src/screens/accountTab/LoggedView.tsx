@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 // Redux import
 import { useStore } from "../../Redux/store";
@@ -39,7 +39,6 @@ import {
   Strings,
   Navigation,
   readStorageKey,
-  removeStorageKey,
   localStorageItems,
   removeFullStorage,
 } from "../../Resources";

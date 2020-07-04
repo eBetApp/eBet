@@ -76,26 +76,26 @@ export default function PasswordView({ navigation }) {
       delete payload.uuid;
       dispatchUserEdit(dispatch, { ...payload });
       navigation.goBack();
-    } else if ((res as IApiResponseError)?.error?.status === 400) {
-      switch (classifyAuthError((res as IApiResponseError).error.message)) {
-        case errorType.password:
-          setError(
-            new AuthError({
-              newPassword: (res as IApiResponseError).error.message,
-            })
-          );
-          break;
-      }
-    } else if ((res as IApiResponseError)?.error?.status === 403) {
-      switch (classifyAuthError((res as IApiResponseError).error.message)) {
-        case errorType.password:
-          setError(
-            new AuthError({
-              password: (res as IApiResponseError).error.message,
-            })
-          );
-          break;
-      }
+    } else if (
+      (res as IApiResponseError)?.error?.status === 400 &&
+      classifyAuthError((res as IApiResponseError).error.message) ===
+        errorType.password
+    ) {
+      setError(
+        new AuthError({
+          newPassword: (res as IApiResponseError).error.message,
+        })
+      );
+    } else if (
+      (res as IApiResponseError)?.error?.status === 403 &&
+      classifyAuthError((res as IApiResponseError).error.message) ===
+        errorType.password
+    ) {
+      setError(
+        new AuthError({
+          password: (res as IApiResponseError).error.message,
+        })
+      );
     } else throw new Error();
   };
 

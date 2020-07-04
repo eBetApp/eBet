@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
 // UI imports
-import { Input, Icon, ThemeContext } from "react-native-elements";
+import { Input, Icon } from "react-native-elements";
 import {
   ButtonValid,
   TextLink,
@@ -29,7 +29,6 @@ import {
   setStorage,
   localStorageItems,
   readStorageKey,
-  readFullStorage,
 } from "../../Resources";
 
 export default function SignInView({ navigation }) {
