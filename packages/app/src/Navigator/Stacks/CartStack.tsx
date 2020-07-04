@@ -4,7 +4,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import { RouteProp } from "@react-navigation/native";
-import { commonNavScreenOptions, headerRightOption } from ".";
+import { commonNavScreenOptions, headerOptions } from ".";
 // Resources imports
 import * as Navigation from "../../Resources/Navigation";
 // Screens imports
@@ -57,7 +57,7 @@ export function CartStackScreen({ navigation }) {
       <CartStack.Screen
         name={Navigation.Screens.cart}
         component={CartScreen}
-        options={() => headerRightOption(state)}
+        options={() => headerOptions(state)}
       />
       <CartStack.Screen name={Navigation.Screens.pay} component={PayScreen} />
     </CartStack.Navigator>

@@ -12,7 +12,7 @@ import * as Navigation from "../../Resources/Navigation";
 import { MainScreen } from "../../screens/storeTab";
 // Redux imports
 import { useStore } from "../../Redux/store";
-import { commonNavScreenOptions, headerRightOption } from ".";
+import { commonNavScreenOptions, headerOptions } from ".";
 
 //#region TYPES
 type StoreStackParamList = {
@@ -43,7 +43,7 @@ export function StoreStackScreen({ navigation }) {
     <StoreStack.Navigator screenOptions={commonNavScreenOptions}>
       <StoreStack.Screen
         name={Navigation.Screens.store}
-        options={() => headerRightOption(state)}
+        options={() => headerOptions(state)}
         component={MainScreen}
       />
     </StoreStack.Navigator>

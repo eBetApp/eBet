@@ -4,7 +4,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import { RouteProp } from "@react-navigation/native";
-import { commonNavScreenOptions, headerRightOption } from ".";
+import { commonNavScreenOptions, headerOptions } from ".";
 // Screens imports
 import {
   SignInScreen,
@@ -113,12 +113,12 @@ export function AccountStackScreen() {
         <>
           <AccountStack.Screen
             name={Navigation.Screens.loggedHome}
-            options={() => headerRightOption(state)}
+            options={() => headerOptions(state)}
             component={LoggedScreen}
           />
           <AccountStack.Screen
             name={Navigation.Screens.password}
-            options={() => headerRightOption(state)}
+            options={() => headerOptions(state)}
             component={PasswordScreen}
           />
           <AccountStack.Screen

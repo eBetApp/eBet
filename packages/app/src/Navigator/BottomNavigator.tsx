@@ -15,7 +15,7 @@ import {
   AccountStackScreen,
 } from "./Stacks";
 // UI imports
-import { ThemeContext } from "react-native-elements";
+import { ThemeContext, Badge } from "react-native-elements";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { CustomTheme } from "../Resources/Theme";
 // Resources imports

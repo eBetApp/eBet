@@ -2,11 +2,13 @@ import React from "react";
 import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 // LocalStorage imports
 import { readStorageKey, localStorageItems } from "../Resources/LocalStorage";
-// Redux import
+// Redux imports
 import { useStore } from "../Redux/store";
 import { dispatchUserEdit } from "../Redux/dispatchers";
-// Services import
+// Services imports
 import userService from "../Services/userService";
+// Resources imports
+import { Images } from "../Resources";
 
 export default function Avatar() {
   const { state, dispatch } = useStore();
@@ -40,7 +42,7 @@ export default function Avatar() {
           source={
             state.user.avatar != null
               ? { uri: state.user.avatar }
-              : require("../../assets/defaultAvatar.png")
+              : Images.defaultAvatar
           }
         />
       </TouchableOpacity>
