@@ -24,6 +24,7 @@ type AccountStackParamList = {
   [Navigation.Screens.signUp]: undefined;
   [Navigation.Screens.loggedHome]: undefined;
   [Navigation.Screens.password]: undefined;
+  [Navigation.Screens.claimMoney]: undefined;
 };
 
 // SignIn screen
@@ -88,6 +89,22 @@ type PasswordScreenRouteProp = RouteProp<
 export type PasswordScreenProps = {
   navigation: PasswordScreenNavigationProp;
   route: PasswordScreenRouteProp;
+};
+
+// Claim winnings screen
+type ClaimScreenNavigationProp = StackNavigationProp<
+  AccountStackParamList,
+  Navigation.Screens.claimMoney
+>;
+
+type ClaimScreenRouteProp = RouteProp<
+  AccountStackParamList,
+  Navigation.Screens.claimMoney
+>;
+
+export type ClaimScreenProps = {
+  navigation: ClaimScreenNavigationProp;
+  route: ClaimScreenRouteProp;
 };
 
 //#endregion TYPES
