@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 // .env imports
 import { REACT_NATIVE_STRIPE_PK } from "react-native-dotenv";
 // Resources imports
@@ -11,37 +11,48 @@ import { CreditCardInput } from "react-native-credit-card-input";
 import { ButtonValid, MainView, Loader } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
 import { useFormInput, IForm } from "../../Hooks/useFormInput";
+import { useFetchAuth } from "../../Hooks";
 // Stripe imports
 // tslint:disable-next-line:no-var-requires
 const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
 
-export default function PayView({ navigation }) {
+export default function PayView({ navigation, route }) {
   const { theme } = useContext(ThemeContext);
   const form = useFormInput(null);
-  const [paymentIsProcessing, setPaymentIsProcessing] = useState<boolean>(
-    false
-  );
-  const [paymentError, setPaymentError] = useState<string>("");
+  const { amount } = route.params;
 
-  const handlePayment = async () => {
-    console.log("### FORM");
-    console.log(form?.data);
+  //#region FETCH PAYMENT
+  const {
+    fetch,
+    fetchIsProcessing: paymentIsProcessing,
+    error: paymentError,
+  } = useFetchAuth(
+    null,
+    (setErr) => preFetchRequest(setErr),
+    async (setErr) => fetchRequest(setErr),
+    (res, err) => handleFetchRes(res, err),
+    (err, setErr) => handleFetchErr(err, setErr)
+  );
+
+  const preFetchRequest = (setPaymentError) => {
+    console.log("AMOUT: ", amount);
+    if (!form?.data?.valid) {
+      setPaymentError("Incomplete credentials");
+      return false;
+    }
+    return true;
+  };
+
+  const fetchRequest = async (setPaymentError) => {
     const stripeToken = await _getPaymentToken();
-    if (stripeToken !== null) await fetchPayment(stripeToken);
+    if (stripeToken !== null) return await _submitFetch(stripeToken);
   };
 
   const _getPaymentToken: () => Promise<string | null> = async () => {
-    if (!_checkPaymentInfosCompletion(form?.data)) {
-      setPaymentError("Incomplete credentials");
-      return null;
-    }
-
     const card = await stripeClient.createToken(_paymentInfos(form?.data));
     const token = card.id;
     return token;
   };
-
-  const _checkPaymentInfosCompletion = (_form: IForm) => _form.valid;
 
   const _paymentInfos = (_form: IForm) => {
     return {
@@ -54,32 +65,30 @@ export default function PayView({ navigation }) {
     };
   };
 
-  const fetchPayment = async (stripeToken) => {
-    if (paymentIsProcessing) return;
-
-    setPaymentIsProcessing(true);
-
+  const _submitFetch = async (stripeToken: string) => {
     const payload = {
-      amount: 2000,
+      amount,
       source: stripeToken,
     };
 
     const userToken = await readStorageKey(localStorageItems.token);
 
-    stripeService
-      .postPaymentAsync(payload, userToken)
-      .then((res) => {
-        if (res === null) setPaymentError("Network error");
-        else if ((res as IApiResponseSuccess)?.status === 200) {
-          navigation.goBack();
-        } else throw new Error();
-      })
-      .catch((error) => {
-        setPaymentError("Failed to process");
-        console.log("submitPayment() -- Unexpected error : ", error);
-      })
-      .finally(() => setPaymentIsProcessing(false));
+    return stripeService.postPaymentAsync(payload, userToken);
   };
+
+  const handleFetchRes = (res: ApiResponse, setPaymentError) => {
+    if (res === null) setPaymentError("Network error");
+    else if ((res as IApiResponseSuccess)?.status === 200) {
+      navigation.goBack();
+    } else throw new Error();
+  };
+
+  const handleFetchErr = (err: any, setPaymentError) => {
+    setPaymentError("Failed to process");
+    console.log("submitPayment() -- Unexpected error : ", err);
+    console.log(err);
+  };
+  //#endregion FETCH PAYMENT
 
   return (
     <MainView>
@@ -94,7 +103,7 @@ export default function PayView({ navigation }) {
         />
         <ButtonValid
           title="PAY"
-          onPress={handlePayment}
+          onPress={fetch}
           icon={
             <Icon name="ios-wallet" type="ionicon" size={15} color="#ffffff" />
           }

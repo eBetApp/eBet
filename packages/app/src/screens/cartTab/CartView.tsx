@@ -17,7 +17,9 @@ export default function CartScreen({ navigation }) {
         <View>
           <ButtonValid
             title={Strings.buttons.valid_payment}
-            onPress={() => navigation.navigate(Navigation.Screens.pay)}
+            onPress={() =>
+              navigation.navigate(Navigation.Screens.pay, { amount: 2000 })
+            }
           />
         </View>
       ) : (

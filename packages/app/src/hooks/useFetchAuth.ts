@@ -5,7 +5,7 @@ export const useFetchAuth = (
   preFetchRequest: (setError) => boolean,
   fetchRequest: (err?: any) => Promise<any>,
   handleFetchRes: (res, setError) => any,
-  handleFetchErr: (err) => any
+  handleFetchErr: (err, setError) => any
 ) => {
   const [fetchIsProcessing, setFetchIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState(initError);
@@ -17,7 +17,7 @@ export const useFetchAuth = (
     setFetchIsProcessing(true);
     fetchRequest(setError)
       .then((result) => handleFetchRes(result, setError))
-      .catch((err) => handleFetchErr(err))
+      .catch((err) => handleFetchErr(err, setError))
       .finally(() => setFetchIsProcessing(false));
   };
 
