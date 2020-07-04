@@ -13,6 +13,7 @@ import { StackHeaderOptions } from "@react-navigation/stack/lib/typescript/src/t
 import { Images } from "../../Resources";
 // Utils imports
 import { nFormatter } from "../../Utils/formatter";
+
 export const commonNavScreenOptions: StackNavigationOptions = {
   headerStyle: {
     backgroundColor: (theme as CustomTheme).customColors.secondaryBg,
@@ -21,7 +22,7 @@ export const commonNavScreenOptions: StackNavigationOptions = {
   cardStyle: { backgroundColor: (theme as CustomTheme).customColors.primaryBg },
 };
 
-export const headerOptions = (
+export const headerOptionsWithBadge = (
   state: IState,
   localOptions?: StackHeaderOptions
 ): StackHeaderOptions => {
@@ -41,6 +42,16 @@ export const headerOptions = (
           )}
         </>
       );
+    },
+  };
+};
+export const headerOptionsWithoutBadge = (
+  localOptions?: StackHeaderOptions
+): StackHeaderOptions => {
+  return {
+    ...localOptions,
+    headerRight: () => {
+      return <Avatar rounded={true} source={Images.logo} size="medium" />;
     },
   };
 };

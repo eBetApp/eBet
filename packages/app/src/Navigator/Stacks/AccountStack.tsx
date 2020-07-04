@@ -4,7 +4,11 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { StackNavigationProp } from "@react-navigation/stack/lib/typescript/src/types";
 import { RouteProp } from "@react-navigation/native";
-import { commonNavScreenOptions, headerOptions } from ".";
+import {
+  commonNavScreenOptions,
+  headerOptionsWithBadge,
+  headerOptionsWithoutBadge,
+} from ".";
 // Screens imports
 import {
   SignInScreen,
@@ -119,10 +123,12 @@ export function AccountStackScreen() {
         <>
           <AccountStack.Screen
             name={Navigation.Screens.signIn}
+            options={() => headerOptionsWithoutBadge(state)}
             component={SignInScreen}
           />
           <AccountStack.Screen
             name={Navigation.Screens.signUp}
+            options={() => headerOptionsWithoutBadge(state)}
             component={SignUpScreen}
           />
         </>
@@ -130,12 +136,12 @@ export function AccountStackScreen() {
         <>
           <AccountStack.Screen
             name={Navigation.Screens.loggedHome}
-            options={() => headerOptions(state)}
+            options={() => headerOptionsWithBadge(state)}
             component={LoggedScreen}
           />
           <AccountStack.Screen
             name={Navigation.Screens.password}
-            options={() => headerOptions(state)}
+            options={() => headerOptionsWithBadge(state)}
             component={PasswordScreen}
           />
           <AccountStack.Screen
