@@ -12,7 +12,7 @@ import {
 // Fetch imports
 import { userService } from "../../Services";
 // Custom hooks imports
-import { useInput, useFetchAuth } from "../../Hooks";
+import { useTextInput, useFetchAuth } from "../../Hooks";
 // Redux import
 import { useStore } from "../../Redux/store";
 import { dispatchUserNew } from "../../Redux/dispatchers";
@@ -36,8 +36,8 @@ export default function SignInView({ navigation }) {
   const { dispatch } = useStore();
 
   // States
-  const useEmail = useInput();
-  const usePassword = useInput();
+  const useEmail = useTextInput();
+  const usePassword = useTextInput();
 
   // Ref
   const pwdInputRef = useRef(null);

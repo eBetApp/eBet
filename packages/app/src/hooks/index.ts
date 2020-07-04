@@ -1,2 +1,2 @@
 export * from "./useFetchAuth";
-export * from "./useInput";
+export * from "./useTextInput";

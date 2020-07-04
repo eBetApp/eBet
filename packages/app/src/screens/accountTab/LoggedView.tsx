@@ -33,7 +33,7 @@ import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
 // Custom hooks imports
-import { useInput } from "../../Hooks";
+import { useTextInput } from "../../Hooks";
 // Resources imports
 import {
   Strings,
@@ -50,8 +50,8 @@ export default function LoggedView({ navigation }) {
   const { dispatch, state } = useStore();
 
   // States
-  const useEmail = useInput(state.user?.email ?? "");
-  const useNickname = useInput(state.user?.nickname ?? "");
+  const useEmail = useTextInput(state.user?.email ?? "");
+  const useNickname = useTextInput(state.user?.nickname ?? "");
   const [birthdate, setBirthdate] = useState(
     new Date(state.user?.birthdate).toDateString() ?? ""
   );

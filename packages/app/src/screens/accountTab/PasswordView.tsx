@@ -11,7 +11,7 @@ import {
 } from "../../components";
 // Redux import
 import { useStore } from "../../Redux/store";
-import { useInput, useFetchAuth } from "../../Hooks";
+import { useTextInput, useFetchAuth } from "../../Hooks";
 import { dispatchUserEdit } from "../../Redux/dispatchers";
 // Fetch imports
 import { userService } from "../../Services";
@@ -26,9 +26,9 @@ import { Strings, readStorageKey, localStorageItems } from "../../Resources";
 export default function PasswordView({ navigation }) {
   // States
   const { state, dispatch } = useStore();
-  const useCurrentPassword = useInput();
-  const useNewPassword = useInput();
-  const useNewPasswordConfirmation = useInput();
+  const useCurrentPassword = useTextInput();
+  const useNewPassword = useTextInput();
+  const useNewPasswordConfirmation = useTextInput();
 
   // Refs
   const toastErrRef = useRef(null);

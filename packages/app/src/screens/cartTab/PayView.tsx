@@ -10,36 +10,33 @@ import { Icon, Text, ThemeContext } from "react-native-elements";
 import { CreditCardInput } from "react-native-credit-card-input";
 import { ButtonValid, MainView, Loader } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
+import { useFormInput, IForm } from "../../Hooks/useFormInput";
 // Stripe imports
 // tslint:disable-next-line:no-var-requires
 const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
 
-interface IForm {
-  valid: boolean;
-  values: any;
-  status: any;
-}
-
 export default function PayView({ navigation }) {
   const { theme } = useContext(ThemeContext);
-  const [form, setForm] = useState<IForm>(null);
+  const form = useFormInput(null);
   const [paymentIsProcessing, setPaymentIsProcessing] = useState<boolean>(
     false
   );
   const [paymentError, setPaymentError] = useState<string>("");
 
   const handlePayment = async () => {
+    console.log("### FORM");
+    console.log(form?.data);
     const stripeToken = await _getPaymentToken();
     if (stripeToken !== null) await fetchPayment(stripeToken);
   };
 
   const _getPaymentToken: () => Promise<string | null> = async () => {
-    if (!_checkPaymentInfosCompletion(form)) {
+    if (!_checkPaymentInfosCompletion(form?.data)) {
       setPaymentError("Incomplete credentials");
       return null;
     }
 
-    const card = await stripeClient.createToken(_paymentInfos(form));
+    const card = await stripeClient.createToken(_paymentInfos(form?.data));
     const token = card.id;
     return token;
   };
@@ -49,10 +46,10 @@ export default function PayView({ navigation }) {
   const _paymentInfos = (_form: IForm) => {
     return {
       card: {
-        number: form?.values.number,
-        exp_month: form?.values.expiry.substr(0, 2),
-        exp_year: form?.values.expiry.substr(3, 5),
-        cvc: form?.values.cvc,
+        number: form?.data?.values.number,
+        exp_month: form?.data?.values.expiry.substr(0, 2),
+        exp_year: form?.data?.values.expiry.substr(3, 5),
+        cvc: form?.data?.values.cvc,
       },
     };
   };
@@ -88,11 +85,12 @@ export default function PayView({ navigation }) {
     <MainView>
       <ScrollView>
         <CreditCardInput
+          {...form}
           allowScroll={true}
           invalidColor={theme.colors.error}
           labelStyle={{ color: theme.colors.secondary }}
           inputStyle={{ color: theme.colors.primary }}
-          onChange={(data) => setForm(data)}
+          // onChange={(data) => setForm(data)}
         />
         <ButtonValid
           title="PAY"

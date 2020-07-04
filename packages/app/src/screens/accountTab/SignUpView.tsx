@@ -13,7 +13,7 @@ import {
 } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
 // Custom hooks imports
-import { useInput, useFetchAuth } from "../../Hooks";
+import { useTextInput, useFetchAuth } from "../../Hooks";
 // Redux import
 import { useStore } from "../../Redux/store";
 import { dispatchUserNew } from "../../Redux/dispatchers";
@@ -38,9 +38,9 @@ export default function SignUpView({ navigation }) {
   const { dispatch } = useStore();
 
   // States
-  const useNickname = useInput();
-  const useEmail = useInput();
-  const usePassword = useInput();
+  const useNickname = useTextInput();
+  const useEmail = useTextInput();
+  const usePassword = useTextInput();
   const [birthdate, setBirthdate] = useState(null);
 
   // Ref
