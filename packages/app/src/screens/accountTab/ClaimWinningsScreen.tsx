@@ -1,7 +1,7 @@
 import React from "react";
 import WebView from "react-native-webview";
 
-export default function ClaimWinningsView() {
+export default function ClaimWinningsScreen() {
   return (
     <WebView
       source={{

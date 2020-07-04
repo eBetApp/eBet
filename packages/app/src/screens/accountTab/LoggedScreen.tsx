@@ -42,8 +42,9 @@ import {
   localStorageItems,
   removeFullStorage,
 } from "../../Resources";
+import { LoggedScreenProps } from "../../Navigator/Stacks";
 
-export default function LoggedView({ navigation }) {
+export default function LoggedScreen({ navigation }: LoggedScreenProps) {
   let stripeAccount = "";
 
   // Redux

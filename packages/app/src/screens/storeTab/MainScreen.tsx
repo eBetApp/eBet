@@ -3,10 +3,10 @@ import { View } from "react-native";
 // UI imports
 import { Text } from "react-native-elements";
 import { ButtonValid, ButtonCancel } from "../../components";
-// Redux import
-import { useStore } from "../../Redux/store";
+// Resources imports
+import { StoreScreenProps } from "../../Navigator/Stacks";
 
-export default function MainView() {
+export default function MainScreen({ navigation }: StoreScreenProps) {
   return (
     <View>
       <Text>TEST DES DIFFERENTS BOUTONS</Text>

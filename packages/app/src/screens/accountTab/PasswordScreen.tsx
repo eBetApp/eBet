@@ -22,8 +22,9 @@ import {
 } from "../../Utils/parseApiError";
 // Resources imports
 import { Strings, readStorageKey, localStorageItems } from "../../Resources";
+import { PasswordScreenProps } from "../../Navigator/Stacks";
 
-export default function PasswordView({ navigation }) {
+export default function PasswordScreen({ navigation }: PasswordScreenProps) {
   // States
   const { state, dispatch } = useStore();
   const useCurrentPassword = useTextInput();

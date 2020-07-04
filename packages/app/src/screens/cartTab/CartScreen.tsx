@@ -7,7 +7,7 @@ import { ButtonValid } from "../../components";
 import { useStore } from "../../Redux/store";
 // Resources imports
 import { Navigation, Strings } from "../../Resources";
-import { CartScreenProps } from "../../Navigator/StacksNavigator";
+import { CartScreenProps } from "../../Navigator/Stacks";
 
 export default function CartScreen({ navigation }: CartScreenProps) {
   const { state } = useStore();

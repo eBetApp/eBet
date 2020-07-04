@@ -13,7 +13,7 @@ import {
   StoreStackScreen,
   CartStackScreen,
   AccountStackScreen,
-} from "./StacksNavigator";
+} from "./Stacks";
 // UI imports
 import { ThemeContext } from "react-native-elements";
 import FontAwesome from "react-native-vector-icons/FontAwesome";

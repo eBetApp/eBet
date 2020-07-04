@@ -32,8 +32,9 @@ import {
   setStorage,
   localStorageItems,
 } from "../../Resources";
+import { SignUpScreenProps } from "../../Navigator/Stacks";
 
-export default function SignUpView({ navigation }) {
+export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   // Redux
   const { dispatch } = useStore();
 

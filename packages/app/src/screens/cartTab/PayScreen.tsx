@@ -12,12 +12,12 @@ import { ButtonValid, MainView, Loader } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
 import { useFormInput, IForm } from "../../Hooks/useFormInput";
 import { useFetchAuth } from "../../Hooks";
-import { PayScreenProps } from "../../Navigator/StacksNavigator";
+import { PayScreenProps } from "../../Navigator/Stacks";
 // Stripe imports
 // tslint:disable-next-line:no-var-requires
 const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
 
-export default function PayView({ navigation, route }: PayScreenProps) {
+export default function PayScreen({ navigation, route }: PayScreenProps) {
   const { theme } = useContext(ThemeContext);
   const form = useFormInput(null);
   const { amount } = route.params;

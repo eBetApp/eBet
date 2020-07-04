@@ -30,8 +30,9 @@ import {
   localStorageItems,
   readStorageKey,
 } from "../../Resources";
+import { SignInScreenProps } from "../../Navigator/Stacks";
 
-export default function SignInView({ navigation }) {
+export default function SignInScreen({ navigation }: SignInScreenProps) {
   // Redux
   const { dispatch } = useStore();
 
