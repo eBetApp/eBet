@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+// React imports
+import React from "react";
 // UI imports
+import { StyleSheet, View, ScrollView } from "react-native";
 import { Input, Icon } from "react-native-elements";
 import {
   ButtonValid,
@@ -9,106 +10,34 @@ import {
   Loader,
   ToastErr,
 } from "../../components";
-// Fetch imports
-import { userService } from "../../Services";
-// Custom hooks imports
-import { useTextInput, useFetchAuth } from "../../Hooks";
 // Redux import
 import { useStore } from "../../Redux/store";
-import { dispatchUserNew } from "../../Redux/dispatchers";
-// utils imports
-import {
-  classifyAuthError,
-  errorType,
-  AuthError,
-} from "../../Utils/parseApiError";
 // Resources imports
-import {
-  Strings,
-  Navigation,
-  setStorage,
-  localStorageItems,
-} from "../../Resources";
+import { Strings, Navigation } from "../../Resources";
 import { SignInScreenProps } from "../../Navigator/Stacks";
+// Hooks imports
 import { signInScreenVM } from "../../Hooks";
 
-export default function SignInScreen({ navigation }: SignInScreenProps) {
+export default function SignInScreen({ navigation, route }: SignInScreenProps) {
   // Redux
   const { dispatch } = useStore();
 
-  // States
-  const useEmail = useTextInput();
-  const usePassword = useTextInput();
-
-  // Ref
-  const pwdInputRef = useRef(null);
-  const toastErrRef = useRef(null);
-
+  // Fetch
   const { fetchIsProcessing: initLoading } = signInScreenVM.useInitAuthFetch(
     dispatch
   );
 
-  const payload: ISignInPayload = {
-    email: useEmail.value,
-    password: usePassword.value,
-  };
+  const {
+    useEmail,
+    usePassword,
+    pwdInputRef,
+    toastErrRef,
+    fetch,
+    fetchIsProcessing,
+    error,
+  } = signInScreenVM.useSignInFetch(dispatch, { navigation, route });
 
-  const { fetch, fetchIsProcessing, error } = useFetchAuth(
-    new AuthError(),
-    (setErr) => true,
-    async (setErr) => _fetchRequest(setErr),
-    (res, err) => _handleFetchRes(res, err),
-    (err) => _handleFetchErr(err)
-  );
-
-  const _fetchRequest = (setErr) => userService.signInAsync(payload);
-
-  const _handleFetchRes = (result: ApiResponse, setError) => {
-    if (result === null) {
-      setError(new AuthError());
-      toastErrRef.current.show("Network error");
-      return;
-    } else if ((result as IAuthServiceResponse)?.status === 200) {
-      dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
-      setStorage(
-        localStorageItems.token,
-        (result as IAuthServiceResponse).meta.token
-      );
-      setStorage(
-        localStorageItems.userUuid,
-        (result as IAuthServiceResponse).data.user.uuid
-      );
-      setError(new AuthError());
-      navigation.navigate(Navigation.Screens.loggedHome);
-    } else if ((result as IApiResponseError)?.error?.status === 400) {
-      switch (classifyAuthError((result as IApiResponseError).error.message)) {
-        case errorType.email:
-          setError(
-            new AuthError({
-              email: (result as IApiResponseError).error.message,
-            })
-          );
-          break;
-        case errorType.password:
-          setError(
-            new AuthError({
-              password: (result as IApiResponseError).error.message,
-            })
-          );
-          break;
-        default:
-          break;
-      }
-    } else throw new Error();
-  };
-
-  const _handleFetchErr = (err: any) => {
-    toastErrRef.current.show("Unexpected error");
-    console.log("signInAsync() -- Unexpected error : ", err);
-  };
-  //#endregion FETCH TO SIGN IN
-
-  //#region VIEW
+  // View
   return (
     <>
       {initLoading ? (

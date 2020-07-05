@@ -1,9 +1,25 @@
-import { useFetchAuth } from ".";
-import { useEffect } from "react";
-import { readStorageKey, localStorageItems } from "../Resources";
-import { userService } from "../Services";
+// React imports
+import { useEffect, useRef } from "react";
+// Hooks imports
+import { useFetchAuth, useTextInput } from ".";
+// Resources imports
+import {
+  readStorageKey,
+  localStorageItems,
+  setStorage,
+  Navigation,
+} from "../Resources";
+import { SignInScreenProps } from "../Navigator/Stacks";
+// Redux imports
 import { dispatchUserNew } from "../Redux/dispatchers";
 import { IAction } from "../Redux/ReducerTypes";
+// Utils imports
+import { userService } from "../Services";
+import {
+  AuthError,
+  errorType,
+  classifyAuthError,
+} from "../Utils/parseApiError";
 
 export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
   let token: string;
@@ -43,4 +59,86 @@ export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
   }, []);
 
   return { fetchIsProcessing };
+};
+
+export const useSignInFetch = (
+  dispatch: React.Dispatch<IAction>,
+  { navigation }: SignInScreenProps
+) => {
+  // States
+  const useEmail = useTextInput();
+  const usePassword = useTextInput();
+
+  // Ref
+  const pwdInputRef = useRef(null);
+  const toastErrRef = useRef(null);
+
+  const payload: ISignInPayload = {
+    email: useEmail.value,
+    password: usePassword.value,
+  };
+
+  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+    new AuthError(),
+    (setErr) => true,
+    async (setErr) => _fetchRequest(setErr),
+    (res, err) => _handleFetchRes(res, err),
+    (err) => _handleFetchErr(err)
+  );
+
+  const _fetchRequest = (setErr) => userService.signInAsync(payload);
+
+  const _handleFetchRes = (result: ApiResponse, setError) => {
+    if (result === null) {
+      setError(new AuthError());
+      toastErrRef.current.show("Network error");
+      return;
+    } else if ((result as IAuthServiceResponse)?.status === 200) {
+      dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
+      setStorage(
+        localStorageItems.token,
+        (result as IAuthServiceResponse).meta.token
+      );
+      setStorage(
+        localStorageItems.userUuid,
+        (result as IAuthServiceResponse).data.user.uuid
+      );
+      setError(new AuthError());
+      navigation.navigate(Navigation.Screens.loggedHome);
+    } else if ((result as IApiResponseError)?.error?.status === 400) {
+      switch (classifyAuthError((result as IApiResponseError).error.message)) {
+        case errorType.email:
+          setError(
+            new AuthError({
+              email: (result as IApiResponseError).error.message,
+            })
+          );
+          break;
+        case errorType.password:
+          setError(
+            new AuthError({
+              password: (result as IApiResponseError).error.message,
+            })
+          );
+          break;
+        default:
+          break;
+      }
+    } else throw new Error();
+  };
+
+  const _handleFetchErr = (err: any) => {
+    toastErrRef.current.show("Unexpected error");
+    console.log("signInAsync() -- Unexpected error : ", err);
+  };
+
+  return {
+    useEmail,
+    usePassword,
+    pwdInputRef,
+    toastErrRef,
+    fetch,
+    fetchIsProcessing,
+    error,
+  };
 };
