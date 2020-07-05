@@ -60,18 +60,20 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
   let uuid: string;
 
   useEffect(() => {
-    (async function initFetch() {
-      token = await readStorageKey(localStorageItems.token);
-      uuid = await readStorageKey(localStorageItems.userUuid);
-      if (
-        token === null ||
-        token === undefined ||
-        uuid === null ||
-        uuid === undefined
-      )
-        return;
-      initFetchFromLocalStorage();
-    })();
+    const tokenPromise = readStorageKey(localStorageItems.token);
+    const uuidPromise = readStorageKey(localStorageItems.userUuid);
+    Promise.all([tokenPromise, uuidPromise])
+      .then((values) => ([token, uuid] = values))
+      .then(() => {
+        if (
+          token === null ||
+          token === undefined ||
+          uuid === null ||
+          uuid === undefined
+        )
+          return;
+        initFetchFromLocalStorage();
+      });
   }, []);
 
   const _initFetchFromLocalStorageRequest = async (setErr) =>
