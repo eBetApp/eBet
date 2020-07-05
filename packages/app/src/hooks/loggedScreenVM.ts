@@ -1,10 +1,13 @@
 // React imports
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 // Resources imports
 import { localStorageItems, readStorageKey } from "../Resources";
 // Redux imports
 import { IAction, IState } from "../Redux/ReducerTypes";
-import { dispatchUserEdit } from "../Redux/dispatchers";
+import {
+  dispatchUserEdit,
+  dispatchUserAccountBalance,
+} from "../Redux/dispatchers";
 // Hooks imports
 import { useTextInput, useFetchAuth } from ".";
 // Utils imports
@@ -13,8 +16,10 @@ import {
   classifyAuthError,
   errorType,
 } from "../Utils/parseApiError";
-import { userService } from "../Services";
+import { userService, stripeService } from "../Services";
+import parseUrl from "../Utils/parseUrl";
 
+/** Invoked on calling fetch() */
 export const useEditUserFetch = (
   state: IState,
   dispatch: React.Dispatch<IAction>
@@ -92,4 +97,65 @@ export const useEditUserFetch = (
     fetchIsProcessing,
     error,
   };
+};
+
+/** Invoked on calling setUrl() */
+export const useSetStripeAccountFetch = (
+  state: IState,
+  dispatch: React.Dispatch<IAction>
+) => {
+  const [url, setUrl] = useState<string>("");
+  const [stripeAccount, setStripeAccount] = useState("");
+
+  useEffect(() => fetch(), [url]);
+  const fetch = () => {
+    const { code } = parseUrl(url);
+    if (code === undefined || code === stripeAccount) return;
+
+    setStripeAccount(code);
+
+    const stripePayload = {
+      uuid: state.user.uuid,
+      code,
+    };
+
+    readStorageKey(localStorageItems.token)
+      .then((token) => stripeService.postNewAccountAsync(stripePayload, token))
+      .then((result) => {
+        dispatchUserEdit(dispatch, {
+          accountId: (result as IApiResponseSuccess)?.data?.accountId,
+        });
+      })
+      .catch((err) => console.log("useSetStripeAccountFetch() errror: ", err));
+  };
+
+  return { setUrl };
+};
+
+/** Invoked by useEffect on state.user.accountId changed */
+export const useStripeBalanceFetch = (
+  state: IState,
+  dispatch: React.Dispatch<IAction>
+) => {
+  useEffect(() => {
+    fetchBalance();
+  }, [state.user?.accountId]);
+
+  const fetchBalance = (): void => {
+    readStorageKey(localStorageItems.token).then((token) => {
+      stripeService
+        .getBalanceAsync({ accountId: state.user.accountId }, token)
+        .then((res) => {
+          if (res === null) return;
+          const _res = res as IApiResponseSuccess;
+          if (_res == null) return;
+          dispatchUserAccountBalance(dispatch, _res.data.balance);
+        })
+        .catch((err) => {
+          console.log("getBalance() -- Unexpected error : ", err);
+        });
+    });
+  };
+
+  return;
 };

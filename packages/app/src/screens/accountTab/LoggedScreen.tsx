@@ -1,11 +1,9 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 // Redux import
 import { useStore } from "../../Redux/store";
 import {
   dispatchUserNull,
-  dispatchUserEdit,
-  dispatchUserAccountBalance,
   dispatchUserAccountBalanceNull,
 } from "../../Redux/dispatchers";
 // UI imports
@@ -21,32 +19,23 @@ import {
   ToastErr,
   ToastSuccess,
 } from "../../components";
-// Fetch imports
-import { stripeService } from "../../Services";
 // webView import
 import { WebView } from "react-native-webview";
-// utils import
-import parseUrl from "../../Utils/parseUrl";
 // Custom hooks imports
 import { loggedScreenVM } from "../../Hooks";
 // Resources imports
-import {
-  Strings,
-  Navigation,
-  readStorageKey,
-  localStorageItems,
-  removeFullStorage,
-} from "../../Resources";
+import { Strings, Navigation, removeFullStorage } from "../../Resources";
 import { LoggedScreenProps } from "../../Navigator/Stacks";
 
 export default function LoggedScreen({ navigation }: LoggedScreenProps) {
-  let stripeAccount = "";
-
   // Redux
   const { dispatch, state } = useStore();
 
   // Ref
   const emailInputRef = useRef(null);
+
+  // Fetch
+  loggedScreenVM.useStripeBalanceFetch(state, dispatch);
 
   const {
     useEmail,
@@ -60,27 +49,9 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
     error,
   } = loggedScreenVM.useEditUserFetch(state, dispatch);
 
-  // useEffect
-  useEffect(() => {
-    fetchBalance();
-  }, [state.user?.accountId]);
+  const { setUrl } = loggedScreenVM.useSetStripeAccountFetch(state, dispatch);
 
-  const fetchBalance = (): void => {
-    readStorageKey(localStorageItems.token).then((token) => {
-      stripeService
-        .getBalanceAsync({ accountId: state.user.accountId }, token)
-        .then((res) => {
-          if (res === null) return;
-          const _res = res as IApiResponseSuccess;
-          if (_res == null) return;
-          dispatchUserAccountBalance(dispatch, _res.data.balance);
-        })
-        .catch((err) => {
-          console.log("getBalance() -- Unexpected error : ", err);
-        });
-    });
-  };
-
+  // Views
   const _renderWebView = () => (
     <WebView
       source={{
@@ -88,32 +59,10 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
           "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_HLOVRxlYXifqJlpAxypmnbp3OPhd8dXU&scope=read_write",
       }}
       onNavigationStateChange={(navState) => {
-        const params = parseUrl(navState.url);
-        if (params?.code !== undefined && params?.code !== stripeAccount) {
-          stripeAccount = params?.code;
-          fetchCreateStripeAccount(stripeAccount);
-        }
+        setUrl(navState.url);
       }}
     />
   );
-
-  const fetchCreateStripeAccount = async (code: string): Promise<void> => {
-    const token = await readStorageKey(localStorageItems.token);
-
-    const stripePayload = {
-      uuid: state.user.uuid,
-      code,
-    };
-
-    stripeService
-      .postNewAccountAsync(stripePayload, token)
-      .then((result) => {
-        dispatchUserEdit(dispatch, {
-          accountId: (result as IApiResponseSuccess)?.data?.accountId,
-        });
-      })
-      .catch((err) => console.log("error", err));
-  };
 
   const _renderLoggedView = () => (
     <MainKeyboardAvoidingView style={styles.mainContainer}>
