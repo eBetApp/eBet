@@ -24,6 +24,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   // Redux
   const { dispatch } = useStore();
 
+  // Fetch
   const {
     setBirthdate,
     useNickname,
@@ -37,7 +38,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
     error,
   } = signUpScreenVM.useInitAuthFetch(dispatch);
 
-  //#region VIEW
+  // View
   return (
     <MainKeyboardAvoidingView style={{ flex: 1 }}>
       <ScrollView style={styles.formContainer}>
@@ -94,7 +95,6 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
       <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
-  //#endregion VIEW
 }
 
 const styles = StyleSheet.create({

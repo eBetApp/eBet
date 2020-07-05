@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 // UI imports
@@ -11,102 +11,32 @@ import {
 } from "../../components";
 // Redux import
 import { useStore } from "../../Redux/store";
-import { useTextInput, useFetchAuth } from "../../Hooks";
-import { dispatchUserEdit } from "../../Redux/dispatchers";
-// Fetch imports
-import { userService } from "../../Services";
-import {
-  classifyAuthError,
-  AuthError,
-  errorType,
-} from "../../Utils/parseApiError";
+import { passwordScreenVM } from "../../Hooks";
 // Resources imports
-import { Strings, readStorageKey, localStorageItems } from "../../Resources";
+import { Strings } from "../../Resources";
 import { PasswordScreenProps } from "../../Navigator/Stacks";
 
-export default function PasswordScreen({ navigation }: PasswordScreenProps) {
-  // States
+export default function PasswordScreen({
+  navigation,
+  route,
+}: PasswordScreenProps) {
+  // Redux
   const { state, dispatch } = useStore();
-  const useCurrentPassword = useTextInput();
-  const useNewPassword = useTextInput();
-  const useNewPasswordConfirmation = useTextInput();
 
-  // Refs
-  const toastErrRef = useRef(null);
-  const newPwdInputErrRef = useRef(null);
-  const confirmNewPwdInputRef = useRef(null);
+  // Fetch
+  const {
+    useCurrentPassword,
+    useNewPassword,
+    useNewPasswordConfirmation,
+    toastErrRef,
+    newPwdInputErrRef,
+    confirmNewPwdInputRef,
+    fetch,
+    fetchIsProcessing,
+    error,
+  } = passwordScreenVM.useEditPwdFetch(state, dispatch, { navigation, route });
 
-  //#region FETCH TO UPDATE PWD
-  const payload: IPwdUpdatePayload = {
-    uuid: state.user.uuid,
-    currentPwd: useCurrentPassword.value,
-    newPwd: useNewPassword.value,
-  };
-
-  const { fetch, fetchIsProcessing, error } = useFetchAuth(
-    new AuthError(),
-    (setErr) => _preFetchRequest(setErr),
-    async (setErr) => _fetchRequest(setErr),
-    (res, err) => _handleFetchRes(res, err),
-    (err) => _handleFetchErr(err)
-  );
-
-  const _preFetchRequest = (setError) => {
-    if (useNewPassword.value !== useNewPasswordConfirmation.value) {
-      setError(
-        new AuthError({
-          newPassword: "Doesn't match",
-          newPasswordConfirmation: "Doesn't match",
-        })
-      );
-      return false;
-    }
-    return true;
-  };
-
-  const _fetchRequest = async (setError) => {
-    const token = await readStorageKey(localStorageItems.token);
-    return userService.updatePwdAsync(payload, token);
-  };
-
-  const _handleFetchRes = (res, setError) => {
-    if (res === null) {
-      setError(new AuthError());
-      return toastErrRef.current.show("Network error");
-    } else if ((res as IApiResponseSuccess)?.status === 200) {
-      delete payload.uuid;
-      dispatchUserEdit(dispatch, { ...payload });
-      navigation.goBack();
-    } else if (
-      (res as IApiResponseError)?.error?.status === 400 &&
-      classifyAuthError((res as IApiResponseError).error.message) ===
-        errorType.password
-    ) {
-      setError(
-        new AuthError({
-          newPassword: (res as IApiResponseError).error.message,
-        })
-      );
-    } else if (
-      (res as IApiResponseError)?.error?.status === 403 &&
-      classifyAuthError((res as IApiResponseError).error.message) ===
-        errorType.password
-    ) {
-      setError(
-        new AuthError({
-          password: (res as IApiResponseError).error.message,
-        })
-      );
-    } else throw new Error();
-  };
-
-  const _handleFetchErr = (err: any) => {
-    toastErrRef.current.show("Unexpected error");
-    console.log("update password -- Unexpected error : ", err);
-  };
-  //#endregion FETCH TO UPDATE PWD
-
-  //#region VIEW
+  // View
   return (
     <MainKeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.formContainer}>
@@ -157,7 +87,6 @@ export default function PasswordScreen({ navigation }: PasswordScreenProps) {
       <ToastErr setRef={toastErrRef} position="top" />
     </MainKeyboardAvoidingView>
   );
-  //#endregion VIEW
 }
 
 const styles = StyleSheet.create({
