@@ -9,7 +9,7 @@ import {
   dispatchUserAccountBalance,
 } from "../Redux/dispatchers";
 // Hooks imports
-import { useTextInput, useFetchAuth } from ".";
+import { useTextInput, useFetch } from ".";
 // Utils imports
 import {
   AuthError,
@@ -42,7 +42,7 @@ export const useEditUserFetch = (
     birthdate: new Date(birthdate).toISOString(),
   };
 
-  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+  const { fetch, fetchIsProcessing, error } = useFetch(
     new AuthError(),
     (setErr) => _preFetchRequest(setErr),
     async (setErr) => _fetchRequest(setErr),

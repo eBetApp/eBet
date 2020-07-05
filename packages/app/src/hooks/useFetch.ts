@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useFetchAuth = (
+export const useFetch = (
   initError,
   preFetchRequest: (setError) => boolean,
   fetchRequest: (err?: any) => Promise<any>,

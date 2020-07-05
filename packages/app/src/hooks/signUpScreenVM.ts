@@ -6,7 +6,7 @@ import { setStorage, localStorageItems } from "../Resources";
 import { IAction } from "../Redux/ReducerTypes";
 import { dispatchUserNew } from "../Redux/dispatchers";
 // Hooks imports
-import { useTextInput, useFetchAuth } from ".";
+import { useTextInput, useFetch } from ".";
 // Utils imports
 import {
   AuthError,
@@ -33,7 +33,7 @@ export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
     birthdate: birthdate != null ? new Date(birthdate).toISOString() : null,
   };
 
-  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+  const { fetch, fetchIsProcessing, error } = useFetch(
     new AuthError(),
     (setErr) => _preFetchRequest(setErr),
     async (setErr) => _fetchRequest(setErr),

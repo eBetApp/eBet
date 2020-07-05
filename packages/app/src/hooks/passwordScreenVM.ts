@@ -7,7 +7,7 @@ import { PasswordScreenProps } from "../Navigator/Stacks";
 import { IAction, IState } from "../Redux/ReducerTypes";
 import { dispatchUserEdit } from "../Redux/dispatchers";
 // Hooks imports
-import { useTextInput, useFetchAuth } from ".";
+import { useTextInput, useFetch } from ".";
 // Utils imports
 import {
   AuthError,
@@ -36,7 +36,7 @@ export const useEditPwdFetch = (
     newPwd: useNewPassword.value,
   };
 
-  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+  const { fetch, fetchIsProcessing, error } = useFetch(
     new AuthError(),
     (setErr) => _preFetchRequest(setErr),
     async (setErr) => _fetchRequest(setErr),

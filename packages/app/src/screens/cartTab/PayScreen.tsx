@@ -12,7 +12,7 @@ import { CreditCardInput } from "react-native-credit-card-input";
 import { ButtonValid, MainView, Loader } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
 import { useFormInput, IForm } from "../../Hooks/useFormInput";
-import { useFetchAuth } from "../../Hooks";
+import { useFetch } from "../../Hooks";
 import { PayScreenProps } from "../../Navigator/Stacks";
 // Stripe imports
 const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
@@ -27,7 +27,7 @@ export default function PayScreen({ navigation, route }: PayScreenProps) {
     fetch,
     fetchIsProcessing: paymentIsProcessing,
     error: paymentError,
-  } = useFetchAuth(
+  } = useFetch(
     null,
     (setErr) => preFetchRequest(setErr),
     async (setErr) => fetchRequest(setErr),

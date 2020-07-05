@@ -1,7 +1,7 @@
 // React imports
 import { useEffect, useRef } from "react";
 // Hooks imports
-import { useFetchAuth, useTextInput } from ".";
+import { useFetch, useTextInput } from ".";
 // Resources imports
 import {
   readStorageKey,
@@ -26,7 +26,7 @@ export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
   let token: string;
   let uuid: string;
 
-  const { fetch, fetchIsProcessing } = useFetchAuth(
+  const { fetch, fetchIsProcessing } = useFetch(
     null,
     (setErr) => true,
     async (setErr) => _initFetchFromLocalStorageRequest(setErr),
@@ -79,7 +79,7 @@ export const useSignInFetch = (
     password: usePassword.value,
   };
 
-  const { fetch, fetchIsProcessing, error } = useFetchAuth(
+  const { fetch, fetchIsProcessing, error } = useFetch(
     new AuthError(),
     (setErr) => true,
     async (setErr) => _fetchRequest(setErr),
