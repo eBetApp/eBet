@@ -28,9 +28,9 @@ import {
   Navigation,
   setStorage,
   localStorageItems,
-  readStorageKey,
 } from "../../Resources";
 import { SignInScreenProps } from "../../Navigator/Stacks";
+import { signInScreenVM } from "../../Hooks";
 
 export default function SignInScreen({ navigation }: SignInScreenProps) {
   // Redux
@@ -44,48 +44,10 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
   const pwdInputRef = useRef(null);
   const toastErrRef = useRef(null);
 
-  //#region INIT FETCH FROM LOCAL STORAGE
-  const {
-    fetch: initFetchFromLocalStorage,
-    fetchIsProcessing: initLoading,
-  } = useFetchAuth(
-    null,
-    (setErr) => true,
-    async (setErr) => _initFetchFromLocalStorageRequest(setErr),
-    (res, err) => _handleinitFetchFromLocalStorageRes(res, err),
-    (err) => {} // tslint:disable-line
+  const { fetchIsProcessing: initLoading } = signInScreenVM.useInitAuthFetch(
+    dispatch
   );
 
-  let token: string;
-  let uuid: string;
-
-  useEffect(() => {
-    const tokenPromise = readStorageKey(localStorageItems.token);
-    const uuidPromise = readStorageKey(localStorageItems.userUuid);
-    Promise.all([tokenPromise, uuidPromise])
-      .then((values) => ([token, uuid] = values))
-      .then(() => {
-        if (
-          token === null ||
-          token === undefined ||
-          uuid === null ||
-          uuid === undefined
-        )
-          return;
-        initFetchFromLocalStorage();
-      });
-  }, []);
-
-  const _initFetchFromLocalStorageRequest = async (setErr) =>
-    userService.getUserAsync(uuid, token);
-
-  const _handleinitFetchFromLocalStorageRes = (res, setError) => {
-    if (res !== null && (res as IApiResponseSuccess)?.status === 200)
-      dispatchUserNew(dispatch, (res as IApiResponseSuccess)?.data.user);
-  };
-  //#endregion INIT FETCH FROM LOCAL STORAGE
-
-  //#region FETCH TO SIGN IN
   const payload: ISignInPayload = {
     email: useEmail.value,
     password: usePassword.value,
