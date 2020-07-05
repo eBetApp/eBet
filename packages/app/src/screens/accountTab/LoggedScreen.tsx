@@ -242,9 +242,10 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
           <ButtonCancel
             title={Strings.buttons.exit}
             onPress={() => {
-              dispatchUserNull(dispatch);
-              dispatchUserAccountBalanceNull(dispatch);
-              removeFullStorage();
+              removeFullStorage().then(() => {
+                dispatchUserNull(dispatch);
+                dispatchUserAccountBalanceNull(dispatch);
+              });
             }}
             icon={
               <Icon
