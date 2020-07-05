@@ -1,5 +1,5 @@
 // React imports
-import React, { useState, useRef } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 // UI imports
 import { Input, Icon } from "react-native-elements";
@@ -12,120 +12,30 @@ import {
   ToastErr,
 } from "../../components";
 import { ScrollView } from "react-native-gesture-handler";
-// Custom hooks imports
-import { useTextInput, useFetchAuth } from "../../Hooks";
+// Hooks imports
+import { signUpScreenVM } from "../../Hooks";
 // Redux import
 import { useStore } from "../../Redux/store";
-import { dispatchUserNew } from "../../Redux/dispatchers";
-// API types imports
-import {
-  classifyAuthError,
-  errorType,
-  AuthError,
-} from "../../Utils/parseApiError";
-// Services import
-import { userService } from "../../Services";
 // Resources imports
-import {
-  Strings,
-  Navigation,
-  setStorage,
-  localStorageItems,
-} from "../../Resources";
+import { Strings, Navigation } from "../../Resources";
 import { SignUpScreenProps } from "../../Navigator/Stacks";
 
 export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   // Redux
   const { dispatch } = useStore();
 
-  // States
-  const useNickname = useTextInput();
-  const useEmail = useTextInput();
-  const usePassword = useTextInput();
-  const [birthdate, setBirthdate] = useState(null);
-
-  // Ref
-  const pwdInputRef = useRef(null);
-  const emailInputRef = useRef(null);
-  const toastErrRef = useRef(null);
-
-  //#region FETCH TO SIGN UP
-  const payload: ISignUpPayload = {
-    nickname: useNickname.value,
-    email: useEmail.value,
-    password: usePassword.value,
-    birthdate: birthdate != null ? new Date(birthdate).toISOString() : null,
-  };
-
-  const { fetch, fetchIsProcessing, error } = useFetchAuth(
-    new AuthError(),
-    (setErr) => _preFetchRequest(setErr),
-    async (setErr) => _fetchRequest(setErr),
-    (res, err) => _handleFetchRes(res, err),
-    (err) => _handleFetchErr(err)
-  );
-
-  const _preFetchRequest = (setErr) =>
-    !(birthdate === null || birthdate === undefined);
-
-  const _fetchRequest = async (setError) => userService.signUpAsync(payload);
-
-  const _handleFetchRes = (result: ApiResponse, setError) => {
-    if (result === null) {
-      setError(new AuthError());
-      return toastErrRef.current.show("Network error");
-    } else if ((result as IAuthServiceResponse)?.status === 201) {
-      dispatchUserNew(dispatch, (result as IAuthServiceResponse).data.user);
-      setStorage(
-        localStorageItems.token,
-        (result as IAuthServiceResponse).meta.token
-      );
-      setStorage(
-        localStorageItems.userUuid,
-        (result as IAuthServiceResponse).data.user.uuid
-      );
-      setError(new AuthError());
-    } else if ((result as IApiResponseError)?.error?.status === 400) {
-      switch (classifyAuthError((result as IApiResponseError).error.message)) {
-        case errorType.nickname:
-          setError(
-            new AuthError({
-              nickname: (result as IApiResponseError).error?.message,
-            })
-          );
-          break;
-        case errorType.email:
-          setError(
-            new AuthError({
-              email: (result as IApiResponseError).error?.message,
-            })
-          );
-          break;
-        case errorType.password:
-          setError(
-            new AuthError({
-              password: (result as IApiResponseError).error?.message,
-            })
-          );
-          break;
-        case errorType.birthdate:
-          setError(
-            new AuthError({
-              birthdate: (result as IApiResponseError).error?.message,
-            })
-          );
-          break;
-        default:
-          break;
-      }
-    } else throw new Error();
-  };
-
-  const _handleFetchErr = (err: any) => {
-    toastErrRef.current.show("Unexpected error");
-    console.log("signUpAsync() -- Unexpected error : ", err);
-  };
-  //#endregion FETCH TO SIGN UP
+  const {
+    setBirthdate,
+    useNickname,
+    useEmail,
+    usePassword,
+    emailInputRef,
+    pwdInputRef,
+    toastErrRef,
+    fetch,
+    fetchIsProcessing,
+    error,
+  } = signUpScreenVM.useInitAuthFetch(dispatch);
 
   //#region VIEW
   return (
