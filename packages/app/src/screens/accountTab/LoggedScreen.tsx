@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 // Redux import
 import { useStore } from "../../Redux/store";
@@ -22,18 +22,13 @@ import {
   ToastSuccess,
 } from "../../components";
 // Fetch imports
-import { userService, stripeService } from "../../Services";
-import {
-  classifyAuthError,
-  errorType,
-  AuthError,
-} from "../../Utils/parseApiError";
+import { stripeService } from "../../Services";
 // webView import
 import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
 // Custom hooks imports
-import { useTextInput, useFetchAuth } from "../../Hooks";
+import { loggedScreenVM } from "../../Hooks";
 // Resources imports
 import {
   Strings,
@@ -50,17 +45,20 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
   // Redux
   const { dispatch, state } = useStore();
 
-  // States
-  const useEmail = useTextInput(state.user?.email ?? "");
-  const useNickname = useTextInput(state.user?.nickname ?? "");
-  const [birthdate, setBirthdate] = useState(
-    new Date(state.user?.birthdate).toDateString() ?? ""
-  );
-
   // Ref
   const emailInputRef = useRef(null);
-  const toastErrRef = useRef(null);
-  const toastSuccessRef = useRef(null);
+
+  const {
+    useEmail,
+    useNickname,
+    birthdate,
+    setBirthdate,
+    toastErrRef,
+    toastSuccessRef,
+    fetch: fetchEdit,
+    fetchIsProcessing: fetchEditIsProcessing,
+    error,
+  } = loggedScreenVM.useEditUserFetch(state, dispatch);
 
   // useEffect
   useEffect(() => {
@@ -117,63 +115,6 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
       .catch((err) => console.log("error", err));
   };
 
-  //#region FETCH EDIT ACCOUNT
-  const payload = {
-    uuid: state.user?.uuid,
-    email: useEmail.value,
-    nickname: useNickname.value,
-    birthdate: new Date(birthdate).toISOString(),
-  };
-
-  const {
-    fetch: fetchEditAccount,
-    fetchIsProcessing: fetchEditIsProcessing,
-    error,
-  } = useFetchAuth(
-    new AuthError(),
-    (setErr) => _preFetchRequest(setErr),
-    async (setErr) => _fetchRequest(setErr),
-    (res, err) => _handleFetchRes(res, err),
-    (err) => _handleFetchErr(err)
-  );
-
-  const _preFetchRequest = (setError) =>
-    birthdate !== null && birthdate !== undefined;
-
-  const _fetchRequest = async (setError) => {
-    const token = await readStorageKey(localStorageItems.token);
-    return userService.updateAsync(payload, token);
-  };
-
-  const _handleFetchRes = (res, setError) => {
-    if (res === null) {
-      return toastErrRef.current.show("Network error");
-    } else if ((res as IApiResponseSuccess)?.status === 200) {
-      delete payload.uuid;
-      dispatchUserEdit(dispatch, { ...payload });
-      toastSuccessRef.current.show("👍 Update is done");
-      setError(new AuthError());
-    } else if ((res as IApiResponseError)?.error?.status === 400) {
-      switch (classifyAuthError((res as IApiResponseError).error.message)) {
-        case errorType.nickname:
-          setError(new AuthError({ nickname: "Wrong format" }));
-          break;
-        case errorType.email:
-          setError(new AuthError({ email: "Wrong format" }));
-          break;
-        case errorType.birthdate:
-          setError(new AuthError({ birthdate: "Wrong format" }));
-          break;
-      }
-    } else throw new Error();
-  };
-
-  const _handleFetchErr = (err: any) => {
-    toastErrRef.current.show("Unexpected error");
-    console.log("updateUserAsync() -- Unexpected error : ", error);
-  };
-  // #enregion FETCH EDIT ACCOUNT
-
   const _renderLoggedView = () => (
     <MainKeyboardAvoidingView style={styles.mainContainer}>
       <ScrollView style={styles.formContainer}>
@@ -214,7 +155,7 @@ export default function LoggedScreen({ navigation }: LoggedScreenProps) {
           <View style={styles.buttonContainer}>
             <ButtonEdit
               title={Strings.buttons.edit}
-              onPress={() => fetchEditAccount()}
+              onPress={() => fetchEdit()}
               icon={
                 <Icon
                   name="edit"
