@@ -16,6 +16,7 @@ import {
 } from "../Utils/parseApiError";
 import { userService } from "../Services";
 
+/** Invoked on calling fetch() */
 export const useEditPwdFetch = (
   state: IState,
   dispatch: React.Dispatch<IAction>,

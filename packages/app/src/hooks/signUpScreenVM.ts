@@ -15,6 +15,7 @@ import {
 } from "../Utils/parseApiError";
 import { userService } from "../Services";
 
+/** Invoked on calling fetch() */
 export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
   // States
   const useNickname = useTextInput();

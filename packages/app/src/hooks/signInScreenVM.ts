@@ -21,6 +21,7 @@ import {
   classifyAuthError,
 } from "../Utils/parseApiError";
 
+/** Invoked by useEffect on viewDidLoad */
 export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
   let token: string;
   let uuid: string;
@@ -61,6 +62,7 @@ export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
   return { fetchIsProcessing };
 };
 
+/** Invoked by calling fetch() */
 export const useSignInFetch = (
   dispatch: React.Dispatch<IAction>,
   { navigation }: SignInScreenProps
