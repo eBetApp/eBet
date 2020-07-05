@@ -1,5 +1,5 @@
 // React imports
-import React from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View } from "react-native";
 // UI imports
 import { Input, Icon } from "react-native-elements";
@@ -24,14 +24,16 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   // Redux
   const { dispatch } = useStore();
 
+  // Ref
+  const pwdInputRef = useRef(null);
+  const emailInputRef = useRef(null);
+
   // Fetch
   const {
     setBirthdate,
     useNickname,
     useEmail,
     usePassword,
-    emailInputRef,
-    pwdInputRef,
     toastErrRef,
     fetch,
     fetchIsProcessing,

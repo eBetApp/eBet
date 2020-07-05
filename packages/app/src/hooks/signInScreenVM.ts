@@ -70,7 +70,6 @@ export const useSignInFetch = (
   const usePassword = useTextInput();
 
   // Ref
-  const pwdInputRef = useRef(null);
   const toastErrRef = useRef(null);
 
   const payload: ISignInPayload = {
@@ -135,7 +134,6 @@ export const useSignInFetch = (
   return {
     useEmail,
     usePassword,
-    pwdInputRef,
     toastErrRef,
     fetch,
     fetchIsProcessing,

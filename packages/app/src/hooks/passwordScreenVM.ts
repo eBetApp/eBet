@@ -28,8 +28,6 @@ export const useEditPwdFetch = (
 
   // Refs
   const toastErrRef = useRef(null);
-  const newPwdInputErrRef = useRef(null);
-  const confirmNewPwdInputRef = useRef(null);
 
   const payload: IPwdUpdatePayload = {
     uuid: state.user.uuid,
@@ -104,8 +102,6 @@ export const useEditPwdFetch = (
     useNewPassword,
     useNewPasswordConfirmation,
     toastErrRef,
-    newPwdInputErrRef,
-    confirmNewPwdInputRef,
     fetch,
     fetchIsProcessing,
     error,

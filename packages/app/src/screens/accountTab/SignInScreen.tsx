@@ -1,5 +1,5 @@
 // React imports
-import React from "react";
+import React, { useRef } from "react";
 // UI imports
 import { StyleSheet, View, ScrollView } from "react-native";
 import { Input, Icon } from "react-native-elements";
@@ -22,6 +22,9 @@ export default function SignInScreen({ navigation, route }: SignInScreenProps) {
   // Redux
   const { dispatch } = useStore();
 
+  // Ref
+  const pwdInputRef = useRef(null);
+
   // Fetch
   const { fetchIsProcessing: initLoading } = signInScreenVM.useInitAuthFetch(
     dispatch
@@ -30,7 +33,6 @@ export default function SignInScreen({ navigation, route }: SignInScreenProps) {
   const {
     useEmail,
     usePassword,
-    pwdInputRef,
     toastErrRef,
     fetch,
     fetchIsProcessing,

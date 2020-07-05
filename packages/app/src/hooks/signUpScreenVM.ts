@@ -23,8 +23,6 @@ export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
   const [birthdate, setBirthdate] = useState(null);
 
   // Ref
-  const pwdInputRef = useRef(null);
-  const emailInputRef = useRef(null);
   const toastErrRef = useRef(null);
 
   const payload: ISignUpPayload = {
@@ -113,8 +111,6 @@ export const useInitAuthFetch = (dispatch: React.Dispatch<IAction>) => {
     useNickname,
     useEmail,
     usePassword,
-    emailInputRef,
-    pwdInputRef,
     toastErrRef,
     fetch,
     fetchIsProcessing,

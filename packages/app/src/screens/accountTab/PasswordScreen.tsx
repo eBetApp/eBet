@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 // UI imports
@@ -23,14 +23,16 @@ export default function PasswordScreen({
   // Redux
   const { state, dispatch } = useStore();
 
+  // Refs
+  const newPwdInputErrRef = useRef(null);
+  const confirmNewPwdInputRef = useRef(null);
+
   // Fetch
   const {
     useCurrentPassword,
     useNewPassword,
     useNewPasswordConfirmation,
     toastErrRef,
-    newPwdInputErrRef,
-    confirmNewPwdInputRef,
     fetch,
     fetchIsProcessing,
     error,
