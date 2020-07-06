@@ -11,7 +11,7 @@ import {
 } from "../../components";
 // Redux import
 import { useStore } from "../../Redux/store";
-import { useInput, useFetchAuth } from "../../hooks";
+import { useInput, useFetchAuth } from "../../Hooks2";
 import { dispatchUserEdit } from "../../Redux/dispatchers";
 // Fetch imports
 import { userService } from "../../Services";

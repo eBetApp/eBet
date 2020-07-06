@@ -33,7 +33,7 @@ import { WebView } from "react-native-webview";
 // utils import
 import parseUrl from "../../Utils/parseUrl";
 // Custom hooks imports
-import { useInput } from "../../hooks";
+import { useInput } from "../../Hooks2";
 // Resources imports
 import {
   Strings,

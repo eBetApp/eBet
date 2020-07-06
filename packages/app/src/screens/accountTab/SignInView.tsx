@@ -12,7 +12,7 @@ import {
 // Fetch imports
 import { userService } from "../../Services";
 // Custom hooks imports
-import { useInput, useFetchAuth } from "../../hooks";
+import { useInput, useFetchAuth } from "../../Hooks2";
 // Redux import
 import { useStore } from "../../Redux/store";
 import { dispatchUserNew } from "../../Redux/dispatchers";
