@@ -2,7 +2,7 @@
 import {
   REACT_NATIVE_BACK_URL,
   REACT_NATIVE_S3_URL,
-} from "../Hooks2/node_modules/react-native-dotenv";
+} from "react-native-dotenv";
 
 const _CRUD = {
   delete: async (endPoint: string, token: string) => {
