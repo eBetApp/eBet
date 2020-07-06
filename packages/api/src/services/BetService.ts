@@ -96,7 +96,7 @@ class BetServices {
 			for (let idMatch in liveMatch) {
 				const match = liveMatch[idMatch];
 				liveMatch[idMatch] = await getMatchOdd(match);
-			};
+			}
 
 			return { status: 201, data: liveMatch };
 		} catch (error) {
@@ -112,7 +112,7 @@ class BetServices {
 			for (let idMatch in upcomingMatch) {
 				const match = upcomingMatch[idMatch];
 				upcomingMatch[idMatch] = await getMatchOdd(match);
-			};
+			}
 
 			return { status: 201, data: upcomingMatch };
 		} catch (error) {
@@ -176,47 +176,47 @@ const getMatchOdd = async (match: Match): Promise<Match> => {
 		const totalBet = matchBets.length;
 
 		if (match.opponents[0] || match.opponents[1]) {
-			console.log(match.id)
+			console.log(match.id);
 		}
 
 		const team0: addOdd = {
 			id: match.opponents[0].opponent.id,
 			count: 0
-		}
+		};
 		const team1: addOdd = {
 			id: match.opponents[1].opponent.id,
 			count: 0
-		}
+		};
 
 		matchBets.map(matchBet => {
-			matchBet.idTeamBet
+			matchBet.idTeamBet;
 			if (matchBet.idTeamBet === team0.id) {
-				team0.count++
+				team0.count++;
 			}
 
 			if (matchBet.idTeamBet === team1.id) {
-				team1.count++
+				team1.count++;
 			}
 		});
 
 		match.opponents.map((opponent, index) => {
 			switch (opponent.opponent.id) {
-				case team0.id:
-					match.opponents[index].opponent.odd = Number(((team0.count * 2) / totalBet).toFixed(2));
-					break;
-				case team1.id:
-					match.opponents[index].opponent.odd = Number(((team1.count * 2) / totalBet).toFixed(2));
-					break;
-				default:
-					break;
+			case team0.id:
+				match.opponents[index].opponent.odd = Number(((team0.count * 2) / totalBet).toFixed(2));
+				break;
+			case team1.id:
+				match.opponents[index].opponent.odd = Number(((team1.count * 2) / totalBet).toFixed(2));
+				break;
+			default:
+				break;
 			}
 		});
 
 		return match;
 	} catch (error) {
 		console.log(error);
-		throw new UnexpectedError(`Couldn't find odd for this match`, error);
+		throw new UnexpectedError('Couldn\'t find odd for this match', error);
 	}
-}
+};
 
 export default BetServices;

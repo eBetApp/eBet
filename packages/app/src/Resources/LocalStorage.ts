@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 export enum localStorageItems {
   token = "token",
+  userUuid = "uuid",
 }
 
 export const setStorage = async (key, json) => {
@@ -12,7 +13,7 @@ export const setStorage = async (key, json) => {
   }
 };
 
-export const readStorage = async (key) => {
+export const readStorageKey = async (key): Promise<string | undefined> => {
   try {
     const value = await AsyncStorage.getItem(key);
     if (value !== null) {
@@ -20,14 +21,22 @@ export const readStorage = async (key) => {
       return res;
     }
   } catch (e) {
-    console.log(`readStorage() error: ${e.message}`);
+    console.log(`readStorageKey(${key}) error: ${e.message}`);
   }
 };
 
-export const removeStorage = async (key) => {
+export const removeStorageKey = async (key) => {
   try {
     await AsyncStorage.removeItem(key);
   } catch (e) {
-    console.log(`removeStorage() error: ${e.message}`);
+    console.log(`removeStorage(${key}) error: ${e.message}`);
+  }
+};
+export const removeFullStorage = async () => {
+  try {
+    const allKeys = await AsyncStorage.getAllKeys();
+    await AsyncStorage.multiRemove(allKeys);
+  } catch (e) {
+    console.log("removeFullStorage() error: ${e.message}");
   }
 };

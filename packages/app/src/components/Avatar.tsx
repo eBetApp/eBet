@@ -1,18 +1,20 @@
 import React from "react";
 import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 // LocalStorage imports
-import { readStorage, localStorageItems } from "../Resources/LocalStorage";
-// Redux import
+import { readStorageKey, localStorageItems } from "../Resources/LocalStorage";
+// Redux imports
 import { useStore } from "../Redux/store";
 import { dispatchUserEdit } from "../Redux/dispatchers";
-// Services import
+// Services imports
 import userService from "../Services/userService";
+// Resources imports
+import { Images } from "../Resources";
 
 export default function Avatar() {
   const { state, dispatch } = useStore();
 
   const chooseImage = async () => {
-    const token = await readStorage(localStorageItems.token);
+    const token = await readStorageKey(localStorageItems.token);
     try {
       const newImage = await userService.chooseImageFromGaleryAsync();
       if (newImage === null) return;
@@ -40,7 +42,7 @@ export default function Avatar() {
           source={
             state.user.avatar != null
               ? { uri: state.user.avatar }
-              : require("../../assets/defaultAvatar.png")
+              : Images.defaultAvatar
           }
         />
       </TouchableOpacity>

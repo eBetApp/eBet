@@ -1,3 +1,5 @@
+import { createStackNavigator } from "@react-navigation/stack";
+
 export enum Tabs {
   store = "StoreTab",
   cart = "CartTab",

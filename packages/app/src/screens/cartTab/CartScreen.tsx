@@ -7,8 +7,9 @@ import { ButtonValid } from "../../components";
 import { useStore } from "../../Redux/store";
 // Resources imports
 import { Navigation, Strings } from "../../Resources";
+import { CartScreenProps } from "../../Navigator/Stacks";
 
-export default function CartScreen({ navigation }) {
+export default function CartScreen({ navigation }: CartScreenProps) {
   const { state } = useStore();
 
   return (
@@ -17,7 +18,9 @@ export default function CartScreen({ navigation }) {
         <View>
           <ButtonValid
             title={Strings.buttons.valid_payment}
-            onPress={() => navigation.navigate(Navigation.Screens.pay)}
+            onPress={() =>
+              navigation.navigate(Navigation.Screens.pay, { amount: 2000 })
+            }
           />
         </View>
       ) : (
