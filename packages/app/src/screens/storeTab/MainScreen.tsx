@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { View, ScrollView, Image } from "react-native";
+import React, { useContext, useRef } from "react";
+import { View, ScrollView, Image, RefreshControl } from "react-native";
 // UI imports
 import { Text } from "react-native-elements";
 import { ThemeContext } from "react-native-elements";
@@ -16,16 +16,23 @@ export default function MainView({ navigation }) {
 	const { theme } = useContext(ThemeContext);
 
 	// Fetch
-	const { initLoading, upcomingMatchs } = storeScreenVM.useInitFetch(state);
+	const { fetchIsProcessing, upcomingMatchs, fetch } = storeScreenVM.useInitFetch(state);
 
 	return (
 		<View style={{ flex: 1 }}>
 			{state.user != null ? (
 				<>
-					{initLoading ? (
+					{fetchIsProcessing && upcomingMatchs?.length === 0 ? (
 						<Loader style={{ flex: 1 }} />
 					) : (
-						<ScrollView>
+						<ScrollView
+							refreshControl={
+								<RefreshControl
+									refreshing={fetchIsProcessing && upcomingMatchs?.length !== 0}
+									onRefresh={fetch}
+								/>
+							}
+						>
 							{upcomingMatchs.map(match => {
 								return <MatchCard key={match.id} match={match} canBet={true} />;
 							})}
