@@ -21,6 +21,11 @@ import UserRepository from '../database/repositories/userRepository';
 import User from '../database/models/User';
 import ApiDatas from './pandaScoreApi/apiDatas';
 
+interface addOdd {
+	id: number
+	count: number
+}
+
 class BetServices {
 	static async create(
 		token: string | undefined,
@@ -63,7 +68,7 @@ class BetServices {
 		bet.idTeam1 = upcomingMatch.opponents[0].opponent.id;
 		bet.team2 = upcomingMatch.opponents[1].opponent.name;
 		bet.idTeam2 = upcomingMatch.opponents[1].opponent.id;
-		
+
 		try {
 			const { user, ...createdBet } = await BetRepository.instance.create(
 				bet
@@ -87,6 +92,12 @@ class BetServices {
 	static async live(): Promise<IApiResponseSuccess> {
 		try {
 			const liveMatch = new ApiDatas().getliveMatch() as Match[];
+
+			for (let idMatch in liveMatch) {
+				const match = liveMatch[idMatch];
+				liveMatch[idMatch] = await getMatchOdd(match);
+			};
+
 			return { status: 201, data: liveMatch };
 		} catch (error) {
 			console.log(error);
@@ -96,7 +107,13 @@ class BetServices {
 
 	static async upcoming(): Promise<IApiResponseSuccess> {
 		try {
-			const upcomingMatch = new ApiDatas().getUpcomingMatch() as Match[];
+			let upcomingMatch = new ApiDatas().getUpcomingMatch() as Match[];
+
+			for (let idMatch in upcomingMatch) {
+				const match = upcomingMatch[idMatch];
+				upcomingMatch[idMatch] = await getMatchOdd(match);
+			};
+
 			return { status: 201, data: upcomingMatch };
 		} catch (error) {
 			console.log(error);
@@ -143,6 +160,62 @@ class BetServices {
 		} catch (error) {
 			return false;
 		}
+	}
+}
+
+const getMatchOdd = async (match: Match): Promise<Match> => {
+	try {
+		const matchBets = await BetRepository.instance.getByMatchId(match.id);
+		if (!matchBets || matchBets?.length === 0 || match.opponents.length < 2) {
+			match.opponents.map((_, index) => {
+				match.opponents[index].opponent.odd = 1;
+			});
+			return match;
+		}
+
+		const totalBet = matchBets.length;
+
+		if (match.opponents[0] || match.opponents[1]) {
+			console.log(match.id)
+		}
+
+		const team0: addOdd = {
+			id: match.opponents[0].opponent.id,
+			count: 0
+		}
+		const team1: addOdd = {
+			id: match.opponents[1].opponent.id,
+			count: 0
+		}
+
+		matchBets.map(matchBet => {
+			matchBet.idTeamBet
+			if (matchBet.idTeamBet === team0.id) {
+				team0.count++
+			}
+
+			if (matchBet.idTeamBet === team1.id) {
+				team1.count++
+			}
+		});
+
+		match.opponents.map((opponent, index) => {
+			switch (opponent.opponent.id) {
+				case team0.id:
+					match.opponents[index].opponent.odd = Number(((team0.count * 2) / totalBet).toFixed(2));
+					break;
+				case team1.id:
+					match.opponents[index].opponent.odd = Number(((team1.count * 2) / totalBet).toFixed(2));
+					break;
+				default:
+					break;
+			}
+		});
+
+		return match;
+	} catch (error) {
+		console.log(error);
+		throw new UnexpectedError(`Couldn't find odd for this match`, error);
 	}
 }
 

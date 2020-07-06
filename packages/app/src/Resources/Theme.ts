@@ -44,6 +44,14 @@ const theme: CustomTheme = {
   Icon: {
     color: Palette.primaryText,
   },
+  Card: {
+    containerStyle: {
+      borderWidth: 5,
+      borderColor: Palette.ternaryBgEdit,
+      borderRadius: 10,
+      backgroundColor: Palette.primaryBg,
+    }
+  }
 };
 
 export default theme;

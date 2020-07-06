@@ -5,3 +5,4 @@ export { default as BirthdatePicker } from "./BirthdatePicker";
 export * from "./Views";
 export { default as Avatar } from "./Avatar";
 export * from "./Toasts";
+export * from "./MatchCard";

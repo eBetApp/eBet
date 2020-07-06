@@ -26,6 +26,11 @@ interface IApiResponseSuccess {
   data: { [key: string]: any };
 }
 
+interface IApiMatchResponseSuccess {
+  status: number;
+  data: [];
+}
+
 interface IApiResponseError {
   error: {
     status: number;
@@ -57,4 +62,52 @@ interface IUserServiceResponse extends IApiResponseSuccess {
   data: {
     user?: Omit<User, "password">;
   };
+}
+
+interface IMatchServiceResponse extends IApiMatchResponseSuccess {
+  status: number;
+  data: Match[];
+}
+
+// Match
+interface Match {
+	id: number;
+	name: string;
+	begin_at: string;
+	end_at?: string;
+	games: Game[];
+	opponents: Opponents[];
+	tournament_id: number;
+	videogame: VideoGame;
+	tournament: Tournament;
+	winner_id: number;
+}
+
+interface VideoGame {
+	name: string;
+}
+
+interface Tournament {
+	name: string;
+}
+
+interface Game {
+	status: string;
+	winner: Winner;
+}
+
+interface Opponents {
+	opponent: Opponent;
+}
+
+interface Opponent {
+	id: number;
+	image_url: string;
+  name: string;
+  odd: number;
+}
+
+interface Winner {
+	id: number;
+	name: string;
 }

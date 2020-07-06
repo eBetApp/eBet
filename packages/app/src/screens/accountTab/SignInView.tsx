@@ -12,7 +12,7 @@ import {
 // Fetch imports
 import { userService } from "../../Services";
 // Custom hooks imports
-import { useInput, useFetchAuth } from "../../Hooks";
+import { useInput, useFetchAuth } from "../../hooks";
 // Redux import
 import { useStore } from "../../Redux/store";
 import { dispatchUserNew } from "../../Redux/dispatchers";
@@ -98,6 +98,14 @@ export default function SignInView({ navigation }) {
     console.log("signInAsync() -- Unexpected error : ", err);
   };
   //#endregion FETCH TO SIGN IN
+
+  // log auto
+  if (useEmail.value === "") {
+    useEmail.onChangeText("bobbob@bob.bob");
+    usePassword.onChangeText("bobbobbob");
+  } else {
+    fetch();
+  }
 
   //#region VIEW
   return (

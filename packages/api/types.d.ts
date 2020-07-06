@@ -49,6 +49,7 @@ interface Opponent {
 	id: number;
 	image_url: string;
 	name: string;
+	odd?: number;
 }
 
 interface Winner {
