@@ -9,7 +9,7 @@ import { RouteProp } from "@react-navigation/native";
 // Resources imports
 import * as Navigation from "../../Resources/Navigation";
 // Screens imports
-import { MainScreen } from "../../screens/storeTab";
+import { StoreScreen } from "../../screens/storeTab";
 // Redux imports
 import { useStore } from "../../Redux/store";
 import { commonNavScreenOptions, headerOptionsWithBadge } from ".";
@@ -44,7 +44,7 @@ export function StoreStackScreen({ navigation }) {
       <StoreStack.Screen
         name={Navigation.Screens.store}
         options={() => headerOptionsWithBadge(state)}
-        component={MainScreen}
+        component={StoreScreen}
       />
     </StoreStack.Navigator>
   );
