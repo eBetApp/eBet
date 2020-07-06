@@ -1,5 +1,6 @@
 import React, { useContext, useRef } from "react";
 import { View, ScrollView, Image, RefreshControl } from "react-native";
+
 // UI imports
 import { Text } from "react-native-elements";
 import { ThemeContext } from "react-native-elements";
@@ -9,14 +10,17 @@ import { useStore } from "../../Redux/store";
 import { MatchCard, Loader } from "../../components";
 // Resources import
 import { storeScreenVM } from "../../Hooks";
-import { Images, Strings } from "../../Resources";
 
-export default function MainView({ navigation }) {
+import { Images, Strings, Navigation } from "../../Resources";
+
+export default function StoreScreen({ navigation }) {
+
 	const { state, dispatch } = useStore();
 	const { theme } = useContext(ThemeContext);
 
 	// Fetch
 	const { fetchIsProcessing, upcomingMatchs, fetch } = storeScreenVM.useInitFetch(state);
+
 
 	return (
 		<View style={{ flex: 1 }}>

@@ -111,3 +111,21 @@ interface Winner {
 	id: number;
 	name: string;
 }
+
+interface Bet {
+  uuid: string;
+  user: User;
+  amount: number;
+  ended: false;
+  idMatch: number;
+  idTournament: number;
+  idTeamBet: number;
+  idWinner: null;
+  gameName: string;
+  tournamentName: string;
+  matchName: string;
+  team1: string;
+  idTeam1: number;
+  team2: string;
+  idTeam2: number;
+}

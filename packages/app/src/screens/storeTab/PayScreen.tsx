@@ -11,18 +11,24 @@ import { PayScreenProps } from "../../Navigator/Stacks";
 
 export default function PayScreen({ navigation, route }: PayScreenProps) {
   const { theme } = useContext(ThemeContext);
-
+  const {setPaymentDone} = route.params
   const {
     setAmount,
     form,
     fetch,
     fetchIsProcessing,
     error,
+    success
   } = payScreenVM.useInitAuthFetch({ navigation, route });
 
   useEffect(() => {
-    setAmount(route.params.amount);
+    console.log("amount from payScreen:", route.params.amount);
+    setAmount(route.params.amount * 100);
   }, []);
+
+  useEffect(() => {
+    setPaymentDone(success);
+  }, [success]);
 
   return (
     <MainView>

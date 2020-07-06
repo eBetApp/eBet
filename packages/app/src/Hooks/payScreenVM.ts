@@ -16,6 +16,8 @@ const stripeClient = require("stripe-client")(REACT_NATIVE_STRIPE_PK);
 /** Invoked on calling fetch() */
 export const useInitAuthFetch = ({ navigation }: PayScreenProps) => {
   const [amount, setAmount] = useState<number>();
+  const [success, setSuccess] = useState<boolean>(null);
+
   const form = useFormInput(null);
 
   const { fetch, fetchIsProcessing, error } = useFetch(
@@ -27,6 +29,7 @@ export const useInitAuthFetch = ({ navigation }: PayScreenProps) => {
   );
 
   const preFetchRequest = (setError) => {
+    setSuccess(null)
     if (amount === null || amount === undefined) return false;
     if (!form?.data?.valid) {
       setError("Incomplete credentials");
@@ -69,17 +72,20 @@ export const useInitAuthFetch = ({ navigation }: PayScreenProps) => {
   };
 
   const handleFetchRes = (res: ApiResponse, setError) => {
+    console.log("RES", res)
     if (res === null) setError("Network error");
     else if ((res as IApiResponseSuccess)?.status === 200) {
+      setSuccess(true);
       navigation.goBack();
     } else throw new Error();
   };
 
   const handleFetchErr = (err: any, setError) => {
+    setSuccess(false)
     setError("Failed to process");
     console.log("submitPayment() -- Unexpected error : ", err);
     console.log(err);
   };
 
-  return { setAmount, form, fetch, fetchIsProcessing, error };
+  return { setAmount, form, fetch, fetchIsProcessing, error, success };
 };
