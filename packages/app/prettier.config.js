@@ -8,7 +8,7 @@ module.exports = {
 	// print semicolons at the ends of statements
 	semi: true,
 	// use single quotes instead of double quotes
-	singleQuote: true,
+	singleQuote: false,
 	// print trailing commas wherever possible when multi-line
 	trailingComma: 'all',
 	// print spaces between brackets in object literals
