@@ -11,7 +11,7 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import {
   StoreStackScreen,
-  CartStackScreen,
+  MyBetsStackScreen,
   AccountStackScreen,
 } from "./Stacks";
 // UI imports
@@ -48,7 +48,7 @@ export default function NestedApp() {
               let iconName;
               if (route.name === Tabs.store) {
                 iconName = "gamepad";
-              } else if (route.name === Tabs.cart) {
+              } else if (route.name === Tabs.myBets) {
                 iconName = "shopping-cart";
               } else if (route.name === Tabs.account) {
                 iconName = state.user != null ? "user" : "user-times";
@@ -68,9 +68,9 @@ export default function NestedApp() {
             component={StoreStackScreen}
           />
           <Tab.Screen
-            name={Tabs.cart}
+            name={Tabs.myBets}
             options={{ title: "Cart" }}
-            component={CartStackScreen}
+            component={MyBetsStackScreen}
           />
         </Tab.Navigator>
       </NavigationContainer>

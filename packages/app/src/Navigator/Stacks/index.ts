@@ -1,4 +1,4 @@
 export * from "./AccountStack";
-export * from "./CartStack";
+export * from "./MyBetsStack";
 export * from "./StoreStack";
 export * from "./CommonOptionsStack";

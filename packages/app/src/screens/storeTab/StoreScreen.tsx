@@ -9,9 +9,9 @@ import { useStore } from "../../Redux/store";
 import { MatchCard, Loader } from "../../components";
 // Resources import
 import { storeScreenVM } from "../../Hooks";
-import { Images, Strings } from "../../Resources";
+import { Images, Strings, Navigation } from "../../Resources";
 
-export default function MainView({ navigation }) {
+export default function StoreScreen({ navigation }) {
 	const { state, dispatch } = useStore();
 	const { theme } = useContext(ThemeContext);
 

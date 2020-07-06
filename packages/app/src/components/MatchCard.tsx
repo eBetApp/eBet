@@ -6,20 +6,26 @@ import { View, StyleSheet } from "react-native";
 import Palette from "../Resources/Palette";
 import { AmountPopup } from ".";
 
+import { useNavigation } from "@react-navigation/native";
+
+
 interface IProps {
 	match: Match;
 	canBet: boolean;
 }
 
 export function MatchCard(props: IProps) {
+	const navigation = useNavigation();
 	// Theme
 	const { theme } = useContext(ThemeContext);
 	const [betTeam, setBetTeam] = useState<number>();
+	const [showModal, setShowModal] = useState<boolean>(false);
 	const { match, canBet } = props;
 
 	const betOnTeam = async (teamId: number = 0) => {
 		console.log("match :", match.id, "team :", teamId);
 		setBetTeam(teamId);
+		setShowModal(true);
 		// return <AmountPopup match={match} betTeams={teamId} visible={true} />;
 	};
 
@@ -29,7 +35,7 @@ export function MatchCard(props: IProps) {
 
 	return (
 		<View>
-			<AmountPopup match={match} betTeams={betTeam} visible={false} />
+		<AmountPopup match={match} betTeams={betTeam} visible={showModal} closeFunction={() => setShowModal(false)}/>
 			<Card>
 				<Text>Game : {match.videogame.name}</Text>
 				<Text>Match : {match.name}</Text>

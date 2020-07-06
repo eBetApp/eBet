@@ -27,10 +27,42 @@ const getUpcomingMatchs = async (
       "bet/get/upcoming",
       null,
       token
-    )
+    );
   } catch (err) {
     return null;
   }
 }
 
-export default { postPaymentAsync, getUpcomingMatchs };
+const postMatch = async (
+  token: string,
+  payload: { idMatch: number, amount: number, idTeamBet: number, uuidUser: string }
+) => {
+  try {
+    return await UserRepository.post(
+      `bet/create/${payload.uuidUser}`,
+      queryString.stringify(payload),
+      token
+    );
+  } catch (error) {
+    return null;
+  }
+}
+
+const getMyBets = async (
+  token: string,
+  payload: { uuidUser: string }
+) => {
+  try {
+    console.log("getMyBets --- payload:", payload, "token:", token);
+    return await UserRepository.get(
+      `bet/get/user/${payload.uuidUser}`, 
+      null, 
+      token 
+    );
+  } catch (error) {
+    console.log(error);
+    return null
+  }
+}
+
+export default { postPaymentAsync, getUpcomingMatchs, postMatch, getMyBets };
