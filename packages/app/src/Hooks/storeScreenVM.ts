@@ -35,5 +35,5 @@ export const useInitFetch = (state: IState) => {
 		setUpcomingMatchs(res.data);
 	};
 
-	return { initLoading: fetchIsProcessing, upcomingMatchs };
+	return { fetchIsProcessing, upcomingMatchs, fetch };
 };
