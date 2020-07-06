@@ -123,29 +123,37 @@ export const useSetStripeAccountFetch = (state: IState, dispatch: React.Dispatch
 export const useStripeBalanceFetch = (state: IState, dispatch: React.Dispatch<IAction>) => {
 	// Init fetch
 	useEffect(() => {
-		fetchBalance();
+		fetch();
 	}, [state.user?.accountId]);
 
 	// Next fetch by interval
 	useInterval(() => {
-		fetchBalance();
+		fetch();
 	}, 60000);
 
-	const fetchBalance = (): void => {
-		readStorageKey(localStorageItems.token).then(token => {
-			stripeService
-				.getBalanceAsync({ accountId: state.user.accountId }, token)
-				.then(res => {
-					if (res === null) return;
-					const _res = res as IApiResponseSuccess;
-					if (_res == null) return;
-					dispatchUserAccountBalance(dispatch, _res.data.balance);
-				})
-				.catch(err => {
-					console.log('getBalance() -- Unexpected error : ', err);
-				});
-		});
+	const { fetch, fetchIsProcessing } = useFetch(
+		null,
+		setErr => true,
+		async setErr => fetchBalance(setErr),
+		(res, err) => handleFetchBalanceRes(res, err),
+		err => handleFetchBalanceErr(err),
+	);
+
+	const fetchBalance = async setErr => {
+		const token = await readStorageKey(localStorageItems.token);
+		return stripeService.getBalanceAsync({ accountId: state.user.accountId }, token);
 	};
 
-	return;
+	const handleFetchBalanceRes = (res, setErr) => {
+		if (res === null) return;
+		const _res = res as IApiResponseSuccess;
+		if (_res == null) return;
+		dispatchUserAccountBalance(dispatch, _res.data.balance);
+	};
+
+	const handleFetchBalanceErr = err => {
+		console.log('getBalance() -- Unexpected error : ', err);
+	};
+
+	return { fetch, fetchIsProcessing };
 };
