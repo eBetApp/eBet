@@ -21,7 +21,8 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "test": "jest",
-    "lint": "tslint src/*.ts* src/**/*.ts*"
+    "lint": "tslint --project .",
+    "lintfix": "tslint --fix --project ."
   },
   "bugs": {
     "url": "https://github.com/eBetApp/eBet/issues"
@@ -75,6 +76,7 @@
     "babel-preset-expo": "^8.1.0",
     "babel-preset-react-native": "^4.0.1",
     "jest": "^25.1.0",
+    "prettier-tslint": "^0.4.2",
     "react-native-credit-card-input": "^0.4.1",
     "react-native-dotenv": "^0.2.0",
     "react-native-easy-toast": "^1.2.0",
