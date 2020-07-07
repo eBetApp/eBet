@@ -11,8 +11,7 @@
 - run app: `yarn dev-app`
 - run tests: `yarn tests`
 
-## Lerna commands to dev
+## How to contribute?
 
-- install packages listed in all packages.json: `lerna bootstrap`
 - install npm package in all subRepo: `lerna add packageName --dev`
 - install npm package in specific subRepo: `lerna add packageName --scope MySubRepo --dev`
