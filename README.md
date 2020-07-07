@@ -2,7 +2,7 @@
 
 ## Get started
 
-- install common packages : `npm install`
+- install common packages : `yarn install`
 - install packages listed in all packages.json: `lerna bootstrap`
 
 ## Commands to run projects
