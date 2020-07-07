@@ -8,7 +8,7 @@ import { IState } from "../Redux/ReducerTypes";
 // Utils imports
 import { betService } from "../Services";
 
-/** Invoked by useEffect on viewDidLoad */
+/** Invoked by useEffect on state.user?.uuid changed */
 export const useInitFetch = (state: IState) => {
 	const [myBets, setMyBets] = useState<Bet[]>([]);
 
@@ -27,9 +27,8 @@ export const useInitFetch = (state: IState) => {
 	const fetchRequest = async setErr => {
 		const token = await readStorageKey(localStorageItems.token);
 		const payload = {
-			uuidUser: state.user.uuid
-		}
-		const test = await betService.getMyBets(token, payload)
+			uuidUser: state.user.uuid,
+		};
 		return await betService.getMyBets(token, payload);
 	};
 
@@ -38,5 +37,5 @@ export const useInitFetch = (state: IState) => {
 		setMyBets(res.data);
 	};
 
-	return { initLoading: fetchIsProcessing, myBets };
+	return { fetchIsProcessing, myBets, fetchBets: fetch };
 };

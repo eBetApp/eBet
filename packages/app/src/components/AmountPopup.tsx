@@ -24,12 +24,11 @@ export function AmountPopup(props: IProps) {
 	const [paymentDone, setPaymentDone] = useState<boolean>(false);
 
 	useEffect(() => {
-		// TODO Bet creation
 		if (paymentDone) {
 			sendBet();
 		}
-	  }, [paymentDone])
-	
+	}, [paymentDone]);
+
 	// Redux
 	const { dispatch, state } = useStore();
 
@@ -66,17 +65,17 @@ export function AmountPopup(props: IProps) {
 	const openPayment = () => {
 		closeFunction();
 		navigation.navigate(Navigation.Screens.pay, { amount: Number(amount), setPaymentDone });
-	}
+	};
 
 	const sendBet = async () => {
 		// call post
 		const token = await readStorageKey(localStorageItems.token);
 		const payload = {
-			idMatch: match.id, 
-			amount: Number(amount), 
-			idTeamBet: betTeams, 
-			uuidUser: state.user.uuid
-		}
+			idMatch: match.id,
+			amount: Number(amount),
+			idTeamBet: betTeams,
+			uuidUser: state.user.uuid,
+		};
 		await betService.postMatch(token, payload);
 	};
 
