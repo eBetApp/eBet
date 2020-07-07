@@ -8,6 +8,7 @@ import { Navigation } from "../Resources";
 import { readStorageKey, localStorageItems } from "../Resources";
 import { useNavigation } from "@react-navigation/native";
 import { useStore } from "../Redux/store";
+import { dispatchBetsCount } from "../Redux/dispatchers";
 
 interface IProps {
 	match: Match;
@@ -77,6 +78,7 @@ export function AmountPopup(props: IProps) {
 			uuidUser: state.user.uuid,
 		};
 		await betService.postMatch(token, payload);
+		dispatchBetsCount(dispatch);
 	};
 
 	useEffect(() => {

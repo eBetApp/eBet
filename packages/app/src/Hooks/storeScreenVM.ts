@@ -14,7 +14,7 @@ export const useInitFetch = (state: IState) => {
 
 	useEffect(() => {
 		if (state.user !== null && state.user !== undefined) fetch();
-	}, [state.user?.uuid]);
+	}, [state.user?.uuid, state.bets]);
 
 	const { fetch, fetchIsProcessing } = useFetch(
 		null,
